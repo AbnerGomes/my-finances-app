@@ -76,7 +76,7 @@ def index():
     
     if 'usuario' not in session:
         
-        return redirect(url_for('login'))
+        return redirect(url_for('gasto.login'))
 
     usuario = session['usuario']  # Só acessa se já tiver passado pela verificação
 
@@ -102,7 +102,7 @@ def cadastrar_gasto():
         print('cad entrou')
         if 'usuario' not in session:
             flash('Você precisa estar logado para adicionar um gasto.')
-            return redirect('/login')
+            return redirect(url_for('gasto.login')) 
 
         gasto = request.form['gasto']
         valor = request.form['valor']
@@ -197,7 +197,7 @@ def cadastro():
         
         if dados:
             flash("Usuário já existe! 🤦🏽‍♂️")
-            return redirect("/cadastro")
+            return return redirect(url_for('gasto.cadastro')) 
 
         flash("Usuário cadastrado com sucesso! 😄", "success")
 
@@ -215,7 +215,7 @@ def editar_gasto():
 
     if 'usuario' not in session:
         flash('Você precisa estar logado para adicionar um gasto.')
-        return redirect('/login')
+        return redirect(url_for('gasto.login')) 
 
     gasto = request.form['gasto']
     valor = request.form['valor']
@@ -235,7 +235,7 @@ def deletar_gasto():
     print('foi')
     if 'usuario' not in session:
         flash('Você precisa estar logado para deletar um gasto.')
-        return redirect('/login')
+        return redirect(url_for('gasto.login')) 
 
     id_gasto = request.form.get('id')
 
@@ -243,7 +243,7 @@ def deletar_gasto():
 
     if not id_gasto:
         # flash('ID do gasto não fornecido!', 'danger')
-        return redirect('/extrato')
+        return redirect(url_for('gasto.extrato')) 
 
     try:
         gasto_bp.gasto_service.deletar_gasto(id_gasto)
@@ -300,7 +300,7 @@ def cadastrar_despesa():
     if request.method == 'POST':
         if 'usuario' not in session:
             flash('Você precisa estar logado para adicionar um gasto.')
-            return redirect('/login')
+            return redirect(url_for('gasto.login')) 
 
         despesa = request.form['despesa']
         valor = request.form['valor']
@@ -329,7 +329,7 @@ def editar_despesa():
 
     if 'usuario' not in session:
         flash('Você precisa estar logado para editar uma despesa.')
-        return redirect('/login')
+        return redirect(url_for('gasto.login')) 
 
     despesa = request.form['despesa']
     valor = request.form['valor']
@@ -347,13 +347,13 @@ def deletar_despesa():
     print('foi')
     if 'usuario' not in session:
         flash('Você precisa estar logado para deletar uma despesa.')
-        return redirect('/login')
+        return redirect(url_for('gasto.login')) 
 
     id_despesa = request.form.get('id')
 
     if not id_despesa:
         flash('ID do despesa não fornecido!', 'danger')
-        return redirect('/extrato')
+        return redirect(url_for('gasto.extrato')) 
 
     try:
         despesa_bp.despesa_service.deletar_despesa(id_despesa)
@@ -435,7 +435,7 @@ def configuracoes():
     
     if 'usuario' not in session:
         
-        return redirect(url_for('login'))
+        return redirect(url_for('gasto.login')) 
 
     usuario = session['usuario']  # Só acessa se já tiver passado pela verificação
 
