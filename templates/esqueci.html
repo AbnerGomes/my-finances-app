@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <style>
+        .img-responsiva {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 0 auto;
+        }
+
+        .button-detalhes {
+            display: inline-block;
+            padding: 10px 20px;
+            text-decoration: none;
+            background: linear-gradient(135deg, #da4025f5, #bc3a1ae7);
+            color: white;
+            border-radius: 5px;
+
+
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            font-weight: bold;
+            font-size: 10px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .button{
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+    <img src="https://i.ytimg.com/vi/Mp0QGaVIbdE/maxresdefault.jpg" class="img-responsiva" alt="Imagem exemplo">
+<br><br><br>
+    <div class="button">
+    <a href="{{ url_for('gasto.login') }}" class="button-detalhes">Voltar</a>
+</div>
+</body>
+</html>

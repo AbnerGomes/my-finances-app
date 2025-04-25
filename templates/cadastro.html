@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Usuário</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cadastro_usu.css') }}">
+</head>
+<body>
+    <div class="container">
+
+
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-success">
+          {{ messages[0] }}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+        <h3>Cadastro de Usuário</h3>
+        <form class="form-box" action="{{ url_for('gasto.cadastro') }}" method="POST">
+          <!-- <div class="validate-input" data-validate = "Um email válido deve conter: algumacoisa@algumaoutracoisa.c"> -->
+          <input type="email" name="email" placeholder="Email" required >
+            <input type="password" name="senha" placeholder="Senha" required>
+        <!-- </div> -->
+            <br><br>
+            <button class="button-cad" type="submit">Cadastrar</button>
+
+        <a href="/" class="btn-cad-usu">Voltar </a>
+          </form>
+
+    </div>
+</body>
+</html>

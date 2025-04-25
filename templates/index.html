@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dash de Finanças de Abner</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+ 
+  <div class="header-bar center">
+    <div class="logo-text">
+      <img src="{{ url_for('static', filename='images/A.png') }}" alt="Logo" class="logo">
+      <span class="company-name">A&A - Finance Dashboard</span>
+    </div>
+  </div>
+  
+
+  <div class="chart-bar">
+      <div class="chart-container-bar">
+        <canvas id="barChart"></canvas>
+      </div>  
+  </div>  
+
+  <div class="chart-and-buttons">
+<div class="container-btn">
+<div class="period-container-wrapper" id="period-buttons">
+  <button class="period-button " onclick="filtrarGastos('semanaatual')">Semana Atual</button>
+  <button class="period-button " onclick="filtrarGastos('ontem')">Ontem</button>
+  <button class="period-button " onclick="filtrarGastos('hoje')">Hoje</button>
+  <button class="period-button " onclick="filtrarGastos('semanapassada')">Semana Passada</button>
+  <button class="period-button " onclick="filtrarGastos('mesatual')">Mês Atual</button>
+  <button class="period-button " onclick="filtrarGastos('mesanterior')">Mês Anterior</button>
+</div>
+</div>
+
+<!-- <br><br> -->
+ 
+  <div id="mensagem" style="display: none; color: red; font-weight: bold; text-align: center; margin-top: 10px;"></div>
+  <div class="chart-container">
+    <canvas id="donutChart"></canvas>
+</div>
+
+</div>
+
+<div id="total" class="total" style="text-align: center; margin-top: 20px; padding: 10px 10px 10px 10px; ">
+   <h3 class="txt1">Total Gasto no período: R$ <span id="valor-total">0,00</span></h3>
+</div>
+<br>
+
+<!-- <div class="button-container">
+  <a href="{{ url_for('despesa.despesas') }}"><button class="btn-despesas">Visualizar Despesas</button></a>
+  <a href="{{ url_for('gasto.extrato') }}"><button class="btn-right">Detalhar Gastos</button></a>
+  <a href="{{ url_for('gasto.login') }}" ><button class="btn-voltar">Sair</button></a>
+</div> -->
+
+
+<div class="footer-bar">
+  <a href="{{ url_for('despesa.despesas') }}">
+    <button class="footer-btn">
+      <span class="material-icons">bar_chart</span>
+      <span class="footer-text">Despesas</span>
+    </button>
+  </a>
+  <a href="{{ url_for('gasto.extrato') }}">
+    <button class="footer-btn">
+      <span class="material-icons">account_balance_wallet</span>
+      <span class="footer-text">Transações</span>
+    </button>
+  </a>
+  <a href="{{ url_for('gasto.index') }}">
+    <button class="footer-btn active">
+      <span class="material-icons">dashboard</span>
+      <span class="footer-text">Visão Geral</span>
+    </button>
+  </a>
+  <button class="footer-btn">
+    <span class="material-icons">settings</span>
+    <span class="footer-text">Configurações</span>
+  </button>
+</div>
+
+
+
+
+  <script src="static/js/scripts.js" defer></script>
+</body>
+</html>

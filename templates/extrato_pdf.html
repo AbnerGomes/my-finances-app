@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 25px;
+            font-size: 13px;
+        }
+    
+        h2 {
+            color: #37474f;
+            text-align: center;
+        }
+    
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+        }
+    
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+    
+        th {
+            background-color: #B0E0E6;
+            color: white;
+        }
+    
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    
+        tfoot td {
+            background-color: #B0E0E6;
+            font-weight: bold;
+        }
+
+
+        .valor {
+            text-align: right;
+        }
+    </style>
+    
+</head>
+<body>
+    <h2>Extrato</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Categoria</th>
+                <th>Descrição</th>
+                <th>Data</th>
+                <th>Valor (R$)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in dados %}
+            <tr>
+                <td>{{ item[0] }}</td>
+                <td>{{ item[1] }}</td>
+                <td>{{ item[3] }}</td>
+                <td>R$ {{ '%.2f'|format( item[2]) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+        <tfoot>
+            <tr>
+                <td colspan="2" style="text-align: left; font-weight: bold;">Total do período:</td>
+                <td colspan="2" style="font-weight: bold;">
+                    R$ {{ '%.2f' | format(soma_gastos) }}
+                </td>
+            </tr>
+            
+        </tfoot>
+    </table>
+</body>
+</html>
