@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extrato</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/extrato.css') }}">
+    <script src="static/js/extrato.js" defer></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
+</head>
+<body>
+
+    <div class="header-bar center">
+        <div class="logo-text">
+          <img src="{{ url_for('static', filename='images/A.png') }}" alt="Logo" class="logo">
+          <span class="company-name">A&A - Finance Dashboard</span>
+        </div>
+      </div>
+      
+
+    <div class="container-detalhes" >
+
+        <h2 style="text-align: center;">Extrato</h2>
+            <!-- Filtro -->
+<!-- Filtro -->
+<form method="GET" action="{{ url_for('gasto.extrato') }}" class="filtro-form" id="filtro-form">
+    <!-- Botão de período -->
+    <div class="periodo-wrapper">
+        <label for="data">Período:</label>
+        <input type="text" id="periodo-picker" readonly placeholder="Selecione o período" />
+        <input type="hidden" id="data_inicio" name="data_inicio" value="{{ data_inicio }}">
+<input type="hidden" id="data_fim" name="data_fim" value="{{ data_fim }}">
+
+<!-- <input type="hidden" id="categoria" name="categoria" value="{{ categoria }}"> -->
+    </div>
+    <!-- Dropdown de categoria -->
+    <label for="categoria">Categoria:</label>
+    <select name="categoria" id="categoria">
+        <option value="Todas">Todas</option>
+        <option value="Alimentação">Alimentação</option>
+        <option value="Saúde">Saúde</option>
+        <option value="Mobilidade">Mobilidade</option>
+        <option value="Entretenimento">Entretenimento</option>
+        <option value="Moradia">Moradia</option>
+        <option value="Outros">Outros</option>
+        <option value="Dívidas">Dívidas</option>
+        <option value="Educação">Educação</option>
+
+        {% for cat in categorias %}
+            <option value="{{ cat }}" {% if request.args.get('categoria') == cat %}selected{% endif %}>{{ cat }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit" class="botao-filtrar">Filtrar</button>
+</form>
+<br>
+
+        <table>
+            <thead>
+                <tr>
+                    <!-- <th>Data</th> -->
+                    <th>Categoria</th>
+                    <th>Descrição</th>
+                    <th>Valor (R$)</th>
+                    <th colspan="2"> </th>
+
+                    <!-- <th></th> -->
+                </tr>
+            </thead>
+            <tbody>
+             
+
+                {% for data, lista in gastos_agrupados.items() %}
+                <!-- Linha com a data -->
+                <tr style="background-color: #f5f5f5;">
+                    <td colspan="5" style="text-align: justify; padding: 8px 0;"><strong>📅 {{ data }}</strong></td>
+                </tr>
+            
+                {% for gasto in lista %}
+                    <tr class="gasto"
+                    data-id="{{ gasto[4] }}"
+                     style="background-color: {% if loop.index0 % 2 == 0 %}#eaffea{% else %}white{% endif %}; line-height: 1.6;">
+                        <td>{{ gasto[0] }}</td>
+                        <td>{{ gasto[1] }}</td>
+                        <td>R$ {{ gasto[2] | round(2) }}</td>
+                        <td>
+                            <i class="fas fa-edit edit-icon"
+                            data-data="{{ gasto[3] }}"
+                            data-categoria="{{ gasto[0] }}"
+                            data-descricao="{{ gasto[1] }}"
+                            data-valor="{{ gasto[2] }}"
+                            data-id="{{ gasto[4] }}"
+                            title="Editar"></i>
+                        </td>
+                        <td>
+                            <i class="fa-solid fa-trash"
+                            data-id="{{ gasto[4] }}"
+                            ></i>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+            
+
+              </tbody>
+              <tfoot>
+                <tr>
+                    <td colspan="2" style="text-align: left; font-weight: bold;">Total do período:</td>
+                    <td></td>
+                    <td colspan="2" style="font-weight: bold;">
+                        R$ {{ '%.2f' | format(soma_gastos) }}
+                    </td>
+                </tr>
+                
+            </tfoot>
+            
+                      
+
+        </table>
+
+        <div style="text-align: right; margin-top: 10px;">
+            <a href="{{ url_for('gasto.exportar_excel', data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria')) }}" class="button-detalhes" style="background: linear-gradient(135deg, #28a745, #218838);">Exportar Excel</a>
+
+            <a href="{{ url_for('gasto.exportar_pdf', data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria')) }}" class="button-detalhes" style="background: linear-gradient(135deg, #e04b4bc9, #e62121);">Exportar PDF</a>
+        </div>
+
+
+        <!-- Paginação -->
+        <div class="pagination">
+
+                <!-- <a href="{{ url_for('gasto.cadastrar_gasto') }}"><button class="btn-left">Adicionar Gasto</button></a>  -->
+                <button class="btn-left">Adicionar Gasto</button> 
+            {% if page > 1 %}
+                <!-- <a href="{{ url_for('gasto.extrato', page=page-1) }}" class="button">← Anterior</a> -->
+                <a href="{{ url_for('gasto.extrato', page=page-1, data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria')) }}" class="button">← Anterior</a>
+
+            {% endif %}
+            
+            <span>Página {{ page }}</span>
+
+            {% if total > page * per_page %}
+                <!-- <a href="{{ url_for('gasto.extrato', page=page+1) }}" class="button">Próxima →</a> -->
+                <a href="{{ url_for('gasto.extrato', page=page+1, data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria')) }}" class="button">Próxima →</a>
+
+            {% endif %}
+            <!-- <a href="{{ url_for('gasto.index') }}" class="button-detalhes">Voltar</a> -->
+        </div>
+
+        
+    </div>
+
+    <div class="footer-bar">
+        <a href="{{ url_for('despesa.despesas') }}">
+          <button class="footer-btn">
+            <span class="material-icons">bar_chart</span>
+            <span class="footer-text">Despesas</span>
+          </button>
+        </a>
+        <a href="{{ url_for('gasto.extrato') }}">
+          <button class="footer-btn active">
+            <span class="material-icons">account_balance_wallet</span>
+            <span class="footer-text">Transações</span>
+          </button>
+        </a>
+        <a href="{{ url_for('gasto.index') }}">
+          <button class="footer-btn">
+            <span class="material-icons">dashboard</span>
+            <span class="footer-text">Visão Geral</span>
+          </button>
+        </a>
+        <button class="footer-btn">
+          <span class="material-icons">settings</span>
+          <span class="footer-text">Configurações</span>
+        </button>
+      </div>
+
+<!-- Modal de Edição -->
+<div id="modal-editar" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close" id="fechar-modal">&times;</span>
+      <h3>Editar Gasto</h3>
+      <form id="form-editar" method="POST" action="{{ url_for('gasto.editar_gasto') }}">
+        <label for="editar-data">Data:</label>
+        <input type="date" name="data" id="editar-data">
+  
+        <label for="editar-categoria">Categoria:</label>
+        <!-- <input type="text" name="categoria" id="editar-categoria" required> -->
+        <select name="categoria" id="editar-categoria">
+
+            <option value="Alimentação">Alimentação</option>
+            <option value="Saúde">Saúde</option>
+            <option value="Mobilidade">Mobilidade</option>
+            <option value="Entretenimento">Entretenimento</option>
+            <option value="Moradia">Moradia</option>
+            <option value="Outros">Outros</option>
+            <option value="Dívidas">Dívidas</option>
+            <option value="Educação">Educação</option>
+        </select>
+        <label for="editar-descricao">Descrição:</label>
+        <input type="text" name="gasto" id="editar-descricao" required>
+  
+        <label for="editar-valor">Valor (R$):</label>
+        <input type="number" step="0.01" name="valor" id="editar-valor" required>
+  
+        <input type="hidden" id="editar-id" name="id">
+
+        <button type="submit" class="botao-salvar">Salvar</button>
+      </form>
+    </div>
+  </div>
+  
+ <!-- Modal confirmação  -->
+ <div id="modal-confirmar-exclusao" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close" id="fechar-modal-excluir">&times;</span>
+      <h3>Tem certeza que deseja excluir este gasto?</h3>
+      <form method="POST" action="{{ url_for('gasto.deletar_gasto') }}"> 
+        <input type="hidden" id="id-gasto-excluir" name="id">
+        <button type="submit" id="confirmar-exclusao" class="btn-ok" style="margin-top: 12px;">OK</button>
+    </form>
+    
+    </div>
+  </div>
+  
+
+<!-- Modal de Cadastro -->
+<div id="modal-cadastrar" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close" id="fechar-modal-cadastro">&times;</span>
+      <h3>cadastrar Gasto</h3>
+      <form id="form-cadastrar" method="POST" action="{{ url_for('gasto.cadastrar_gasto') }}">
+        <label for="cadastrar-data">Data:</label>
+        <input type="date" name="data" id="cadastrar-data">
+  
+        <label for="cadastrar-categoria">Categoria:</label>
+        <!-- <input type="text" name="categoria" id="cadastrar-categoria" required> -->
+        <select name="categoria" id="cadastrar-categoria">
+
+            <option value="Alimentação">Alimentação</option>
+            <option value="Saúde">Saúde</option>
+            <option value="Mobilidade">Mobilidade</option>
+            <option value="Entretenimento">Entretenimento</option>
+            <option value="Moradia">Moradia</option>
+            <option value="Outros">Outros</option>
+            <option value="Dívidas">Dívidas</option>
+            <option value="Educação">Educação</option>
+        </select>
+        <label for="cadastrar-descricao">Descrição:</label>
+        <input type="text" name="gasto" id="cadastrar-descricao" required>
+  
+        <label for="cadastrar-valor">Valor (R$):</label>
+        <input type="number" step="0.01" name="valor" id="cadastrar-valor" required>
+  
+        <input type="hidden" id="cadastrar-id" name="id">
+
+        <button type="submit" class="botao-salvar">Salvar</button>
+      </form>
+    </div>
+  </div>
+
+
+ <!-- Modal ok  -->
+ <div id="modal-cadastro-ok" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close" id="fechar-modal-ok">&times;</span>
+      <h4>Gasto Cadastrado com sucesso!</h4>
+      <form method="POST"> 
+        <input type="hidden" id="id-gasto" name="id">
+        <button type="submit" id="confirmar-ok" class="botao-salvar" style="margin-top: 12px;">OK</button>
+    </form>
+    
+    </div>
+  </div>
+
+<!-- Modal mensalista  -->
+<div id="modal-mensalista" class="modal" style="display: none;">
+    <div class="modal-content" style="background-color: #e96960;">
+      <span class="mensalista" id="fechar-modal-mensalista">&times;</span>
+      <h4 style="text-align: center; color: #f5f5f5;">Assinatura de mensalista vencida!</h4>
+      <h4 style="text-align: center; color: #f5f5f5;">Contate o administrador.</h4>  
+      <button type="submit" id="confirmar-ok" class="btn-ok" style="margin-top: 12px;">OK</button>  
+    </div>
+  </div>
+
+ 
+  
+
+</body>
+</html>

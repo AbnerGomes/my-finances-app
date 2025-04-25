@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/despesas.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="static/js/despesas.js" defer></script>
+  <title>Quadro de Despesas Mensais </title>
+</head>
+<body>
+
+  <div class="header-bar center">
+    <div class="logo-text">
+      <img src="{{ url_for('static', filename='images/A.png') }}" alt="Logo" class="logo">
+      <span class="company-name">A&A - Finance Dashboard</span>
+    </div>
+  </div>
+
+  <h2>Despesas Mensais</h2>
+<br>
+  <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+    <label for="filtroMes" style="font-weight: bold;">Selecione o mês:</label>
+    <input type="month" id="filtroMes" style="padding: 10px; border-radius: 8px; border: 1px solid #B0E0E6; font-size: 10px;"  value="{{ mes_ano }}">
+    <button class="botao-filtrar" onclick="filtrarPorMes()">Filtrar</button>
+    <!-- <button onclick="limparFiltro()">Limpar</button> -->
+
+    <div class="legenda">
+      <div class="legenda-item">
+        <span class="legenda-icon Pago"></span>
+        <span class="legenda-texto">Pago</span>
+      </div>
+      <div class="legenda-item">
+        <span class="legenda-icon Pendente"></span>
+        <span class="legenda-texto">Pendente</span>
+      </div>
+      <div class="legenda-item">
+        <span class="legenda-icon Parcial"></span>
+        <span class="legenda-texto">Parcial</span>
+      </div>
+    </div>
+  </div>
+<div class="tabela">
+  <table>
+    <thead>
+      <tr>
+        <th>Despesa</th>
+        <th>Categoria</th>
+        <th>Valor (R$)</th>
+        <th>Status</th>
+        <th>Tipo</th>
+        <th>Alterar</th>
+        <th colspan="2"> </th>
+        <!-- <th></th> -->
+      </tr>
+    </thead>
+    <tbody>
+        {% for despesa in despesas %}
+      <tr data-data="{{ despesa[3] }}" data-id="{{ despesa[6] }}"
+      {% if despesa[5] == 'FIXA' %} class="linha-fixa" {% endif %}
+      >
+        <td>{{ despesa[1] }}</td>
+        <td>{{ despesa[0] }}</td>
+        <td>{{ despesa[2] }}</td>
+        <td class="status-cell">
+            <span class="status-indicator {{ despesa[4] | replace(' ', '-') }}"></span>
+            <!-- <span class="status-text">{{ despesa[4] }}</span> -->
+          </td>
+          <td>{{ despesa[5] }}</td>
+          <td>
+            <select name="categoria" onchange="atualizarStatus(this)">
+                <option value="Pago" {% if despesa[4] == 'Pago' %}selected{% endif %}>Pago</option>
+                <option value="Parcial" {% if despesa[4] == 'Parcial' %}selected{% endif %}>Parcial</option>
+                <option value="Pendente" {% if despesa[4] == 'Pendente' %}selected{% endif %}>Pendente</option>
+              </select>
+        </td>
+        <td class="icones">
+          {% if despesa[5] != 'FIXA' %}
+            <i class="fas fa-edit edit-icon"
+            data-data="{{ despesa[3] }}"
+            data-categoria="{{ despesa[0] }}"
+            data-descricao="{{ despesa[1] }}"
+            data-valor="{{ despesa[2] }}"
+            data-id="{{ despesa[6] }}"
+            title="Editar"></i>
+          {% endif %}
+      </td>
+      <td class="icones">
+        {% if despesa[5] != 'FIXA' %}
+          <i class="fa-solid fa-trash"
+          data-id="{{ despesa[6] }}"
+          ></i>
+          {% endif %}  
+      </td>
+
+
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+  <div class="button-container">
+    <a href="{{ url_for('despesa.cadastrar_despesa') }}"><button class="btn-left">Adicionar Despesa</button></a>
+      
+    <!-- <a href="{{ url_for('gasto.index') }}" ><button class="btn-voltar">Sair</button></a> -->
+  </div>
+
+
+<!-- Modal de Edição -->
+<div id="modal-editar" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close" id="fechar-modal">&times;</span>
+    <h3>Editar Despesa</h3>
+    <form id="form-editar" method="POST" action="{{ url_for('despesa.editar_despesa') }}">
+
+      <label for="editar-categoria">Categoria:</label>
+      <!-- <input type="text" name="categoria" id="editar-categoria" required> -->
+      <select name="categoria" id="editar-categoria">
+
+        <option value="Alimentação">Alimentação</option>
+        <option value="Saúde">Saúde</option>
+        <option value="Mobilidade">Mobilidade</option>
+        <option value="Entretenimento">Entretenimento</option>
+        <option value="Moradia">Moradia</option>
+        <option value="Outros">Outros</option>
+        <option value="Dívidas">Dívidas</option>
+        <option value="Educação">Educação</option>
+    </select>
+
+      <label for="editar-descricao">Descrição:</label>
+      <input type="text" name="despesa" id="editar-descricao" required>
+
+      <label for="editar-valor">Valor (R$):</label>
+      <input type="number" step="0.01" name="valor" id="editar-valor" required>
+
+      <input type="hidden" id="editar-id" name="id">
+
+      <button type="submit" class="botao-salvar">Salvar</button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal confirmação  -->
+<div id="modal-confirmar-exclusao" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close" id="fechar-modal-excluir">&times;</span>
+    <h3>Tem certeza que deseja excluir esta despesa?</h3>
+    <form method="POST" action="{{ url_for('despesa.deletar_despesa') }}"> 
+      <input type="hidden" id="id-despesa-excluir" name="id">
+      <button type="submit" id="confirmar-exclusao" class="botao-salvar" style="margin-top: 12px;">OK</button>
+  </form>
+  
+  </div>
+</div>
+
+
+<div class="footer-bar">
+  <a href="{{ url_for('despesa.despesas') }}">
+    <button class="footer-btn">
+      <span class="material-icons">bar_chart</span>
+      <span class="footer-text">Despesas</span>
+    </button>
+  </a>
+  <a href="{{ url_for('gasto.extrato') }}">
+    <button class="footer-btn">
+      <span class="material-icons">account_balance_wallet</span>
+      <span class="footer-text">Transações</span>
+    </button>
+  </a>
+  <a href="{{ url_for('gasto.index') }}">
+    <button class="footer-btn active">
+      <span class="material-icons">dashboard</span>
+      <span class="footer-text">Visão Geral</span>
+    </button>
+  </a>
+  <button class="footer-btn">
+    <span class="material-icons">settings</span>
+    <span class="footer-text">Configurações</span>
+  </button>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,378 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    background-color: white;
+
+  }
+
+  .title {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+
+  .categories {
+    padding-bottom: 10px;
+    display: flex;
+    flex-direction: column;  /* Alterado para coluna */
+    align-items: center;
+    border-radius: 50%;
+  }
+
+  .button-container {
+      display: flex;
+      justify-content: space-between;  /* Espaço entre os botões */
+      width: 100%;
+      margin-top: 40px; /* Espaço acima dos botões */
+      margin-bottom: 30px; /* Espaço abaixo dos botões */
+  }
+
+  .btn-left, .btn-right, .btn-voltar, .btn-despesas {
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      color: #fff;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      font-weight: bold;
+
+      padding: 12px 20px;
+      font-size: 8px;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      transition: background-color 0.3s;
+
+  }
+
+  /* Gradiente azul para os botões */
+  .btn-left {
+      background: linear-gradient(135deg, #3498db, #2980b9);
+      margin-right: 10px;
+  }
+
+  .btn-right {
+      background: linear-gradient(135deg, #16a085, #1abc9c);
+      margin-right: 10px;
+  }
+
+  .btn-voltar {
+      background: linear-gradient(135deg, #da4025f5, #bc3a1ae7);
+      margin-right: 10px;
+  }
+
+  .btn-despesas {
+    background: linear-gradient(135deg, #89d6ed, #499bb4);
+    margin-right: 10px;
+}
+
+  /* Efeito de hover para os botões */
+  .btn-left:hover, .btn-right:hover, .btn-voltar:hover {
+      background-color: #2980b9;  /* Um tom mais escuro de azul */
+      transform: translateY(-3px); /* Elevação no hover */
+  }
+
+  /* Efeito de foco nos botões */
+  .btn-left:focus, .btn-right:focus , .btn-voltar:hover{
+      outline: none;
+      box-shadow: 0px 0px 10px rgba(52, 152, 219, 0.8);
+  }
+
+  /* Estilo geral da página de cadastro */
+  .container-cadastro {
+      width: 90%;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+  }
+
+  /* Estilos para os campos do formulário */
+  .form-group {
+      margin-bottom: 15px;
+  }
+
+  label {
+      display: block;
+      font-size: 8px;
+      color: #333;
+      margin-bottom: 8px;
+  }
+
+  input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 8px;
+  }
+
+  input[type="date"] {
+      font-family: inherit;
+      font-size: 8px;
+  }
+
+  input[type="number"] {
+      -moz-appearance: textfield;
+  }
+
+  input:focus, select:focus {
+      border-color: #4CAF50;
+      outline: none;
+  }
+
+  /* Estilo do botão de "Salvar" */
+  .button-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+  }
+  
+  /* Estilo do botão de "Salvar" */
+  .btn-save {
+      background: linear-gradient(90deg, #004D99, #005BBB);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-save:hover {
+      background: linear-gradient(90deg, #005BBB, #004D99);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Responsividade */
+  @media (max-width: 768px) {
+      .container-cadastro {
+          padding: 10px;
+      }
+      h1 {
+          font-size: 10px;
+      }
+  }
+
+  /* Estilo do botão "Voltar" */
+  .btn-voltar {
+      padding: 12px 20px;
+      font-size: 8px;
+      border-radius: 5px;
+      border: none;
+      background-color: #f44336;
+      color: white;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      transition: background-color 0.3s;
+  }
+
+  .btn-voltar:hover {
+      background-color: #d32f2f;
+  }
+
+  /* Estilo para a mensagem de sucesso */
+  .flash-message {
+      margin-top: 20px;
+      text-align: center;
+  }
+
+  .alert {
+      padding: 15px;
+      color: white;
+      border-radius: 5px;
+      font-weight: bold;
+      margin-bottom: 15px;
+  }
+
+  .alert.success {
+      background-color: #4CAF50;
+  }
+
+  .alert.error {
+      background-color: #f44336;
+  }
+
+  .typewriter-button {
+      display: inline-block;
+      padding: 10px 20px;
+      text-decoration: none;
+      background-color: #007BFF;
+      color: white;
+      border-radius: 5px;
+  }
+  .typewriter-button:active {
+      box-shadow: 1px 1px 0 black;
+      transform: translate(2px, 2px);
+  }
+
+  .typewriter-button:hover {
+      background-color: #0056b3;
+  }
+
+  #flash-message {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 128, 0, 0.8);
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      z-index: 1000;
+  }
+
+  .login-page {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+  }
+
+  .login-container {
+      width: 300px;
+      margin: 100px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+  input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      box-sizing: border-box;
+  }
+
+  .button-login {
+      width: 100%;
+      padding: 10px;
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+  }
+
+  .erro {
+      color: red;
+      margin-top: 10px;
+      text-align: center;
+  }
+
+.period-container-wrapper {
+
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;                /* gap-2 */
+    justify-items: center;
+  }
+
+  .period-button {
+    background: linear-gradient(135deg, #105c80, #003f5c);
+    color: white;
+    font-size: 9px;
+    font-weight: 800;
+    /* padding: 0.5rem 0.75rem; */
+    padding: 6px 10px 10px 6px;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease;
+    width: 50px;
+  }
+
+  .period-button:hover {
+    background: linear-gradient(135deg, #0f5575, #003f5c);
+    transform: translateY(-3px)
+  }
+
+   .period-button.active {
+    background: linear-gradient(135deg, #155872, #123e5c);
+    color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  } 
+
+
+  .container-btn {
+    /* background-color: #efefef;  */
+    /* border-radius: 1rem;         */
+    /* padding: 1.5rem;          */  
+    padding: 10px 0px 10px 30px; 
+    /* box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);  */
+    width: 100%;
+    max-width: 320px;           /* max-w-sm */
+    text-align: center;
+  }
+
+  .txt1{
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+
+  .chart-and-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0px;
+    flex-wrap: nowrap;
+    background-color: #fffefe;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 320px;
+    text-align: center;
+    padding: 40px 25px 11px 10px;
+  }
+  
+  .chart-container {
+    max-width: 220px;
+    max-height: 220px;
+    margin: 0 auto;
+  }
+
+  .chart-bar{
+    background-color: #fffefe;
+    border-radius: 1rem;
+    /* padding: 1.5rem; */
+    /* padding: 10px 0px 10px 10px;  */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 320px;
+    text-align: center;
+
+  }
+
+  .chart-container-bar {
+    width: 100%;
+    max-width: 320px; /* aumenta o espaço */
+    /* max-height: 220px; (pode remover isso) */
+    margin: 0 auto;
+  }
+
+   .total{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0px;
+    flex-wrap: nowrap;
+    background-color: #fffefe;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 320px;
+    text-align: center;
+    padding: 40px 25px 11px 10px;
+  } 
+
+  
