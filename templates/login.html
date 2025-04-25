@@ -40,7 +40,7 @@
   {% endif %}
 {% endwith %}
 
-				<form  method="POST" action="/login" class="login100-form validate-form" >
+				<form  method="POST" action="{{ url_for('gasto.login') }}" class="login100-form validate-form" >
 					<span class="login100-form-title p-b-26">
 						Bem vindo
 					</span>

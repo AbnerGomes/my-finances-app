@@ -178,10 +178,12 @@
             <span class="footer-text">Visão Geral</span>
           </button>
         </a>
-        <button class="footer-btn">
-          <span class="material-icons">settings</span>
-          <span class="footer-text">Configurações</span>
-        </button>
+        <a href="{{ url_for('gasto.confguracoes') }}">
+            <button class="footer-btn">
+            <span class="material-icons">settings</span>
+            <span class="footer-text">Configurações</span>
+            </button>
+        </a>
       </div>
 
 <!-- Modal de Edição -->
