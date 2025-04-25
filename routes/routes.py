@@ -426,3 +426,19 @@ def verificar_mensalista():
     # else:
     #     return jsonify(status='mensalista')
     return jsonify(status='mensalista')
+
+
+
+
+@gasto_bp.route('/configuracoes')
+def configuracoes():
+    
+    if 'usuario' not in session:
+        
+        return redirect(url_for('login'))
+
+    usuario = session['usuario']  # Só acessa se já tiver passado pela verificação
+
+    #dados = gasto_bp.gasto_service.busca_config(usuario) #verifica_dados_bd(usuario)
+
+    return render_template('configuracoes.html')    

@@ -330,14 +330,16 @@ body {
     border-radius: 1rem;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 320px;
+    /* max-width: 320px; */
     text-align: center;
-    padding: 40px 25px 11px 10px;
+    padding: 40px 20px 10px 0px;
+    margin: 10px auto;
+    margin: auto;
   }
   
   .chart-container {
-    max-width: 220px;
-    max-height: 220px;
+    max-width: 280px;
+    max-height: 280px;
     margin: 0 auto;
   }
 
@@ -348,16 +350,16 @@ body {
     /* padding: 10px 0px 10px 10px;  */
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 320px;
+    /* max-width: 320px; */
     text-align: center;
-
+    margin: auto;
   }
 
   .chart-container-bar {
     width: 100%;
     max-width: 320px; /* aumenta o espaço */
     /* max-height: 220px; (pode remover isso) */
-    margin: 0 auto;
+    margin: 10px auto;
   }
 
    .total{
@@ -370,9 +372,17 @@ body {
     border-radius: 1rem;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 320px;
+    /* max-width: 320px; */
     text-align: center;
     padding: 40px 25px 11px 10px;
+    margin: auto;
   } 
 
   
+
+  .dashboard-wrapper {
+    width: 100%;
+    max-width: 480px; /* ou 100% se quiser ocupar tudo */
+    margin: 0 auto;
+    padding: 0px 10px 10px 10px;
+}

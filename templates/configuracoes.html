@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/configuracoes.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
+  <title>Configurações</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+<body>
+
+    <div class="header-bar center">
+        <div class="logo-text">
+          <img src="{{ url_for('static', filename='images/A.png') }}" alt="Logo" class="logo">
+          <span class="company-name">A&A - Finance Dashboard</span>
+        </div>
+      </div>
+  <div class="settings-wrapper">
+    <div class="settings-header">
+      <h1>Configurações</h1>
+      <div class="menu-icon">☰</div>
+    </div>
+
+    <div class="settings-options">
+      <div class="option">
+        <div class="icon">🔊</div>
+        <span>Som</span>
+        <label class="switch">
+          <input type="checkbox" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="option">
+        <div class="icon">🔔</div>
+        <span>Notificações</span>
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- <div class="option">
+        <div class="icon">🖼️</div>
+        <span>Galeria</span>
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="option">
+        <div class="icon">🌐</div>
+        <span>Navegador</span>
+        <label class="switch">
+          <input type="checkbox" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div> -->
+
+    <div class="settings-footer">
+      <!-- <div class="footer-icon">👤</div>
+      <div class="footer-icon">☁️</div> -->
+      <div class="footer-icon">⚙️</div>
+      <span>Excluir Conta</span>
+    </div>
+  </div>
+
+
+</div>
+<div class="footer-bar">
+  <a href="{{ url_for('despesa.despesas') }}">
+    <button class="footer-btn">
+      <span class="material-icons">bar_chart</span>
+      <span class="footer-text">Despesas</span>
+    </button>
+  </a>
+  <a href="{{ url_for('gasto.extrato') }}">
+    <button class="footer-btn">
+      <span class="material-icons">account_balance_wallet</span>
+      <span class="footer-text">Transações</span>
+    </button>
+  </a>
+  <a href="{{ url_for('gasto.index') }}">
+    <button class="footer-btn">
+      <span class="material-icons">dashboard</span>
+      <span class="footer-text">Visão Geral</span>
+    </button>
+  </a>
+  <a href="{{ url_for('gasto.configuracoes') }}">
+    <button class="footer-btn active">
+      <span class="material-icons">settings</span>
+      <span class="footer-text">Configurações</span>
+    </button>
+  </a>
+</div>
+</body>
+</html>
