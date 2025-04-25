@@ -48,6 +48,7 @@ def voltar_ao_login():
 
 @gasto_bp.route('/login', methods=['POST'])
 def login_post():
+    print('abner')
     if request.method == 'POST':
         usuario = request.form['email']
         print(usuario)
