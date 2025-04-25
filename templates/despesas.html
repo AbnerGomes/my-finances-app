@@ -17,6 +17,12 @@
       <img src="{{ url_for('static', filename='images/A.png') }}" alt="Logo" class="logo">
       <span class="company-name">A&A - Finance Dashboard</span>
     </div>
+
+    <div class="user-info">
+      <span class="material-icons user-icon">account_circle</span>
+      <span class="user-name">Abner Gomes</span>
+    </div>
+
   </div>
 
   <h2>Despesas Mensais</h2>
@@ -158,7 +164,7 @@
 
 <div class="footer-bar">
   <a href="{{ url_for('despesa.despesas') }}">
-    <button class="footer-btn">
+    <button class="footer-btn active">
       <span class="material-icons">bar_chart</span>
       <span class="footer-text">Despesas</span>
     </button>
@@ -170,7 +176,7 @@
     </button>
   </a>
   <a href="{{ url_for('gasto.index') }}">
-    <button class="footer-btn active">
+    <button class="footer-btn">
       <span class="material-icons">dashboard</span>
       <span class="footer-text">Visão Geral</span>
     </button>

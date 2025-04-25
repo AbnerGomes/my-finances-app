@@ -31,10 +31,10 @@ a:focus {
 a:hover {
     text-decoration: none;
   color: #6a7dfe;
-  color: -webkit-linear-gradient(left, #21d4fd, #b721ff);
-  color: -o-linear-gradient(left, #21d4fd, #b721ff);
-  color: -moz-linear-gradient(left, #21d4fd, #b721ff);
-  color: linear-gradient(left, #21d4fd, #b721ff);
+  color: -webkit-linear-gradient(left, #21d4fd, #25fcfc);
+  color: -o-linear-gradient(left, #21d4fd, #25fcfc);
+  color: -moz-linear-gradient(left, #21d4fd, #25fcfc);
+  color: linear-gradient(left, #21d4fd, #25fcfc);
 }
 
 /*---------------------------------------------*/
@@ -143,8 +143,8 @@ iframe {
   justify-content: center;
   align-items: center;
   padding: 15px;
-  /* background: #f2f2f2;   */
-  background-color: #B0E0E6;
+  /* background-color: #B0E0E6; */
+  background-color: #e9f2f3;
 }
 
 .wrap-login100 {
@@ -232,10 +232,10 @@ iframe {
   transition: all 0.4s;
 
   background: #6a7dfe;
-  background: -webkit-linear-gradient(left, #21d4fd, #b721ff);
-  background: -o-linear-gradient(left, #21d4fd, #b721ff);
-  background: -moz-linear-gradient(left, #21d4fd, #b721ff);
-  background: linear-gradient(left, #21d4fd, #b721ff);
+  background: -webkit-linear-gradient(left, #21d4fd, #25fcfc);
+  background: -o-linear-gradient(left, #21d4fd, #25fcfc);
+  background: -moz-linear-gradient(left, #21d4fd, #25fcfc);
+  background: linear-gradient(left, #21d4fd, #25fcfc);
 }
 
 .focus-input100::after {
@@ -299,18 +299,18 @@ iframe {
 
 .btn-show-pass:hover {
   color: #6a7dfe;
-  color: -webkit-linear-gradient(left, #21d4fd, #b721ff);
-  color: -o-linear-gradient(left, #21d4fd, #b721ff);
-  color: -moz-linear-gradient(left, #21d4fd, #b721ff);
-  color: linear-gradient(left, #21d4fd, #b721ff);
+  color: -webkit-linear-gradient(left, #21d4fd, #25fcfc);
+  color: -o-linear-gradient(left, #21d4fd, #25fcfc);
+  color: -moz-linear-gradient(left, #21d4fd, #25fcfc);
+  color: linear-gradient(left, #21d4fd, #25fcfc);
 }
 
 .btn-show-pass.active {
   color: #6a7dfe;
-  color: -webkit-linear-gradient(left, #21d4fd, #b721ff);
-  color: -o-linear-gradient(left, #21d4fd, #b721ff);
-  color: -moz-linear-gradient(left, #21d4fd, #b721ff);
-  color: linear-gradient(left, #21d4fd, #b721ff);
+  color: -webkit-linear-gradient(left, #21d4fd, #25fcfc);
+  color: -o-linear-gradient(left, #21d4fd, #25fcfc);
+  color: -moz-linear-gradient(left, #21d4fd, #25fcfc);
+  color: linear-gradient(left, #21d4fd, #25fcfc);
 }
 
 

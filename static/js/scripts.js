@@ -82,7 +82,7 @@ filtrarGastos('mesatual');
                 labels: {
                   color: 'black', // Muda a cor do texto das labels da legenda
                   font: {
-                    size: 9
+                    size: 10
                     , weight: 'bold'
                   },                  
                   padding: 10, // Espaçamento entre as legendas
