@@ -386,3 +386,119 @@ body {
     margin: 0 auto;
     padding: 0px 10px 10px 10px;
 }
+
+
+
+/* MODAL MENSGEM */
+.modal {
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 100px;
+  }
+  
+
+.modal-content {
+background-color: #fff;
+padding: 16px; /* Diminuí o padding */
+border-radius: 8px;
+width: 100%;
+max-width: 240px; /* Diminui mais a largura */
+box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+position: relative;
+animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+from {
+  transform: translateY(-10px);
+  opacity: 0;
+}
+to {
+  transform: translateY(0);
+  opacity: 1;
+}
+}
+
+.close {
+position: absolute;
+top: 8px; /* Reduzi a posição do "x" */
+right: 10px;
+font-size: 20px;
+color: #888;
+cursor: pointer;
+}
+
+.close:hover {
+color: #000;
+}
+
+.modal-content h3 {
+margin-bottom: 12px; /* Menor margem no título */
+font-size: 18px;
+text-align: center;
+color: #333;
+}
+
+form label {
+display: block;
+font-size: 10px;
+margin-bottom: 2px;
+color: #444;
+}
+
+form input {
+width: 100%;
+padding: 8px;
+margin-bottom: 8px; /* Menor margem entre os inputs */
+border: 1px solid #ccc;
+border-radius: 4px;
+font-size: 10px;
+}
+
+form input:focus {
+border-color: #74C0FC;
+outline: none;
+}
+
+.botao-salvar, .btn-ok {
+width: 100%;
+background-color: #003f5c;
+color: white;
+border: none;
+padding: 8px;
+font-size: 10px;
+border-radius: 4px;
+cursor: pointer;
+}
+
+.botao-salvar:hover {
+background-color: #003f5c;
+}
+
+/* Responsivo (mobile first) */
+@media (max-width: 400px) {
+.modal-content {
+  padding: 14px; /* Menos padding para telas pequenas */
+  max-width: 90%;
+}
+
+.modal-content h3 {
+  font-size: 10px;
+}
+
+.close {
+  font-size: 10px;
+}
+
+.botao-salvar {
+  font-size: 10px;
+}
+}

@@ -14,8 +14,14 @@ function filtrarGastos(periodo) {
             const total = document.getElementById("total");
 
             if (dados.length === 0 || dados === null || dados === undefined ) {
+
+                //MENSAGEM
+                const modal_mensagem = document.getElementById('modal-mensagem');
+                modal_mensagem.style.display = 'block';
+
+
                 mensagem.innerHTML = "Nenhum gasto encontrado para esse período.";
-                mensagem.style.display = "block"; // Exibe a mensagem
+                //mensagem.style.display = "block"; // Exibe a mensagem
                 // atualizarGrafico([], []); // Limpa o gráfico    
                 total.style.display = "none"
             }
@@ -227,4 +233,22 @@ console.log('okokokokok')
       // Adiciona 'active' no botão clicado
       e.target.classList.add("active");
     }
+
+
+    if (e.target && e.target.classList.contains('botao-salvar')) {
+      const modal_mensagem = document.getElementById('modal-mensagem');
+      modal_mensagem.style.display = 'none';  
+   }
+
+    //cadastro ok  
+    // Fechar o modal quando clicar no botão de fechar ou fora do modal
+    // const fecharModal = document.getElementById('fechar-modal');
+    
+    // if (e.target === fecharModal) {
+    //   const modal = document.getElementById('modal-mensagem');
+    //   modal.style.display = 'none';
+    // }
+    
+
+
   });
