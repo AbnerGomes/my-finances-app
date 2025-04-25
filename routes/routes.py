@@ -197,7 +197,7 @@ def cadastro():
         
         if dados:
             flash("Usuário já existe! 🤦🏽‍♂️")
-            return return redirect(url_for('gasto.cadastro')) 
+            return redirect(url_for('gasto.cadastro')) 
 
         flash("Usuário cadastrado com sucesso! 😄", "success")
 
