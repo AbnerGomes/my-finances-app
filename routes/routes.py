@@ -423,10 +423,11 @@ def exportar_pdf():
 @gasto_bp.route('/verificar_mensalista')
 def verificar_mensalista():
     # if valida_mensalista():
-    #     return jsonify(status='ok')
-    # else:
-    #     return jsonify(status='mensalista')
-    return jsonify(status='mensalista')
+    usuario = session['usuario']
+    if usuario == 'abner@gmail.com':
+        return jsonify(status='ok')
+    else:
+        return jsonify(status='mensalista')
 
 
 
