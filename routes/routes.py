@@ -11,9 +11,11 @@ import calendar
 
 from service.despesa_service import DespesaService
 
+from service.admin_service import AdminService
+
 gasto_bp = Blueprint('gasto', __name__)
 despesa_bp = Blueprint('despesa', __name__)
-
+admin_bp = Blueprint('admin', __name__)
 
 mensagens_erro = [
     "Senha ou usuario errado 🖕🏼 ",
@@ -28,15 +30,17 @@ mensagens_erro = [
 
 #####ROTAS#####
 
-def init_routes(app, gasto_service,despesa_service):
+def init_routes(app, gasto_service,despesa_service,admin_service):
     print(app.url_map)
     app.register_blueprint(gasto_bp)
     app.register_blueprint(despesa_bp)
+    app.register_blueprint(admin_bp)
 
     # Armazena a instância do service dentro do blueprint
     gasto_bp.gasto_service = gasto_service
     despesa_bp.despesa_service = despesa_service
-
+    admin_bp.admin_service = admin_service
+    
 #def configure_routes(app, gasto_service):
 @gasto_bp.route('/')
 def login():
@@ -74,12 +78,16 @@ def login_post():
 
 @gasto_bp.route('/index')
 def index():
-    
+
     if 'usuario' not in session:
         
         return redirect(url_for('gasto.login'))
 
     usuario = session['usuario']  # Só acessa se já tiver passado pela verificação
+
+    #verifica se é administrador
+    if usuario == 'admin' or usuario == 'adminstrador':
+        return redirect(url_for('admin.admin'))
 
     dados = gasto_bp.gasto_service.filtrarGastos('mesatual',usuario) #verifica_dados_bd(usuario)
 
@@ -95,7 +103,7 @@ def index():
     )
     ])
 
-    return render_template('index.html')
+    return render_template('index.html',usuario=usuario)
 
 @gasto_bp.route('/cadastrar_gasto', methods=['GET', 'POST'])
 def cadastrar_gasto():
@@ -177,6 +185,7 @@ def extrato():
         data_fim=data_fim,
         categoria=categoria,
         soma_gastos=soma_gastos
+        ,usuario=usuario
     )
 
 
@@ -198,13 +207,13 @@ def cadastro():
         
         if dados:
             flash("Usuário já existe! 🤦🏽‍♂️")
-            return redirect(url_for('gasto.cadastro')) 
+            return redirect(url_for('gasto.cadastro',usuario=usuario)) 
 
         flash("Usuário cadastrado com sucesso! 😄", "success")
 
-        return render_template("cadastro.html")
+        return render_template("cadastro.html",usuario=usuario)
     
-    return render_template("cadastro.html")
+    return render_template("cadastro.html",usuario=usuario)
 
 
 @gasto_bp.route('/esqueci', methods=['GET', 'POST'])
@@ -233,7 +242,7 @@ def editar_gasto():
 
 @gasto_bp.route('/deletar_gasto', methods=['POST'])
 def deletar_gasto():
-    print('foi')
+
     if 'usuario' not in session:
         flash('Você precisa estar logado para deletar um gasto.')
         return redirect(url_for('gasto.login')) 
@@ -274,6 +283,7 @@ def despesas():
         'despesas.html',
         despesas=despesas,
         mes_ano=mes_ano_str[:7]  # yyyy-mm para o input month
+        ,usuario=usuario
     )
 
 @despesa_bp.route('/despesas', methods=['POST'])
@@ -420,17 +430,31 @@ def exportar_pdf():
     return send_file(output, download_name='extrato.pdf', as_attachment=True)
 
 
-@gasto_bp.route('/verificar_mensalista')
-def verificar_mensalista():
+@gasto_bp.route('/valida_mensalista', methods=['GET'], strict_slashes=False)
+def valida_mensalista():
     # if valida_mensalista():
     usuario = session['usuario']
-    if usuario == 'abner@gmail.com':
-        return jsonify(status='ok')
+    
+        # Pega a data atual
+    data_atual = datetime.now()
+
+    # Formata como "MM/YYYY"
+    mes_ano = data_atual.strftime("%m/%Y")
+
+    print(mes_ano)
+    print(usuario)
+
+    status_usuario = admin_bp.admin_service.valida_mensalista(usuario,mes_ano);
+
+    print(status_usuario)
+
+    if status_usuario:
+        if status_usuario[0][0] == 'pago':
+            return jsonify(status='ok')
+        else:
+            return jsonify(status='mensalista')
     else:
         return jsonify(status='mensalista')
-
-
-
 
 @gasto_bp.route('/configuracoes')
 def configuracoes():
@@ -443,4 +467,4 @@ def configuracoes():
 
     #dados = gasto_bp.gasto_service.busca_config(usuario) #verifica_dados_bd(usuario)
 
-    return render_template('configuracoes.html')    
+    return render_template('configuracoes.html',usuario=usuario)    

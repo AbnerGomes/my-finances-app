@@ -11,12 +11,20 @@
 </head>
 <body>
 
-    <div class="header-bar center">
-        <div class="logo-text">
-          <img src="{{ url_for('static', filename='images/A.png') }}" alt="Logo" class="logo">
-          <span class="company-name">A&A - Finance Dashboard</span>
-        </div>
-      </div>
+  <div class="header-bar center">
+    <div class="logo-text">
+      <img src="{{ url_for('static', filename='images/A.png') }}" alt="Logo" class="logo">
+      <span class="company-name">A&A - Finance Dashboard</span>
+    </div>
+
+    <div class="user-info">
+      <span class="material-icons user-icon">account_circle</span>
+      <span class="user-name">{{ usuario.split('@')[0] }}</span>
+    </div>
+
+  </div>
+
+
   <div class="settings-wrapper">
     <div class="settings-header">
       <h1>Configurações</h1>

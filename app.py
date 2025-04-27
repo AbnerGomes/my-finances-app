@@ -10,6 +10,7 @@ import os.path
 from routes.routes import init_routes
 
 from service.despesa_service import DespesaService
+from service.admin_service import AdminService
 
 app = Flask(__name__)
 
@@ -19,11 +20,12 @@ app.secret_key = 'gomes-abner-py-finn-flask-app-2025'
 # Inicializa o service
 gasto_service = GastoService()
 despesa_service = DespesaService()
+admin_service = AdminService()
 #create_db() # chamar antes do flask iniciar
 
 # Configura rotas
 #configure_routes(app, gasto_service)
-init_routes(app, gasto_service,despesa_service),#regitra com blueprint
+init_routes(app, gasto_service,despesa_service,admin_service),#regitra com blueprint
 
 if __name__ == '__main__':
     #create_db()  # Cria o banco e a tabela ao iniciar o app

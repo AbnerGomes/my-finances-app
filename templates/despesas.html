@@ -8,7 +8,8 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="static/js/despesas.js" defer></script>
-  <title>Quadro de Despesas Mensais </title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Quadro de Despesas Mensais </title>
 </head>
 <body>
 
@@ -20,7 +21,7 @@
 
     <div class="user-info">
       <span class="material-icons user-icon">account_circle</span>
-      <span class="user-name">Abner Gomes</span>
+      <span class="user-name">{{ usuario.split('@')[0] }}</span>
     </div>
 
   </div>
