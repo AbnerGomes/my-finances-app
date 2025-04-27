@@ -160,6 +160,12 @@
     </div>
 
     <div class="footer-bar">
+      <a href="{{ url_for('gasto.index') }}">
+        <button class="footer-btn">
+          <span class="material-icons">dashboard</span>
+          <span class="footer-text">Visão Geral</span>
+        </button>
+      </a>    
         <a href="{{ url_for('despesa.despesas') }}">
           <button class="footer-btn">
             <span class="material-icons">bar_chart</span>
@@ -170,12 +176,6 @@
           <button class="footer-btn active">
             <span class="material-icons">account_balance_wallet</span>
             <span class="footer-text">Transações</span>
-          </button>
-        </a>
-        <a href="{{ url_for('gasto.index') }}">
-          <button class="footer-btn">
-            <span class="material-icons">dashboard</span>
-            <span class="footer-text">Visão Geral</span>
           </button>
         </a>
         <a href="{{ url_for('gasto.configuracoes') }}">

@@ -227,7 +227,7 @@ input#periodo-picker:focus {
     outline: none;
   }
   
-  .botao-salvar {
+  .botao-salvar , .btn-ok {
     width: 100%;
     background-color: #003f5c;
     color: white;
@@ -401,4 +401,14 @@ h2 {
 
 .footer-bar {
   padding: 10px 0; /* Diminui o espaçamento interno do rodapé */
+}
+
+
+.mensalista {
+  position: absolute;
+  top: 8px; /* Reduzi a posição do "x" */
+  right: 10px;
+  font-size: 20px;
+  color: #800a0a;
+  cursor: pointer;
 }

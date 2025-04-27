@@ -60,7 +60,7 @@
   }
   
   .header-bar {
-    justify-content: space-between; /* separa logo à esquerda e usuário à direita */
+    justify-content: space-around; /* separa logo à esquerda e usuário à direita */
     align-items: center; /* alinha verticalmente */
   }
   
