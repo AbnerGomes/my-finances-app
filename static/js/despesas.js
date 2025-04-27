@@ -1,3 +1,4 @@
+let idParaExcluir = null;
 // function atualizarStatus(selectElement) {
 //     const novoStatus = selectElement.value;
 //     const linha = selectElement.closest('tr');
@@ -56,7 +57,7 @@ function atualizarStatus(selectElement) {
     if (filtroMes) {
         // Adiciona o primeiro dia do mês (formato yyyy-mm-01)
         const dataInicio = filtroMes;
-        window.location.href = `/despesas?mes_ano=${dataInicio}`;
+        window.location.href = '/despesas?mes_ano=${dataInicio}';
         document.getElementById("filtroMes").value = filtroMes;
     } else {
         alert("Selecione um mês para filtrar.");
@@ -92,8 +93,39 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-//modal edição
+//modal 
 document.addEventListener('click', function (event) {
+  // Verifica se o evento foi disparado por um botão de edição
+  
+  if (event.target.classList.contains('btn-left')) {
+    event.preventDefault(); // evita comportamento padrão do botão/link
+
+    // Faz a requisição ao backend Flask
+    fetch('/verificar_mensalista')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                // Mostra o modal de cadastro
+                document.getElementById('modal-cadastrar').style.display = 'block';
+            } else {
+                // Mostra o modal de mensalista
+                document.getElementById('modal-mensalista').style.display = 'block';
+            }
+        })
+        .catch(error => {
+            console.error('Erro na verificação:', error);
+        });
+}
+else
+{
+  
+  //ok mensalista
+  if (event.target && event.target.classList.contains('btn-ok')) {
+    const modal_mensalista = document.getElementById('modal-mensalista');
+    modal_mensalista.style.display = 'none';
+
+ }
+
   // Verifica se o evento foi disparado por um botão de edição
   if (event.target && event.target.classList.contains('edit-icon')) {
     const categoria = event.target.getAttribute('data-categoria');
@@ -114,17 +146,42 @@ document.addEventListener('click', function (event) {
     modal.style.display = 'flex';
   }
 
+   //cadastrar 
+   if (event.target && event.target.classList.contains('btn-left')) {
+  
+    const modal = document.getElementById('modal-cadastrar');
+    modal.style.display = 'block';
+  }
+
+  //cadastro ok  
+  if (event.target && event.target.classList.contains('botao-salvar')) {
+    const modal_ok = document.getElementById('modal-cadastro-ok');
+    const modal_cad = document.getElementById('modal-cadastrar');
+    modal_cad.style.display = 'none';
+    modal_ok.style.display = 'block';
+
+ }
+
   // Fechar o modal quando clicar no botão de fechar ou fora do modal
   const fecharModal = document.getElementById('fechar-modal');
+  const fecharModalok = document.getElementById('fechar-modal-cadastro');
+  
   if (event.target === fecharModal) {
     const modal = document.getElementById('modal-editar');
     modal.style.display = 'none';
   }
 
-  const modal = document.getElementById('modal-editar');
-  if (event.target === modal) {
+  if (event.target === fecharModalok) {
+    const modal = document.getElementById('modal-cadastrar');
     modal.style.display = 'none';
   }
+
+  const modal = document.getElementById('modal-editar');
+  const modal_cad = document.getElementById('modal-editar');
+  if (event.target === modal || event.target === modal_cad) {
+    modal.style.display = 'none';
+  }
+ 
 
 
   //deletar
@@ -146,7 +203,5 @@ document.addEventListener('click', function (event) {
       document.getElementById('id-despesa-excluir').value = idSelecionado;
 
    }
+  } 
 });
-
-
-let idParaExcluir = null;
