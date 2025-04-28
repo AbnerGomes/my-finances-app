@@ -30,7 +30,7 @@
 <br>
   <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
     <label for="filtroMes" style="font-weight: bold;">Selecione o mês:</label>
-    <input type="month" id="filtroMes" style="padding: 10px; border-radius: 8px; border: 1px solid #B0E0E6; font-size: 10px;"  value="{{ mes_ano }}">
+    <input type="month" id="filtroMes" name="mes_ano" style="padding: 10px; border-radius: 8px; border: 1px solid #B0E0E6; font-size: 10px;"  value="{{ mes_ano }}">
     <button class="botao-filtrar" onclick="filtrarPorMes()">Filtrar</button>
     <!-- <button onclick="limparFiltro()">Limpar</button> -->
 
@@ -67,7 +67,7 @@
         {% for despesa in despesas %}
       <tr data-data="{{ despesa[3] }}" data-id="{{ despesa[6] }}"
       {% if despesa[5] == 'FIXA' %} class="linha-fixa" {% endif %}
-      style="background-color: {% if loop.index0 % 2 == 0 %}#eaffea{% else %}white{% endif %}; line-height: 1.6;"  >
+      style="background-color: {% if loop.index0 % 2 == 0 %}#defbff{% else %}white{% endif %}; line-height: 1.6;"  >
         <td>{{ despesa[1] }}</td>
         <td>{{ despesa[0] }}</td>
         <td>{{ despesa[2] }}</td>
@@ -156,7 +156,7 @@
     <h3>Tem certeza que deseja excluir esta despesa?</h3>
     <form method="POST" action="{{ url_for('despesa.deletar_despesa') }}"> 
       <input type="hidden" id="id-despesa-excluir" name="id">
-      <button type="submit" id="confirmar-exclusao" class="botao-salvar" style="margin-top: 12px;">OK</button>
+      <button type="submit" id="confirmar-exclusao" class="botao-deletar" style="margin-top: 12px;">OK</button>
   </form>
   
   </div>
@@ -167,10 +167,14 @@
 <div id="modal-cadastrar" class="modal" style="display: none;">
   <div class="modal-content">
     <span class="close" id="fechar-modal-cadastro">&times;</span>
-    <h3>cadastrar Gasto</h3>
+    <h3>Cadastrar Despesa</h3>
     <form id="form-cadastrar" method="POST" action="{{ url_for('despesa.cadastrar_despesa') }}">
-      <label for="cadastrar-data">Data:</label>
-      <input type="date" name="data" id="cadastrar-data">
+      <!-- <label for="cadastrar-data">Data:</label>
+      <input type="date" name="data" id="cadastrar-data"> -->
+
+     <label for="cadastrar-data" style="font-weight: bold;">Selecione o mês:</label>
+    <input type="month"  name="mes_ano" id="cadastrar-data" style="padding: 10px; border-radius: 8px; border: 1px solid #B0E0E6; font-size: 10px;"  value="{{ mes_ano }}">  
+
 
       <label for="cadastrar-categoria">Categoria:</label>
       <!-- <input type="text" name="categoria" id="cadastrar-categoria" required> -->
@@ -185,8 +189,23 @@
           <option value="Dívidas">Dívidas</option>
           <option value="Educação">Educação</option>
       </select>
+
+       <!-- Tipo de gasto (Radio Buttons em linha) -->
+       <label for="cadastrar-tipo">Tipo Despesa:</label>
+       <div style="display: flex; flex-direction: row; align-items: center; gap: 20px; margin-bottom: 10px;">
+         <label style="display: flex; align-items: center; gap: 5px;">
+           <input type="radio" name="tipo_despesa" value="Fixa" required> Fixa
+         </label>
+         <label style="display: flex; align-items: center; gap: 5px;">
+           <input type="radio" name="tipo_despesa" value="Exceção" required> Exceção
+         </label>
+         <label style="display: flex; align-items: center; gap: 5px;">
+           <input type="radio" name="tipo_despesa" value="Variável" required> Variável
+         </label>
+       </div>
+
       <label for="cadastrar-descricao">Descrição:</label>
-      <input type="text" name="gasto" id="cadastrar-descricao" required>
+      <input type="text" name="despesa" id="cadastrar-descricao" required>
 
       <label for="cadastrar-valor">Valor (R$):</label>
       <input type="number" step="0.01" name="valor" id="cadastrar-valor" required>

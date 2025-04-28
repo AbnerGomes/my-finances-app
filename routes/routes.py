@@ -213,7 +213,7 @@ def cadastro():
 
         return render_template("cadastro.html",usuario=usuario)
     
-    return render_template("cadastro.html",usuario=usuario)
+    return render_template("cadastro.html")
 
 
 @gasto_bp.route('/esqueci', methods=['GET', 'POST'])
@@ -274,15 +274,14 @@ def despesas():
 
     # Pega o filtro vindo da URL ou usa o primeiro dia do mês atual
     mes_ano_str = request.args.get('mes_ano') or primeiro_mes.strftime('%Y-%m')
-    print(mes_ano_str)
 
     # Busca os gastos ordenados do mais recente para o mais antigo
-    despesas = despesa_bp.despesa_service.busca_despesas(usuario,mes_ano_str,'Todas')  
+    despesas = despesa_bp.despesa_service.busca_despesas(usuario,mes_ano_str[-7:],'Todas')  
 
     return render_template(
         'despesas.html',
         despesas=despesas,
-        mes_ano=mes_ano_str[:7]  # yyyy-mm para o input month
+        mes_ano=mes_ano_str[-7:]  # yyyy-mm para o input month
         ,usuario=usuario
     )
 
@@ -305,34 +304,33 @@ def atualizar_status():
 
 
 
-@despesa_bp.route('/cadastrar_despesa', methods=['GET', 'POST'])
+@despesa_bp.route('/cadastrar_despesa', methods=['POST','GET'])
 def cadastrar_despesa():
     print('foi')
-    if request.method == 'POST':
-        if 'usuario' not in session:
-            flash('Você precisa estar logado para adicionar um gasto.')
-            return redirect(url_for('gasto.login')) 
+    #if request.method == 'POST':
+    if 'usuario' not in session:
+        flash('Você precisa estar logado para adicionar um gasto.')
+        return redirect(url_for('gasto.login')) 
 
-        despesa = request.form['despesa']
-        valor = request.form['valor']
+    despesa = request.form['despesa']
+    valor = request.form['valor']
 
-        data = request.form['mes_ano']
-        print(data)
+    tipo_despesa = request.form['tipo_despesa']
+    data = request.form['mes_ano']
+    print(data)
 
-        
-        categoria = request.form['categoria']
-        
-        usuario = session['usuario']
-        
-        # Salvar o gasto no banco
-        despesa_bp.despesa_service.salvar_despesa(despesa, valor, data, categoria,usuario)
-        flash('Despesa cadastrada com sucesso!', 'success')  
+    
+    categoria = request.form['categoria']
+    
+    usuario = session['usuario']
+    
+    # Salvar o gasto no banco
+    despesa_bp.despesa_service.salvar_despesa(despesa, valor, data, categoria,usuario,tipo_despesa)
+    #flash('Despesa cadastrada com sucesso!', 'success')  
 
-        return """<script>                    
-                    window.location.href = '/cadastrar_despesa';
-                </script>"""
+    return despesas()
 
-    return render_template('cadastrar_despesa.html')  
+    #return render_template('despesas.html',usuario=usuario)  
 
 
 @despesa_bp.route('/editar_despesa', methods=[ 'POST'])
@@ -468,3 +466,14 @@ def configuracoes():
     #dados = gasto_bp.gasto_service.busca_config(usuario) #verifica_dados_bd(usuario)
 
     return render_template('configuracoes.html',usuario=usuario)    
+
+
+@admin_bp.route('/deletar_usuario', methods=['GET','POST'], strict_slashes=False)
+def deletar_usuario():
+    print('dento')
+    # if valida_mensalista():
+    usuario = session['usuario']
+    
+    admin_bp.admin_service.deletar_usuario(usuario)
+    print('oquei')
+    return render_template('configuracoes_exclusao.html')  

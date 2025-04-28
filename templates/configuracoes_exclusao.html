@@ -20,7 +20,7 @@
 
     <div class="user-info">
       <span class="material-icons user-icon">account_circle</span>
-      <span class="user-name">{{ usuario.split('@')[0] }}</span>
+      <span class="user-name">deleted_user</span>
     </div>
 
   </div>
@@ -81,18 +81,21 @@
 
 </div>
 
- <!-- Modal confirmação  -->
- <div id="modal-confirmar-exclusao" class="modal" style="display: none;">
-  <div class="modal-content">
-    <span class="close" id="fechar-modal-excluir">&times;</span>
-    <h3>Tem certeza que deseja excluir sua conta?</h3>
-    <form method="POST" action="{{ url_for('admin.deletar_usuario') }}"> 
-      <input type="hidden" id="id-usuario-excluir" name="id">
-      <button type="submit" id="confirmar-exclusao" class="btn-ok" style="margin-top: 12px;">OK</button>
+<!-- Modal ok  -->
+<div id="modal-delecao-ok" class="modal" style="display: none;">
+  <div class="modal-content" style="color:white; text-align:center; background-color: #e96960;">
+    <span class="close" id="fechar-modal-ok">&times;</span>
+    <h4>Conta encerrada com sucesso. </h4>
+    <br>
+    <h4>Até Logo !</h4>
+    <form method="GET" action="/"> 
+      <input type="hidden" id="id-gasto" name="id">
+      <button type="submit" id="confirmar-ok" class="botao-salvar" style="margin-top: 12px;">OK</button>
   </form>
   
   </div>
 </div>
+
 
 
 <div class="footer-bar">

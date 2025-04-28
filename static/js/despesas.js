@@ -1,13 +1,4 @@
 let idParaExcluir = null;
-// function atualizarStatus(selectElement) {
-//     const novoStatus = selectElement.value;
-//     const linha = selectElement.closest('tr');
-//     const spanStatus = linha.querySelector('.status-indicator');
-
-//     // Limpa classes antigas e adiciona a nova
-//     spanStatus.className = 'status-indicator'; // limpa todas
-//     spanStatus.classList.add(novoStatus.replaceAll(' ', '-')); // adiciona a nova classe baseada no status
-// }
 
 function atualizarStatus(selectElement) {
     const novoStatus = selectElement.value;
@@ -57,7 +48,7 @@ function atualizarStatus(selectElement) {
     if (filtroMes) {
         // Adiciona o primeiro dia do mês (formato yyyy-mm-01)
         const dataInicio = filtroMes;
-        window.location.href = '/despesas?mes_ano=${dataInicio}';
+        window.location.href = `/despesas?mes_ano='${dataInicio}`;
         document.getElementById("filtroMes").value = filtroMes;
     } else {
         alert("Selecione um mês para filtrar.");
@@ -202,8 +193,8 @@ else
 
    if (event.target && event.target.classList.contains('fa-trash')) {
       const modal = document.getElementById('modal-confirmar-exclusao');
-      const fecharModal = document.getElementById('fechar-modal-excluir');
-      const confirmarBtn = document.getElementById('confirmar-exclusao');
+      // const fecharModal = document.getElementById('fechar-modal-excluir');
+      // const confirmarBtn = document.getElementById('confirmar-exclusao');
 
       let idSelecionado = null;
 
@@ -216,5 +207,18 @@ else
       document.getElementById('id-despesa-excluir').value = idSelecionado;
 
    }
+
+   //cadastro ok  
+  if (event.target && event.target.classList.contains('botao-deletar')) {
+    const modal_delete = document.getElementById('modal-confirmar-exclusao');
+    //const modal_ok = document.getElementById('modal-cadastro-ok');
+    modal_delete.style.display = 'none';
+
+    //modal_ok.style.display = 'block';
+    //modal_ok.innerHTML = 'Despesa deletada com sucesso ! Recarregando...'
+
+ }
+
+
   } 
 });
