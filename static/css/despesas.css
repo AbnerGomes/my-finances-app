@@ -227,7 +227,7 @@ input#periodo-picker:focus {
     outline: none;
   }
   
-  .botao-salvar , .btn-ok {
+  .botao-salvar , .btn-ok, .botao-deletar {
     width: 100%;
     background-color: #003f5c;
     color: white;

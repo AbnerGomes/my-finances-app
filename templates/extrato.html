@@ -82,14 +82,14 @@
 
                 {% for data, lista in gastos_agrupados.items() %}
                 <!-- Linha com a data -->
-                <tr style="background-color: #f5f5f5;">
+                <tr style="background-color: #f5f5f5d2;">
                     <td colspan="5" style="text-align: justify; padding: 8px 0;"><strong>📅 {{ data }}</strong></td>
                 </tr>
             
                 {% for gasto in lista %}
                     <tr class="gasto"
                     data-id="{{ gasto[4] }}"
-                     style="background-color: {% if loop.index0 % 2 == 0 %}#eaffea{% else %}white{% endif %}; line-height: 1.6;">
+                     style="background-color: {% if loop.index0 % 2 == 0 %}#defbff{% else %}white{% endif %}; line-height: 1.6;">
                         <td>{{ gasto[0] }}</td>
                         <td>{{ gasto[1] }}</td>
                         <td>R$ {{ gasto[2] | round(2) }}</td>
@@ -239,7 +239,7 @@
 <div id="modal-cadastrar" class="modal" style="display: none;">
     <div class="modal-content">
       <span class="close" id="fechar-modal-cadastro">&times;</span>
-      <h3>cadastrar Gasto</h3>
+      <h3>Cadastrar Gasto</h3>
       <form id="form-cadastrar" method="POST" action="{{ url_for('gasto.cadastrar_gasto') }}">
         <label for="cadastrar-data">Data:</label>
         <input type="date" name="data" id="cadastrar-data">

@@ -10,13 +10,13 @@ class DespesaService:
         #self._create_db()
 
     # Função para salvar o gasto no banco
-    def salvar_despesa(self,despesa, valor, data, categoria,usuario):
+    def salvar_despesa(self,despesa, valor, data, categoria,usuario,tipo_despesa):
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO Despesas (despesa, valor, mes_ano, categoria, usuario)
-            VALUES (%s, %s, %s, %s, %s)
-        ''', (despesa, valor, data, categoria,usuario))
+            INSERT INTO Despesas (despesa, valor, mes_ano, categoria, usuario,tipo_despesa)
+            VALUES (%s, %s, %s, %s, %s,%s)
+        ''', (despesa, valor, data, categoria,usuario,tipo_despesa))
         conn.commit()
         conn.close()
 
@@ -44,7 +44,7 @@ class DespesaService:
         conn = get_connection()
         cursor = conn.cursor()
         print('despesa')
-
+        print(mes_ano)
         cursor.execute("""
         SELECT categoria, despesa, valor, mes_ano , status, case when tipo_despesa = 'F' then 'FIXA' when tipo_despesa ='V' then 'Variavel' else 'Exceção' end, id
         FROM despesas

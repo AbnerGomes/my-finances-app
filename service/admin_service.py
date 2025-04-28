@@ -4,10 +4,10 @@ from datetime import datetime, timedelta
 from .db_service import get_connection
 
 class AdminService:
-    def deletar_usuario(self, id_usuario):
+    def deletar_usuario(self, usuario):
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM usuarios WHERE id = %s", (id_usuario,))
+        cursor.execute("DELETE FROM autenticacao WHERE usuario = %s", (usuario,))
         conn.commit()
         conn.close()       
 
