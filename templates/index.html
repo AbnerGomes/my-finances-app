@@ -18,13 +18,24 @@
       <img src="{{ url_for('static', filename='images/A.png') }}" alt="Logo" class="logo">
       <span class="company-name">A&A - Finance Dashboard</span>
     </div>
-
+  
     <div class="user-info">
-      <span class="material-icons user-icon">account_circle</span>
-      <span class="user-name">{{ usuario.split('@')[0] }}</span>
+      <div class="dropdown">
+        <div class="dropdown-toggle" onclick="toggleDropdown()">
+          <span id="user-icon" class="material-icons user-icon">person</span>
+          <span id="current-username" class="user-name">{{ usuario.split('@')[0] }}</span>
+          <span class="material-icons dropdown-icon">expand_more</span>
+        </div>
+    
+        <div id="dropdown-menu" class="dropdown-menu">
+          <div class="dropdown-item" onclick="changeUser('Casal')">Casal</div>
+          <div class="dropdown-item" onclick="changeUser('{{ usuario.split('@')[0] }}')">{{ usuario.split('@')[0] }}</div>
+        </div>
+      </div>
     </div>
-
+    
   </div>
+  
 
   <div class="dashboard-wrapper">
 
@@ -37,12 +48,12 @@
   <div class="chart-and-buttons">
 <div class="container-btn">
 <div class="period-container-wrapper" id="period-buttons">
-  <button class="period-button " onclick="filtrarGastos('semanaatual')">Semana Atual</button>
-  <button class="period-button " onclick="filtrarGastos('ontem')">Ontem</button>
-  <button class="period-button " onclick="filtrarGastos('hoje')">Hoje</button>
-  <button class="period-button " onclick="filtrarGastos('semanapassada')">Semana Passada</button>
-  <button class="period-button " onclick="filtrarGastos('mesatual')">Mês Atual</button>
-  <button class="period-button " onclick="filtrarGastos('mesanterior')">Mês Anterior</button>
+  <button class="period-button " onclick="filtrarGastosBtn('semanaatual')">Semana Atual</button>
+  <button class="period-button " onclick="filtrarGastosBtn('ontem')">Ontem</button>
+  <button class="period-button " onclick="filtrarGastosBtn('hoje')">Hoje</button>
+  <button class="period-button " onclick="filtrarGastosBtn('semanapassada')">Semana Passada</button>
+  <button class="period-button " onclick="filtrarGastosBtn('mesatual')">Mês Atual</button>
+  <button class="period-button " onclick="filtrarGastosBtn('mesanterior')">Mês Anterior</button>
 </div>
 </div>
 

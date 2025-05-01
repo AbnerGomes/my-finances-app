@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
+    <script src="static/js/comum.js" defer></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
 </head>
@@ -21,8 +22,20 @@
         </div>
     
         <div class="user-info">
-          <span class="material-icons user-icon">account_circle</span>
-          <span class="user-name">{{ usuario.split('@')[0] }}</span>
+          <div class="dropdown">
+            <div class="dropdown-toggle" onclick="toggleDropdown()">
+              <span id="user-icon" class="material-icons user-icon">{{ 'person' if isCasal != 'S' else 'people' }}</span>
+              <span id="current-username" class="user-name">
+                {{ usuario.split('@')[0] if isCasal != 'S' else 'Casal' }}
+              </span>
+              <span class="material-icons dropdown-icon">expand_more</span>
+            </div>
+        
+            <div id="dropdown-menu" class="dropdown-menu">
+              <div class="dropdown-item" onclick="changeUser('Casal')">Casal</div>
+              <div class="dropdown-item" onclick="changeUser('{{ usuario.split('@')[0] }}')">{{ usuario.split('@')[0] }}</div>
+            </div>
+          </div>
         </div>
     
       </div>
@@ -293,9 +306,6 @@
       <button type="submit" id="confirmar-ok" class="btn-ok" style="margin-top: 12px;">OK</button>  
     </div>
   </div>
-
- 
-  
 
 </body>
 </html>

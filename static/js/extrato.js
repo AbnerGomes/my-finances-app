@@ -184,6 +184,18 @@ document.addEventListener('click', function (event) {
 });
 
 
+const form = document.getElementById('filtro-form');
+form.addEventListener('submit', function(e) {
+  const usuario = document.getElementById('current-username').textContent;
 
+  // Cria input escondido
+  const inputHidden = document.createElement('input');
+  inputHidden.type = 'hidden';
+  inputHidden.name = 'isCasal';
+  inputHidden.value = usuario == 'Casal' ? 'S' : 'N';
+
+  // Adiciona ao form
+  form.appendChild(inputHidden);
+});
 
 

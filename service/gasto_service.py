@@ -71,7 +71,7 @@ class GastoService:
             return False    
 
 
-    def filtrarGastos(self,periodo,usuario):
+    def filtrarGastos(self,periodo,usuario,isCasal):
         try: 
             if periodo is None:
                 periodo='mesatual'
@@ -111,15 +111,36 @@ class GastoService:
                 inicio = ultimo_dia_mes_anterior.replace(day=1)
                 fim = ultimo_dia_mes_anterior
             
+            conjuge =''
+
+            #verifica se é casal e busca o conjuge
+            if isCasal == 'S':
+                query = "SELECT a.usuario AS conjuge FROM casal c JOIN autenticacao a ON a.usuario = CASE WHEN c.conjuge_1 = %s THEN c.conjuge_2 ELSE c.conjuge_1 END WHERE %s IN (c.conjuge_1, c.conjuge_2);"
+                cursor.execute(query, (usuario,usuario))
+                resultado = cursor.fetchone()
+                conjuge = resultado[0]
+
             if inicio and fim:
-                query = "SELECT categoria, SUM(valor_gasto) valor FROM Gastos WHERE usuario = %s and data BETWEEN %s AND %s GROUP BY categoria"
-                cursor.execute(query, (usuario, inicio, fim))
+                query = """
+                    SELECT categoria, SUM(valor_gasto) valor
+                    FROM Gastos
+                    WHERE usuario IN (%s, %s) AND data BETWEEN %s AND %s
+                    GROUP BY categoria
+                """
+
+                cursor.execute(query, (usuario,conjuge,inicio, fim))
             else:
-                query = "SELECT categoria, SUM(valor_gasto) valor FROM Gastos where usuario = %s GROUP BY categoria"
-                cursor.execute(query, (usuario,))
+                query = """
+                    SELECT categoria, SUM(valor_gasto) valor
+                    FROM Gastos
+                    WHERE usuario IN (%s, %s)
+                    GROUP BY categoria
+                """
+                cursor.execute(query, (usuario, conjuge))
 
             print(query)
             print(usuario)
+            print(conjuge)
             print(inicio)
             print(fim)
 
@@ -131,25 +152,28 @@ class GastoService:
             #aqui vem um tratamento para exibir uma mensagem quando nao houver dados para exibir naquele periodo
             return ""
 
-    def extrato_gastos(self,usuario,data_inicial,data_fim,categoria):
+    def extrato_gastos(self,usuario,data_inicial,data_fim,categoria,isCasal):
         conn = get_connection()
         cursor = conn.cursor()
 
-        print(data_inicial)
+        conjuge =''
 
-        print(data_fim)
-
-        print(categoria)
+        #verifica se é casal e busca o conjuge
+        if isCasal == 'S':
+            query = "SELECT a.usuario AS conjuge FROM casal c JOIN autenticacao a ON a.usuario = CASE WHEN c.conjuge_1 = %s THEN c.conjuge_2 ELSE c.conjuge_1 END WHERE %s IN (c.conjuge_1, c.conjuge_2);"
+            cursor.execute(query, (usuario,usuario))
+            resultado = cursor.fetchone()
+            conjuge = resultado[0]
 
         cursor.execute("""
         SELECT categoria, gasto, valor_gasto, TO_CHAR(data, 'DD/MM/YYYY') AS data_formatada , id
         FROM gastos
-        WHERE usuario = %s
+        WHERE usuario in( %s ,%s)
         and ( categoria = %s or %s ='Todas' )
         and ( data >= %s )
         and ( data <= %s )
         ORDER BY data DESC
-         """, (usuario,categoria,categoria,data_inicial,data_fim))
+         """, (usuario,conjuge,categoria,categoria,data_inicial,data_fim))
 
         resultados = cursor.fetchall()
         
