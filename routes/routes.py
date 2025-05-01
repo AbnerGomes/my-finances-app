@@ -61,7 +61,7 @@ def login_post():
         if gasto_bp.gasto_service.validar_login(usuario, senha):
             session['usuario'] = usuario
             
-            dados = gasto_bp.gasto_service.filtrarGastos('mesatual',usuario)
+            dados = gasto_bp.gasto_service.filtrarGastos('mesatual',usuario,'N')
 
             total_gasto = sum([
                 float(item.get('valor', 0)) 
@@ -78,9 +78,9 @@ def login_post():
 
 @gasto_bp.route('/index')
 def index():
-
+   
     if 'usuario' not in session:
-        
+
         return redirect(url_for('gasto.login'))
 
     usuario = session['usuario']  # Só acessa se já tiver passado pela verificação
@@ -89,7 +89,7 @@ def index():
     if usuario == 'admin' or usuario == 'adminstrador':
         return redirect(url_for('admin.admin'))
 
-    dados = gasto_bp.gasto_service.filtrarGastos('mesatual',usuario) #verifica_dados_bd(usuario)
+    dados = gasto_bp.gasto_service.filtrarGastos('mesatual',usuario,'N') #verifica_dados_bd(usuario)
 
     if not dados:
         dados = [('Alimentação', 0), ('Saúde', 0), ('Mobilidade', 0), ('Entretenimento', 0), ('Moradia', 0), ('Outros', 0), ('Dívidas', 0), ('Educação', 0)]
@@ -132,8 +132,18 @@ def cadastrar_gasto():
     return extrato()  
 
 @gasto_bp.route('/extrato', methods=['GET', 'POST'])
+@gasto_bp.route('/extrato/<isCasal>', methods=['GET', 'POST'])
 def extrato():
     usuario = session['usuario']
+
+    if request.is_json:
+        data = request.get_json()
+        isCasal = data.get('isCasal')
+    else:
+        isCasal = request.form.get('isCasal')
+
+    if request.method == 'GET':
+        isCasal =request.args.get('isCasal')
 
     page = request.args.get('page', 1, type=int)  # Obtém o número da página (padrão é 1)
     per_page = 12  # Número de gastos por página
@@ -148,7 +158,7 @@ def extrato():
     categoria = request.args.get('categoria') or 'Todas'
 
     # Busca os gastos ordenados do mais recente para o mais antigo
-    gastos = gasto_bp.gasto_service.extrato_gastos(usuario,data_inicio,data_fim,categoria)  
+    gastos = gasto_bp.gasto_service.extrato_gastos(usuario,data_inicio,data_fim,categoria,isCasal)  
 
     total_gastos = len(gastos)
 
@@ -185,15 +195,16 @@ def extrato():
         data_fim=data_fim,
         categoria=categoria,
         soma_gastos=soma_gastos
-        ,usuario=usuario
+        ,usuario =usuario,
+        isCasal= 'S' if isCasal == 'S' else 'N'
     )
 
 
-@gasto_bp.route('/filtrarGastos/<periodo>')
-def filtrar(periodo):
+@gasto_bp.route('/filtrarGastos/<periodo>/<isCasal>')
+def filtrar(periodo,isCasal):
     usuario = session['usuario']
 
-    dados = gasto_bp.gasto_service.filtrarGastos(periodo,usuario)
+    dados = gasto_bp.gasto_service.filtrarGastos(periodo,usuario,isCasal)
     return jsonify(dados)
 
 
@@ -378,6 +389,12 @@ def deletar_despesa():
 def exportar_excel():
     usuario = session['usuario']
 
+    if request.is_json:
+        data = request.get_json()
+        isCasal = data.get('isCasal')
+    else:
+        isCasal = request.form.get('isCasal')
+
      # pega data atual
     hoje = date.today()
     primeiro_dia = hoje.replace(day=1)
@@ -388,7 +405,7 @@ def exportar_excel():
     categoria = request.args.get('categoria') or 'Todas'
 
     # Busca os gastos ordenados do mais recente para o mais antigo
-    gastos = gasto_bp.gasto_service.extrato_gastos(usuario,data_inicio,data_fim,categoria)  
+    gastos = gasto_bp.gasto_service.extrato_gastos(usuario,data_inicio,data_fim,categoria,isCasal)  
 
     colunas = [ 'categoria', 'gasto' ,'valor','data','id']  # ajuste conforme sua estrutura real
     df = pd.DataFrame(gastos,columns=colunas)
@@ -404,6 +421,12 @@ def exportar_excel():
 def exportar_pdf():
     usuario = session['usuario']
 
+    if request.is_json:
+        data = request.get_json()
+        isCasal = data.get('isCasal')
+    else:
+        isCasal = request.form.get('isCasal')
+
      # pega data atual
     hoje = date.today()
     primeiro_dia = hoje.replace(day=1)
@@ -414,7 +437,7 @@ def exportar_pdf():
     categoria = request.args.get('categoria') or 'Todas'
 
     # Busca os gastos ordenados do mais recente para o mais antigo
-    gastos = gasto_bp.gasto_service.extrato_gastos(usuario,data_inicio,data_fim,categoria)  
+    gastos = gasto_bp.gasto_service.extrato_gastos(usuario,data_inicio,data_fim,categoria,isCasal)  
 
     soma_gastos = 0
 

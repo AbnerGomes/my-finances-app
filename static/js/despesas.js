@@ -46,7 +46,6 @@ function atualizarStatus(selectElement) {
     const filtroMes = document.getElementById("filtroMes").value;
     
     if (filtroMes) {
-        // Adiciona o primeiro dia do mês (formato yyyy-mm-01)
         const dataInicio = filtroMes;
         window.location.href = `/despesas?mes_ano='${dataInicio}`;
         document.getElementById("filtroMes").value = filtroMes;

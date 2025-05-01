@@ -2,11 +2,20 @@ var donutChart = null; // Variável global inicializada
 
 var barChart =null;
 
+
+function filtrarGastosBtn(periodo){
+    let name = document.getElementById('current-username').textContent;
+    filtrarGastos(periodo,name == 'Casal' ? 'S' : 'N')
+
+}
+
+
+
 // Função para buscar e atualizar os dados do gráfico
-function filtrarGastos(periodo) {
+function filtrarGastos(periodo,isCasal) {
     var ctx = document.getElementById('donutChart').getContext('2d');
 
-    $.getJSON(`/filtrarGastos/${periodo}`, function(dados) {
+    $.getJSON(`/filtrarGastos/${periodo}/${isCasal}`, function(dados) {
 
             
             const mensagem = document.getElementById("mensagem");
@@ -49,15 +58,12 @@ function filtrarGastos(periodo) {
                 document.getElementById("valor-total").style.color = '#003f5c';
             }    
             });
-
 }
-
-
 
  document.addEventListener("DOMContentLoaded", function () {
     //document.getElementById('total').style.display='none'
     
-filtrarGastos('mesatual');
+filtrarGastos('mesatual','N');
 
    console.log("JavaScript carregado, tentando renderizar o gráfico...");
     
@@ -98,7 +104,6 @@ filtrarGastos('mesatual');
             }
           }
     });
-
 
     //grafico de barras
 
@@ -185,16 +190,12 @@ barChart = new Chart(ctxBar, {
   }
 });
 
-
  });
-
 
 window.onload = function () {
     console.log("window.onload foi chamado!");
     console.log(document.getElementById("donutChart").getContext('2d'));
 };
-
-
 
 // data atual ja carregada no cadastro de gasto
 document.addEventListener("DOMContentLoaded", function() {
@@ -204,8 +205,6 @@ document.addEventListener("DOMContentLoaded", function() {
         campoData.value = hoje;
     }
 });
-
-
 
 document.addEventListener('DOMContentLoaded', function () {
     const buttons = document.querySelectorAll('.period-button');
@@ -219,8 +218,20 @@ console.log('okokokokok')
         this.classList.add('active');
       });
     });
-  });
 
+    //tentatuva de mudar o icone
+    let name = document.getElementById('current-username').textContent;
+
+    let isCasal = name == 'Casal' ? 'S' : 'N'
+
+    if (isCasal == 'S') {
+        document.getElementById('user-icon').textContent = 'people';
+    }
+    else{
+        document.getElementById('user-icon').textContent = 'person';
+    }
+
+  });
 
   document.addEventListener("click", function (e) {
     // Verifica se clicou num botão com a classe "period-button"
@@ -234,21 +245,43 @@ console.log('okokokokok')
       e.target.classList.add("active");
     }
 
-
     if (e.target && e.target.classList.contains('botao-salvar')) {
       const modal_mensagem = document.getElementById('modal-mensagem');
       modal_mensagem.style.display = 'none';  
-   }
-
-    //cadastro ok  
-    // Fechar o modal quando clicar no botão de fechar ou fora do modal
-    // const fecharModal = document.getElementById('fechar-modal');
-    
-    // if (e.target === fecharModal) {
-    //   const modal = document.getElementById('modal-mensagem');
-    //   modal.style.display = 'none';
-    // }
-    
-
+   } 
 
   });
+
+  function toggleDropdown() {
+    const menu = document.getElementById('dropdown-menu');
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+  }
+
+  function changeUser(name) {
+    document.getElementById('current-username').textContent = name;
+    document.getElementById('dropdown-menu').style.display = 'none';
+
+    let isCasal = name == 'Casal' ? 'S' : 'N'
+
+    
+
+    //carrega os dados do casal
+    filtrarGastos('mesatual',isCasal)
+
+    if (isCasal == 'S') {
+        document.getElementById('user-icon').textContent = 'people';
+    }
+    else{
+        document.getElementById('user-icon').textContent = 'person';
+    }
+
+  }
+
+  // Fecha dropdown se clicar fora
+  document.addEventListener('click', function (event) {
+    const dropdown = document.querySelector('.dropdown');
+    if (!dropdown.contains(event.target)) {
+      document.getElementById('dropdown-menu').style.display = 'none';
+    }
+  });
+
