@@ -16,7 +16,7 @@ function atualizarStatus(selectElement) {
     //textoStatus.textContent = novoStatus;
   
     // Envia para o backend
-    fetch('/despesas', {
+    fetch('/atualizar_status', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
