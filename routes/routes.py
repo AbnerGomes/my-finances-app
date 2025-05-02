@@ -308,7 +308,7 @@ def despesas():
         isCasal=isCasal
     )
 
-@despesa_bp.route('/despesas', methods=['POST'])
+@despesa_bp.route('/atualizar_status', methods=['POST'])
 def atualizar_status():
     data = request.get_json()
     id_despesa = data.get('id_despesa')
