@@ -412,3 +412,33 @@ h2 {
   color: #800a0a;
   cursor: pointer;
 }
+
+
+
+/* dele/dela */
+.casal {
+  display: block;
+}
+
+.casal-item {
+  display: flex;
+    /* align-items: center; */
+    gap: 2px;
+    /* margin-bottom: 2px; */
+    margin-left: 37px;
+    font-size: 10px;
+}
+
+.casal-icon {
+  width: 20px;
+  height: 10px;
+}
+
+.dele {
+  background-color: rgba(222, 251, 255, 0.65)
+  ;
+}
+
+.dela {
+  background-color: rgba(247, 236, 247, 0.65);
+}

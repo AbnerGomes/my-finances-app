@@ -166,9 +166,10 @@ class GastoService:
             conjuge = resultado[0]
 
         cursor.execute("""
-        SELECT categoria, gasto, valor_gasto, TO_CHAR(data, 'DD/MM/YYYY') AS data_formatada , id
-        FROM gastos
-        WHERE usuario in( %s ,%s)
+        SELECT categoria, gasto, valor_gasto, TO_CHAR(data, 'DD/MM/YYYY') AS data_formatada , g.id, case when u.pronome = 'Ele/Dele' then 'H' else 'S' end pronome
+        FROM gastos g
+        inner join usuarios u on g.usuario = u.email 
+        WHERE g.usuario in( %s ,%s)
         and ( categoria = %s or %s ='Todas' )
         and ( data >= %s )
         and ( data <= %s )

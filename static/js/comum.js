@@ -2,44 +2,13 @@
 // Função para buscar e atualizar os dados do gráfico
 function filtrarGastos(isCasal) {
     // $.getJSON(`/filtrarGastos/${periodo}/${isCasal}`, function(dados) {  
-
-    //         if (dados.length === 0 || dados === null || dados === undefined ) {
-
-    //             console.log('ok')
-    //         }    
-    //         else{
-                //window.location.href = `/extrato/${isCasal}`;
                 window.location.href = `/extrato?isCasal=${isCasal}`;
-
-            // }
-            // });
-
-            // Envia para o backend
-// fetch('/extrato', {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json'
-//     },
-//     body: JSON.stringify({ isCasal: isCasal })
-//   });
-
-//   .then(response => {
-//     if (!response.ok) {
-//       throw new Error('Erro ao atualizar extrato');
-//     }
-//     return response.text(); // <<< aqui, não .json()
-//   })
-//   .then(html => {
-//     document.body.innerHTML = html; // ou insere num <div> específico
-//   })
-//   .catch(error => {
-//     alert('Erro ao atualizar extrato: ' + error.message);
-//   });
-    
-
 }
 
-
+function filtrarDespesas(isCasal) {
+  // $.getJSON(`/filtrarGastos/${periodo}/${isCasal}`, function(dados) {  
+              window.location.href = `/despesas?isCasal=${isCasal}`;
+}
 
 function toggleDropdown() {
     const menu = document.getElementById('dropdown-menu');
@@ -63,7 +32,14 @@ function toggleDropdown() {
     //     document.getElementById('current-username').textContent = name;
     // }
 
-    filtrarGastos(isCasal)
+    const nomePagina = window.location.pathname.split("/").pop();
+    const nomeSemExtensao = nomePagina.split(".")[0];   
+    if(nomeSemExtensao == 'extrato'){
+      filtrarGastos(isCasal)
+    }
+    if(nomeSemExtensao == 'despesas'){
+      filtrarDespesas(isCasal)
+    }
 
   // Fecha dropdown se clicar fora
   document.addEventListener('click', function (event) {
