@@ -413,3 +413,7 @@ input#periodo-picker:focus {
 .casal-texto {
   font-size: 12px;
 }
+
+.container-detalhes{
+  padding: 5px 0px 0px 0px;
+}
