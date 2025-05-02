@@ -17,7 +17,7 @@
 
     <div class="header-bar center">
         <div class="logo-text">
-          <img src="{{ url_for('static', filename='images/A.png') }}" alt="Logo" class="logo">
+          <img src="{{ url_for('static', filename='images/A&A.png') }}" alt="Logo" class="logo">
           <span class="company-name">A&A - Finance Dashboard</span>
         </div>
     
@@ -44,7 +44,9 @@
     <div class="container-detalhes" >
 
         <h2 style="text-align: center;">Extrato</h2>
-            <!-- Filtro -->
+
+        <div class="filtro-container">
+
 <!-- Filtro -->
 <form method="GET" action="{{ url_for('gasto.extrato') }}" class="filtro-form" id="filtro-form">
     <!-- Botão de período -->
@@ -76,6 +78,22 @@
 
     <button type="submit" class="botao-filtrar">Filtrar</button>
 </form>
+
+<!-- dele/dela (só exibir se for visualziacao de casal)--> 
+{% if isCasal == 'S' %} <!--(só exibir se for visualziacao de casal)--> 
+<div class="casal">
+  <div class="casal-item">
+    <span class="casal-icon dele"></span>
+    <span class="casal-texto">Ele</span>
+  </div>
+  <div class="casal-item">
+    <span class="casal-icon dela"></span>
+    <span class="casal-texto">Ela</span>
+  </div>
+</div>
+{% endif %}
+
+</div>
 <br>
 
         <table>
@@ -102,7 +120,9 @@
                 {% for gasto in lista %}
                     <tr class="gasto"
                     data-id="{{ gasto[4] }}"
-                     style="background-color: {% if loop.index0 % 2 == 0 %}#defbff{% else %}white{% endif %}; line-height: 1.6;">
+                     
+                     style="background-color: {% if  gasto[5]  == 'S' %}rgba(247, 236, 247, 0.65){% else %}rgba(222, 251, 255, 0.65) {% endif %}; line-height: 1.6;"
+                     >
                         <td>{{ gasto[0] }}</td>
                         <td>{{ gasto[1] }}</td>
                         <td>R$ {{ gasto[2] | round(2) }}</td>
@@ -189,6 +209,12 @@
           <button class="footer-btn active">
             <span class="material-icons">account_balance_wallet</span>
             <span class="footer-text">Transações</span>
+          </button>
+        </a>
+        <a href="{{ url_for('despesa.metas') }}">
+          <button class="footer-btn">
+            <span class="material-icons">payment</span>
+            <span class="footer-text">Limites</span>
           </button>
         </a>
         <a href="{{ url_for('gasto.configuracoes') }}">

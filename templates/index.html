@@ -15,7 +15,7 @@
  
   <div class="header-bar center">
     <div class="logo-text">
-      <img src="{{ url_for('static', filename='images/A.png') }}" alt="Logo" class="logo">
+      <img src="{{ url_for('static', filename='images/A&A.png') }}" alt="Logo" class="logo">
       <span class="company-name">A&A - Finance Dashboard</span>
     </div>
   
@@ -92,6 +92,12 @@
     <button class="footer-btn">
       <span class="material-icons">account_balance_wallet</span>
       <span class="footer-text">Transações</span>
+    </button>
+  </a>
+  <a href="{{ url_for('despesa.metas') }}">
+    <button class="footer-btn">
+      <span class="material-icons">payment</span>
+      <span class="footer-text">Limites</span>
     </button>
   </a>
   <a href="{{ url_for('gasto.configuracoes') }}">

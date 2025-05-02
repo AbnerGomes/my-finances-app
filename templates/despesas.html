@@ -9,26 +9,40 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="static/js/despesas.js" defer></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
+    <script src="static/js/comum.js" defer></script>
     <title>Quadro de Despesas Mensais </title>
 </head>
 <body>
 
   <div class="header-bar center">
     <div class="logo-text">
-      <img src="{{ url_for('static', filename='images/A.png') }}" alt="Logo" class="logo">
+      <img src="{{ url_for('static', filename='images/A&A.png') }}" alt="Logo" class="logo">
       <span class="company-name">A&A - Finance Dashboard</span>
     </div>
 
     <div class="user-info">
-      <span class="material-icons user-icon">account_circle</span>
-      <span class="user-name">{{ usuario.split('@')[0] }}</span>
+      <div class="dropdown">
+        <div class="dropdown-toggle" onclick="toggleDropdown()">
+          <span id="user-icon" class="material-icons user-icon">{{ 'person' if isCasal != 'S' else 'people' }}</span>
+          <span id="current-username" class="user-name">
+            {{ usuario.split('@')[0] if isCasal != 'S' else 'Casal' }}
+          </span>
+          <span class="material-icons dropdown-icon">expand_more</span>
+        </div>
+    
+        <div id="dropdown-menu" class="dropdown-menu">
+          <div class="dropdown-item" onclick="changeUser('Casal')">Casal</div>
+          <div class="dropdown-item" onclick="changeUser('{{ usuario.split('@')[0] }}')">{{ usuario.split('@')[0] }}</div>
+        </div>
+      </div>
     </div>
 
   </div>
 
   <h2>Despesas Mensais</h2>
 <br>
-  <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+  <div style="margin-bottom: 20px; display: flex; gap: 4px; align-items: center; flex-wrap: wrap;">
     <label for="filtroMes" style="font-weight: bold;">Selecione o mês:</label>
     <input type="month" id="filtroMes" name="mes_ano" style="padding: 10px; border-radius: 8px; border: 1px solid #B0E0E6; font-size: 10px;"  value="{{ mes_ano }}">
     <button class="botao-filtrar" onclick="filtrarPorMes()">Filtrar</button>
@@ -48,6 +62,20 @@
         <span class="legenda-texto">Parcial</span>
       </div>
     </div>
+
+    <!-- dele/dela (só exibir se for visualziacao de casal)--> 
+    {% if isCasal == 'S' %} <!--(só exibir se for visualziacao de casal)--> 
+    <div class="casal">
+      <div class="casal-item">
+        <span class="casal-icon dele"></span>
+        <span class="casal-texto">Ele</span>
+      </div>
+      <div class="casal-item">
+        <span class="casal-icon dela"></span>
+        <span class="casal-texto">Ela</span>
+      </div>
+    </div>
+    {% endif %}
   </div>
 <div class="tabela">
   <table>
@@ -67,7 +95,9 @@
         {% for despesa in despesas %}
       <tr data-data="{{ despesa[3] }}" data-id="{{ despesa[6] }}"
       {% if despesa[5] == 'FIXA' %} class="linha-fixa" {% endif %}
-      style="background-color: {% if loop.index0 % 2 == 0 %}#defbff{% else %}white{% endif %}; line-height: 1.6;"  >
+      style="background-color: {% if  despesa[7]  == 'S' %}rgba(247, 236, 247, 0.65){% else %}rgba(222, 251, 255, 0.65)
+      {% endif %}; line-height: 1.6;"
+      >
         <td>{{ despesa[1] }}</td>
         <td>{{ despesa[0] }}</td>
         <td>{{ despesa[2] }}</td>
@@ -260,6 +290,12 @@
     <button class="footer-btn">
       <span class="material-icons">account_balance_wallet</span>
       <span class="footer-text">Transações</span>
+    </button>
+  </a>
+  <a href="{{ url_for('despesa.metas') }}">
+    <button class="footer-btn">
+      <span class="material-icons">payment</span>
+      <span class="footer-text">Limites</span>
     </button>
   </a>
   <a href="{{ url_for('gasto.configuracoes') }}">

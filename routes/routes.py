@@ -196,7 +196,7 @@ def extrato():
         categoria=categoria,
         soma_gastos=soma_gastos
         ,usuario =usuario,
-        isCasal= 'S' if isCasal == 'S' else 'N'
+        isCasal=isCasal
     )
 
 
@@ -275,10 +275,21 @@ def deletar_gasto():
 
     return extrato() 
 
-@despesa_bp.route('/despesas', methods=['GET'])
+
+@despesa_bp.route('/despesas', methods=['GET','POST'])
+@despesa_bp.route('/despesas/<isCasal>', methods=['GET','POST'])
 def despesas(): 
     usuario = session['usuario']
     
+    if request.is_json:
+        data = request.get_json()
+        isCasal = data.get('isCasal')
+    else:
+        isCasal = request.form.get('isCasal')
+
+    if request.method == 'GET':
+        isCasal =request.args.get('isCasal')
+
     # pega data atual
     hoje = date.today()
     primeiro_mes = hoje.replace(day=1)
@@ -287,13 +298,14 @@ def despesas():
     mes_ano_str = request.args.get('mes_ano') or primeiro_mes.strftime('%Y-%m')
 
     # Busca os gastos ordenados do mais recente para o mais antigo
-    despesas = despesa_bp.despesa_service.busca_despesas(usuario,mes_ano_str[-7:],'Todas')  
+    despesas = despesa_bp.despesa_service.busca_despesas(usuario,mes_ano_str[-7:],'Todas',isCasal)  
 
     return render_template(
         'despesas.html',
         despesas=despesas,
         mes_ano=mes_ano_str[-7:]  # yyyy-mm para o input month
-        ,usuario=usuario
+        ,usuario=usuario,
+        isCasal=isCasal
     )
 
 @despesa_bp.route('/despesas', methods=['POST'])
@@ -500,3 +512,34 @@ def deletar_usuario():
     admin_bp.admin_service.deletar_usuario(usuario)
     print('oquei')
     return render_template('configuracoes_exclusao.html')  
+
+@despesa_bp.route('/metas') 
+def metas():
+    # Exemplo real com gasto e cálculo do percentual
+    cards = [
+        {
+            "id": 1,
+            "nome": "Ifood",
+            "limite": 300,
+            "gasto": 135,
+            "percentual": min(int((135 / 300) * 100), 100),
+            "imagem_url": "/static/images/ifood.png"
+        },
+        {
+            "id": 2,
+            "nome": "Futebol",
+            "limite": 100,
+            "gasto": 85,
+            "percentual": min(int((85 / 100) * 100), 100),
+            "imagem_url": "/static/images/futebol.png",
+        },
+        {
+            "id": 3,
+            "nome": "Carro",
+            "limite": 800,
+            "gasto": 820,
+            "percentual": min(int((820 / 800) * 100), 100),
+            "imagem_url": "/static/images/carro.png"
+        }
+    ]
+    return render_template("metas.html", cards=cards,usuario='Abner Gomes',isCasal='N')

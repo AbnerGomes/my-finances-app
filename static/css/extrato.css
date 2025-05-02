@@ -371,3 +371,45 @@ input#periodo-picker:focus {
   color: #800a0a;
   cursor: pointer;
 }
+
+
+/* dele/dela */
+.filtro-container {
+  position: relative;
+}
+
+.casal {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.casal-item {
+  display: flex;
+  align-items: center;
+}
+
+.casal-icon.dele {
+  width: 12px;
+  height: 12px;
+  background-color: rgba(222, 251, 255, 0.5); /* azul suave */
+  border-radius: 2px;
+  margin-right: 4px;
+}
+
+.casal-icon.dela {
+  width: 12px;
+  height: 12px;
+  background-color: rgba(247, 236, 247, 0.7); /* rosa suave */
+  border-radius: 2px;
+  margin-right: 4px;
+}
+
+.casal-texto {
+  font-size: 12px;
+}

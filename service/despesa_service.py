@@ -40,19 +40,30 @@ class DespesaService:
         conn.close()
 
 
-    def busca_despesas(self,usuario,mes_ano,categoria):
+    def busca_despesas(self,usuario,mes_ano,categoria,isCasal):
         conn = get_connection()
         cursor = conn.cursor()
-        print('despesa')
-        print(mes_ano)
+
+        conjuge=''
+
+        #verifica se é casal e busca o conjuge
+        if isCasal == 'S':
+            query = "SELECT a.usuario AS conjuge FROM casal c JOIN autenticacao a ON a.usuario = CASE WHEN c.conjuge_1 = %s THEN c.conjuge_2 ELSE c.conjuge_1 END WHERE %s IN (c.conjuge_1, c.conjuge_2);"
+            cursor.execute(query, (usuario,usuario))
+            resultado = cursor.fetchone()
+            conjuge = resultado[0]
+
+
         cursor.execute("""
-        SELECT categoria, despesa, valor, mes_ano , status, case when tipo_despesa = 'F' then 'FIXA' when tipo_despesa ='V' then 'Variavel' else 'Exceção' end, id
-        FROM despesas
-        WHERE usuario = %s
+        SELECT categoria, despesa, valor, mes_ano , status, case when tipo_despesa = 'F' then 'FIXA' when tipo_despesa ='V' then 'Variavel' else 'Exceção' end, d.id
+        , case when u.pronome = 'Ele/Dele' then 'H' else 'S' end pronome
+        FROM despesas d
+        inner join usuarios u on d.usuario = u.email 
+        WHERE usuario in( %s, %s)
         and ( categoria = %s or %s ='Todas' )
         and ( mes_ano = %s )
-        ORDER BY id DESC
-         """, (usuario,categoria,categoria,mes_ano))
+        ORDER BY despesa DESC
+         """, (usuario,conjuge,categoria,categoria,mes_ano))
 
         resultados = cursor.fetchall()
         

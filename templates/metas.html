@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Controle de Despesas</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/metas.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="static/js/metas.js" defer></script>
+</head>
+<body>
+  <main class="container">
+
+    <div class="header-bar center">
+        <div class="logo-text">
+          <img src="{{ url_for('static', filename='images/A&A.png') }}" alt="Logo" class="logo">
+          <span class="company-name">A&A - Finance Dashboard</span>
+        </div>
+      
+        <div class="user-info">
+          <div class="dropdown">
+            <div class="dropdown-toggle" onclick="toggleDropdown()">
+              <span id="user-icon" class="material-icons user-icon">person</span>
+              <span id="current-username" class="user-name">{{ usuario.split('@')[0] }}</span>
+              <span class="material-icons dropdown-icon">expand_more</span>
+            </div>
+        
+            <div id="dropdown-menu" class="dropdown-menu">
+              <div class="dropdown-item" onclick="changeUser('Casal')">Casal</div>
+              <div class="dropdown-item" onclick="changeUser('{{ usuario.split('@')[0] }}')">{{ usuario.split('@')[0] }}</div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+
+    <main class="container">
+        <h3 class="titulo-pagina">Meus Limites</h3> <!-- TÍTULO ADICIONADO AQUI -->
+
+    <!-- Cards de exemplo -->
+    <div class="cards-container">
+      {% for card in cards %}
+      <div class="card">
+        <div class="image-container">
+          <img src="{{ card.imagem_url or '/static/images/padrao.png' }}" class="card-img" onclick="document.getElementById('upload-{{ card.id }}').click();" />
+          <form method="POST" action="/trocar_imagem/{{ card.id }}" enctype="multipart/form-data">
+            <input type="file" id="upload-{{ card.id }}" name="imagem" accept="image/*" style="display: none;" onchange="this.form.submit();" />
+          </form>
+        </div>
+        <div class="card-info">
+            <h3>{{ card.nome }}</h3>
+          
+            <div class="progresso-info">
+                <span>R$ {{ card.gasto }} / R$ {{ card.limite }}</span>
+                <div class="barra-progresso">
+                  <div class="preenchido 
+                              {% if card.percentual >= 100 %}
+                                vermelho
+                              {% elif card.percentual >= 80 %}
+                                amarelo
+                              {% else %}
+                                verde
+                              {% endif %}" 
+                       style="width: {{ card.percentual if card.percentual <= 100 else 100 }}%;">
+                  </div>
+                </div>
+              </div>
+
+          </div>
+        </div>  
+      {% endfor %}
+    </div>
+
+    <!-- Botão para abrir o Modal -->
+    <button id="openModalBtn" class="btn-adicionar">Adicionar Card</button>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <span id="closeModalBtn" class="close">&times;</span>
+        <h2>Adicionar Novo Card</h2>
+        <form class="novo-card-form" method="POST" action="/adicionar_card">
+          <input type="text" name="nome" placeholder="Nome da despesa" required />
+          <input type="number" name="limite" placeholder="Limite (R$)" required />
+          <button type="submit">Adicionar</button>
+        </form>
+      </div>
+    </div>
+  </main>
+<br>
+<div class="footer-bar">
+    <a>
+      <button class="footer-btn">
+        <span class="material-icons">dashboard</span>
+        <span class="footer-text">Visão Geral</span>
+      </button>
+    </a>
+    <a href="{{ url_for('despesa.despesas') }}">
+      <button class="footer-btn">
+        <span class="material-icons">bar_chart</span>
+        <span class="footer-text">Despesas</span>
+      </button>
+    </a>
+    <a href="{{ url_for('gasto.extrato') }}">
+      <button class="footer-btn">
+        <span class="material-icons">account_balance_wallet</span>
+        <span class="footer-text">Transações</span>
+      </button>
+    </a>
+    <a href="{{ url_for('despesa.metas') }}">
+        <button class="footer-btn active">
+          <span class="material-icons">payment</span>
+          <span class="footer-text">Limites</span>
+        </button>
+    </a>
+    <a href="{{ url_for('gasto.configuracoes') }}">
+      <button class="footer-btn">
+        <span class="material-icons">settings</span>
+        <span class="footer-text">Configurações</span>
+      </button>
+    </a>
+  </div>
+  </main>
+</body>
+</html>
