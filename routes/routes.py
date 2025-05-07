@@ -207,6 +207,22 @@ def filtrar(periodo,isCasal):
     dados = gasto_bp.gasto_service.filtrarGastos(periodo,usuario,isCasal)
     return jsonify(dados)
 
+@gasto_bp.route('/filtrarGastosMensais/<isCasal>')
+def filtrarMesAno(isCasal):
+    usuario = session['usuario']
+
+    if request.is_json:
+        data = request.get_json()
+        isCasal = data.get('isCasal')
+    else:
+        isCasal = request.form.get('isCasal')
+
+    if request.method == 'GET':
+        isCasal =request.args.get('isCasal')
+
+    dados = gasto_bp.gasto_service.filtrarGastosMensais(usuario,isCasal)
+    return jsonify(dados)
+
 
 @gasto_bp.route("/cadastro", methods=["GET", "POST"])
 def cadastro():

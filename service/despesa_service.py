@@ -62,7 +62,7 @@ class DespesaService:
         WHERE usuario in( %s, %s)
         and ( categoria = %s or %s ='Todas' )
         and ( mes_ano = %s )
-        ORDER BY despesa DESC
+        ORDER BY d.id DESC
          """, (usuario,conjuge,categoria,categoria,mes_ano))
 
         resultados = cursor.fetchall()
