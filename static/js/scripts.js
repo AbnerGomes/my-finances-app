@@ -60,10 +60,50 @@ function filtrarGastos(periodo,isCasal) {
             });
 }
 
+function filtrarGastosMensais(isCasal) {
+    var ctx = document.getElementById('barChart').getContext('2d');
+
+    $.getJSON(`/filtrarGastosMensais/${isCasal}`, function(dados) {
+
+            
+            //const mensagem = document.getElementById("mensagem");
+
+            //const total = document.getElementById("total");
+
+            if (dados.length === 0 || dados === null || dados === undefined ) {
+
+                //MENSAGEM
+                //const modal_mensagem = document.getElementById('modal-mensagem');
+                //modal_mensagem.style.display = 'block';
+
+
+                //mensagem.innerHTML = "Nenhum gasto encontrado para esse período.";
+                //mensagem.style.display = "block"; // Exibe a mensagem
+                // atualizarGrafico([], []); // Limpa o gráfico    
+                //total.style.display = "none"
+            }
+            else {
+                console.log('BAR CHART')
+
+                let mes_ano = dados.map(item => item.mes_ano);
+                let valores = dados.map(item => item.valor);
+                
+                barChart.data.labels = mes_ano;
+                barChart.data.datasets[0].data = valores;
+                barChart.update();
+
+            }    
+            });
+}
+
+
+
+
  document.addEventListener("DOMContentLoaded", function () {
     //document.getElementById('total').style.display='none'
     
 filtrarGastos('mesatual','N');
+filtrarGastosMensais('N');
 
    console.log("JavaScript carregado, tentando renderizar o gráfico...");
     

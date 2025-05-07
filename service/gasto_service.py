@@ -14,21 +14,21 @@ class GastoService:
 
     def _create_db(self):
         print("ok")
-        os.makedirs('instance', exist_ok=True)  # Garante que a pasta instance existe
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS Gastos (
-            id SERIAL PRIMARY KEY,
-            Gasto TEXT NOT NULL,
-            valor_gasto REAL NOT NULL,
-            data DATE NOT NULL,
-            categoria TEXT NOT NULL,
-            usuario TEXT
-            )
-        ''')
-        conn.commit()
-        conn.close()
+        # os.makedirs('instance', exist_ok=True)  # Garante que a pasta instance existe
+        # conn = get_connection()
+        # cursor = conn.cursor()
+        # cursor.execute('''
+        #     CREATE TABLE IF NOT EXISTS Gastos (
+        #     id SERIAL PRIMARY KEY,
+        #     Gasto TEXT NOT NULL,
+        #     valor_gasto REAL NOT NULL,
+        #     data DATE NOT NULL,
+        #     categoria TEXT NOT NULL,
+        #     usuario TEXT
+        #     )
+        # ''')
+        # conn.commit()
+        # conn.close()
 
 
     #função para verificar se exitem dados para o donut
@@ -71,6 +71,60 @@ class GastoService:
             return False    
 
 
+
+    def filtrarGastosMensais(self,usuario,isCasal):                
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        hoje = datetime.now().date()
+        ano_atual =  datetime(datetime.now().year, 1, 1)
+
+        conjuge =''
+
+        #verifica se é casal e busca o conjuge
+        if isCasal == 'S':
+            query = "SELECT a.usuario AS conjuge FROM casal c JOIN autenticacao a ON a.usuario = CASE WHEN c.conjuge_1 = %s THEN c.conjuge_2 ELSE c.conjuge_1 END WHERE %s IN (c.conjuge_1, c.conjuge_2);"
+            cursor.execute(query, (usuario,usuario))
+            resultado = cursor.fetchone()
+            conjuge = resultado[0]
+
+        query = """
+            WITH meses AS (
+                -- Gera uma série de meses desde janeiro até o mês atual
+                SELECT to_char(data_serie, 'MON/YYYY') AS mes_ano,
+                    date_trunc('month', data_serie) AS data_inicio
+                FROM generate_series(
+                    date_trunc('year', CURRENT_DATE),        -- Primeiro dia de janeiro do ano atual
+                    date_trunc('month', CURRENT_DATE),       -- Mês atual
+                    interval '1 month'
+                ) AS data_serie
+            ),
+            gastos_agrupados AS (
+                -- Soma os valores dos gastos por mês
+                SELECT
+                    to_char(data, 'MON/YYYY') AS mes_ano,
+                    date_trunc('month', data) AS data_inicio,
+                    SUM(valor_gasto) AS valor
+                FROM Gastos
+                WHERE usuario IN (%s, %s)
+                AND data BETWEEN %s AND %s
+                GROUP BY 1, 2
+            )
+            -- Junta a série de meses com os gastos
+            SELECT
+                m.mes_ano,
+                COALESCE(g.valor, 0) AS valor  -- Caso não haja gasto, retorna 0
+            FROM meses m
+            LEFT JOIN gastos_agrupados g ON m.data_inicio = g.data_inicio
+            ORDER BY m.data_inicio ASC;
+        """
+        cursor.execute(query, (usuario, conjuge,ano_atual,hoje))
+    
+        dados = cursor.fetchall()
+        conn.close()
+
+        return [{'mes_ano': row[0], 'valor': row[1]} for row in dados]
+
     def filtrarGastos(self,periodo,usuario,isCasal):
         try: 
             if periodo is None:
@@ -80,6 +134,7 @@ class GastoService:
             cursor = conn.cursor()
 
             hoje = datetime.now().date()
+
             inicio = fim = None
 
             if periodo == 'ontem':
@@ -129,6 +184,7 @@ class GastoService:
                 """
 
                 cursor.execute(query, (usuario,conjuge,inicio, fim))
+
             else:
                 query = """
                     SELECT categoria, SUM(valor_gasto) valor
