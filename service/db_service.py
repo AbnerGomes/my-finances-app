@@ -4,7 +4,7 @@ import psycopg2
 
 # Pegando a URL do banco via variável de ambiente
 # DATABASE_URL = "postgresql://abner:J9a3Yfa4Oziu2VTWjhoHG6W6p6s1VdrD@dpg-cvqi6815pdvs73ae110g-a.oregon-postgres.render.com/fin_db_l8qs"
-DATABASE_URL = "postgresql://abner:ofthekingthepowerthemendandthebesterdthekingthefarythesmain@node228283-abner-pg.ce.br.saveincloud.net.br:11032/my_fin_db"
+DATABASE_URL = "postgresql://abner:ofthekingthepowerthemendandthebesterdthekingthefarythesmain@node228824-my-fin-pg-db.sp1.br.saveincloud.net.br:11032/fin_db"
 
 # (Opcional) URL fixa — apenas para testes locais
 # DATABASE_URL = "postgres://usuario:senha@host:porta/database"
