@@ -5,7 +5,10 @@ var barChart =null;
 
 function filtrarGastosBtn(periodo){
     let name = document.getElementById('current-username').textContent;
-    filtrarGastos(periodo,name == 'Casal' ? 'S' : 'N')
+
+    let isCasal = name == 'Casal' ? 'S' : 'N'
+
+    filtrarGastos(periodo,isCasal)
 
 }
 
@@ -307,6 +310,7 @@ console.log('okokokokok')
 
     //carrega os dados do casal
     filtrarGastos('mesatual',isCasal)
+    filtrarGastosMensais(isCasal)
 
     if (isCasal == 'S') {
         document.getElementById('user-icon').textContent = 'people';
