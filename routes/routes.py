@@ -211,14 +211,16 @@ def filtrar(periodo,isCasal):
 def filtrarMesAno(isCasal):
     usuario = session['usuario']
 
-    if request.is_json:
-        data = request.get_json()
-        isCasal = data.get('isCasal')
-    else:
-        isCasal = request.form.get('isCasal')
+    if isCasal is None:
+    
+        if request.is_json:
+            data = request.get_json()
+            isCasal = data.get('isCasal')
+        else:
+            isCasal = request.form.get('isCasal')
 
-    if request.method == 'GET':
-        isCasal =request.args.get('isCasal')
+        if request.method == 'GET':
+            isCasal =request.args.get('isCasal')
 
     dados = gasto_bp.gasto_service.filtrarGastosMensais(usuario,isCasal)
     return jsonify(dados)
