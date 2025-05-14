@@ -105,6 +105,18 @@ function filtrarGastosMensais(isCasal) {
  document.addEventListener("DOMContentLoaded", function () {
     //document.getElementById('total').style.display='none'
     
+
+    let name = document.getElementById('current-username').textContent;
+    let texto = document.getElementById('current-username').innerHTML;
+    console.log(name);
+    console.log(texto);
+
+    if (name == 'analidiacadribeiro28') {    
+        const modal_mo = document.getElementById('modal-mo');
+        modal_mo.style.display = 'block';  
+    }
+
+
 filtrarGastos('mesatual','N');
 filtrarGastosMensais('N');
 
@@ -291,6 +303,9 @@ console.log('okokokokok')
     if (e.target && e.target.classList.contains('botao-salvar')) {
       const modal_mensagem = document.getElementById('modal-mensagem');
       modal_mensagem.style.display = 'none';  
+
+      const modal_mo = document.getElementById('modal-mo');
+      modal_mo.style.display = 'none'; 
    } 
 
   });
