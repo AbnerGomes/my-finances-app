@@ -64,7 +64,7 @@ document.addEventListener('click', function (event) {
       //   console.log('STATUS recebido:', dados); // Verificando o que está vindo no JS
 
       //   if (dados.status === 'ok') {
-      //     document.getElementById('modal-cadastrar').style.display = 'block';
+           document.getElementById('modal-cadastrar').style.display = 'block';
       //   } else {
       //     document.getElementById('modal-mensalista').style.display = 'block';
       //   }
