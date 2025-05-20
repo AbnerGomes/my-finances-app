@@ -90,33 +90,21 @@ document.addEventListener('click', function (event) {
   if (event.target.classList.contains('btn-left')) {
     event.preventDefault(); // evita comportamento padrão do botão/link
 
-    //workaround
-//     $.getJSON(`/valida_mensalista`, function(dados) {
+//comentado temporariamente
+// fetch('/valida_mensalista')
+//       .then(response => response.json())  // Converte a resposta para JSON
+//       .then(dados => {
+//         console.log('STATUS recebido:', dados); // Verificando o que está vindo no JS
 
-//       console.log('STATUS')
-// console.log(dados)
-//       if (dados.status === 'ok') {
-//         document.getElementById('modal-cadastrar').style.display = 'block';
-//       }
-//       else{
-//         document.getElementById('modal-mensalista').style.display = 'block';
-//       }
-
-//   });
-fetch('/valida_mensalista')
-      .then(response => response.json())  // Converte a resposta para JSON
-      .then(dados => {
-        console.log('STATUS recebido:', dados); // Verificando o que está vindo no JS
-
-        if (dados.status === 'ok') {
-          document.getElementById('modal-cadastrar').style.display = 'block';
-        } else {
-          document.getElementById('modal-mensalista').style.display = 'block';
-        }
-      })
-      .catch(error => {
-        console.error('Erro na requisição:', error);
-      });  
+//         if (dados.status === 'ok') {
+//           document.getElementById('modal-cadastrar').style.display = 'block';
+//         } else {
+//           document.getElementById('modal-mensalista').style.display = 'block';
+//         }
+//       })
+//       .catch(error => {
+//         console.error('Erro na requisição:', error);
+//       });  
 
 }
 else
