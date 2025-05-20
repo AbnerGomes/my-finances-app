@@ -289,3 +289,17 @@ class GastoService:
         cursor.execute("DELETE FROM gastos WHERE id = %s", (id_gasto,))
         conn.commit()
         conn.close()
+
+    def tem_conjuge(self,usuario):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        #verifica se existe conjuge
+        query = "SELECT a.usuario AS conjuge FROM casal c JOIN autenticacao a ON a.usuario = CASE WHEN c.conjuge_1 = %s THEN c.conjuge_2 ELSE c.conjuge_1 END WHERE %s IN (c.conjuge_1, c.conjuge_2);"
+        cursor.execute(query, (usuario,usuario))
+        resultado = cursor.fetchone()
+        
+        if resultado is None:
+            return False
+        else:
+            return True    

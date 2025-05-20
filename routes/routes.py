@@ -103,7 +103,10 @@ def index():
     )
     ])
 
-    return render_template('index.html',usuario=usuario)
+    #verifica se é conta casal e exibe dropdon
+    tem_conjuge = gasto_bp.gasto_service.tem_conjuge(usuario)
+
+    return render_template('index.html',usuario=usuario,temConjuge=tem_conjuge)
 
 @gasto_bp.route('/cadastrar_gasto', methods=['GET', 'POST'])
 def cadastrar_gasto():
@@ -184,6 +187,9 @@ def extrato():
     #se for geral do filtro selecionado
     soma_gastos = sum(gasto[2] for gasto in gastos)
 
+    #verifica se é conta casal e exibe dropdon
+    tem_conjuge = gasto_bp.gasto_service.tem_conjuge(usuario)
+
     return render_template(
         'extrato.html',
         gastos_agrupados=gastos_agrupados,
@@ -196,7 +202,8 @@ def extrato():
         categoria=categoria,
         soma_gastos=soma_gastos
         ,usuario =usuario,
-        isCasal=isCasal
+        isCasal=isCasal,
+        temConjue=tem_conjuge
     )
 
 
@@ -318,12 +325,15 @@ def despesas():
     # Busca os gastos ordenados do mais recente para o mais antigo
     despesas = despesa_bp.despesa_service.busca_despesas(usuario,mes_ano_str[-7:],'Todas',isCasal)  
 
+    tem_conjuge = despesa_bp.despesa_service.tem_conjuge(usuario)
+
     return render_template(
         'despesas.html',
         despesas=despesas,
         mes_ano=mes_ano_str[-7:]  # yyyy-mm para o input month
         ,usuario=usuario,
-        isCasal=isCasal
+        isCasal=isCasal,
+        temConjuge=tem_conjuge
     )
 
 @despesa_bp.route('/atualizar_status', methods=['POST'])
@@ -365,6 +375,13 @@ def cadastrar_despesa():
     
     usuario = session['usuario']
     
+    if tipo_despesa == 'Fixa':
+        tipo_despesa = 'F'
+    elif tipo_despesa == 'Variável':
+        tipo_despesa = 'V'
+    elif tipo_despesa == 'Exceção':
+        tipo_despesa = 'E' 
+
     # Salvar o gasto no banco
     despesa_bp.despesa_service.salvar_despesa(despesa, valor, data, categoria,usuario,tipo_despesa)
     #flash('Despesa cadastrada com sucesso!', 'success')  
