@@ -32,7 +32,9 @@
         </div>
     
         <div id="dropdown-menu" class="dropdown-menu">
+          {% if temConjuge  %}
           <div class="dropdown-item" onclick="changeUser('Casal')">Casal</div>
+          {% endif %}
           <div class="dropdown-item" onclick="changeUser('{{ usuario.split('@')[0] }}')">{{ usuario.split('@')[0] }}</div>
         </div>
       </div>
