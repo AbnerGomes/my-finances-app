@@ -91,20 +91,20 @@ document.addEventListener('click', function (event) {
     event.preventDefault(); // evita comportamento padrão do botão/link
 
 //comentado temporariamente
-// fetch('/valida_mensalista')
-//       .then(response => response.json())  // Converte a resposta para JSON
-//       .then(dados => {
-//         console.log('STATUS recebido:', dados); // Verificando o que está vindo no JS
+fetch('/valida_mensalista')
+      .then(response => response.json())  // Converte a resposta para JSON
+      .then(dados => {
+        console.log('STATUS recebido:', dados); // Verificando o que está vindo no JS
 
-//         if (dados.status === 'ok') {
+        if (dados.status === 'ok') {
            document.getElementById('modal-cadastrar').style.display = 'block';
-//         } else {
-//           document.getElementById('modal-mensalista').style.display = 'block';
-//         }
-//       })
-//       .catch(error => {
-//         console.error('Erro na requisição:', error);
-//       });  
+        } else {
+          document.getElementById('modal-mensalista').style.display = 'block';
+        }
+      })
+      .catch(error => {
+        console.error('Erro na requisição:', error);
+      });  
 
 }
 else
