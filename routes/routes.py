@@ -497,7 +497,8 @@ def exportar_pdf():
         data_inicio=data_inicio,
         data_fim=data_fim,
         categoria=categoria,
-        usuario=usuario
+        usuario=usuario,
+        isCasal=isCasal
     )
     
     viewer_url = f"https://docs.google.com/viewer?embedded=true&url={pdf_url}"
@@ -512,6 +513,8 @@ def gerar_pdf():
     data_fim = request.args.get('data_fim') 
     categoria = request.args.get('categoria') or 'Todas'
     usuario =request.args.get('usuario') or None
+    isCasal = request.args.get('isCasal') or 'N'
+
 
     # Busca os gastos ordenados do mais recente para o mais antigo
     gastos = gasto_bp.gasto_service.extrato_gastos(usuario,data_inicio,data_fim,categoria,isCasal)  
