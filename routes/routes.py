@@ -490,20 +490,40 @@ def exportar_pdf():
     data_fim = request.args.get('data_fim') or hoje.strftime('%Y-%m-%d')
     categoria = request.args.get('categoria') or 'Todas'
 
-    # Monta a URL do PDF com os filtros
-    pdf_url = url_for(
-        'gasto.gerar_pdf',
-        _external=True,
-        data_inicio=data_inicio,
-        data_fim=data_fim,
-        categoria=categoria,
-        usuario=usuario,
-        isCasal=isCasal
-    )
-    
-    viewer_url = f"https://docs.google.com/viewer?embedded=true&url={pdf_url}"
+     # Busca os gastos ordenados do mais recente para o mais antigo
+    gastos = gasto_bp.gasto_service.extrato_gastos(usuario,data_inicio,data_fim,categoria,isCasal)  
 
-    return redirect(viewer_url)
+    soma_gastos = 0
+
+    soma_gastos = sum(gasto[2] for gasto in gastos)
+
+    html = render_template("extrato_pdf.html", dados=gastos,soma_gastos=soma_gastos)
+    output = BytesIO()
+    pisa.CreatePDF(html, dest=output)
+    output.seek(0)
+
+    return send_file(
+        output,
+        mimetype='application/pdf',
+        as_attachment=True,
+        download_name='extrato.pdf'
+    )
+
+    # # Monta a URL do PDF com os filtros
+    # pdf_url = url_for(
+    #     'gasto.gerar_pdf',
+    #     _external=True,
+    #     data_inicio=data_inicio,
+    #     data_fim=data_fim,
+    #     categoria=categoria,
+    #     usuario=usuario,
+    #     isCasal=isCasal
+    # )
+    
+    # viewer_url = f"https://docs.google.com/viewer?embedded=true&url={pdf_url}"
+
+    # return redirect(viewer_url)
+
 
 @gasto_bp.route('/gerar/pdf')
 def gerar_pdf():    
