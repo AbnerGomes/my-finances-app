@@ -106,15 +106,15 @@ function filtrarGastosMensais(isCasal) {
     //document.getElementById('total').style.display='none'
     
 
-    let name = document.getElementById('current-username').textContent;
-    let texto = document.getElementById('current-username').innerHTML;
-    console.log(name);
-    console.log(texto);
+    // let name = document.getElementById('current-username').textContent;
+    // let texto = document.getElementById('current-username').innerHTML;
+    // console.log(name);
+    // console.log(texto);
 
-    if (name == 'analidiacadribeiro28') {    
-        const modal_mo = document.getElementById('modal-mo');
-        modal_mo.style.display = 'block';  
-    }
+    // if (name == 'analidiacadribeiro28') {    
+    //     const modal_mo = document.getElementById('modal-mo');
+    //     modal_mo.style.display = 'block';  
+    // }
 
 
 filtrarGastos('mesatual','N');
@@ -308,39 +308,53 @@ console.log('okokokokok')
       modal_mo.style.display = 'none'; 
    } 
 
+
   });
 
-  function toggleDropdown() {
-    const menu = document.getElementById('dropdown-menu');
-    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-  }
+//   function toggleDropdown() {
+//     const menu = document.getElementById('dropdown-menu');
+//     menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+//   }
 
-  function changeUser(name) {
-    document.getElementById('current-username').textContent = name;
-    document.getElementById('dropdown-menu').style.display = 'none';
-
-    let isCasal = name == 'Casal' ? 'S' : 'N'
-
-    
-
-    //carrega os dados do casal
-    filtrarGastos('mesatual',isCasal)
-    filtrarGastosMensais(isCasal)
-
-    if (isCasal == 'S') {
-        document.getElementById('user-icon').textContent = 'people';
-    }
-    else{
-        document.getElementById('user-icon').textContent = 'person';
-    }
-
-  }
+  
 
   // Fecha dropdown se clicar fora
-  document.addEventListener('click', function (event) {
-    const dropdown = document.querySelector('.dropdown');
-    if (!dropdown.contains(event.target)) {
-      document.getElementById('dropdown-menu').style.display = 'none';
-    }
-  });
+//   document.addEventListener('click', function (event) {
+//     const dropdown = document.querySelector('.dropdown');
+//     if (!dropdown.contains(event.target)) {
+//       document.getElementById('dropdown-menu').style.display = 'none';
+//     }
+//   });
 
+
+
+
+// function toggleDropdown() {
+//     const menu = document.getElementById('dropdown-menu');
+//     menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+//   }
+
+  function toggleModeDropdown() {
+   
+    const submenu = document.getElementById("mode-dropdown");
+    submenu.style.display = submenu.style.display === "block" ? "none" : "block";
+  }
+  function changeMode(isCasal){
+    //mode = document.getElementById('dropMode').innerText;
+
+    //if (mode ==='Casal' || mode == 'Individual'){
+        //carrega os dados do casal
+        filtrarGastos('mesatual',isCasal)
+        filtrarGastosMensais(isCasal)
+
+        if (isCasal == 'S') {
+            document.getElementById('user-icon').textContent = 'people';
+            document.getElementById('user-icon1').textContent = 'people';
+        }
+        else{
+            document.getElementById('user-icon1').textContent = 'person';
+            document.getElementById('user-icon').textContent = 'person';
+        }
+   // }
+
+  }

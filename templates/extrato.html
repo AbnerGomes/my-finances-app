@@ -24,18 +24,37 @@
         <div class="user-info">
           <div class="dropdown">
             <div class="dropdown-toggle" onclick="toggleDropdown()">
-              <span id="user-icon" class="material-icons user-icon">{{ 'person' if isCasal != 'S' else 'people' }}</span>
-              <span id="current-username" class="user-name">
-                {{ usuario.split('@')[0] if isCasal != 'S' else 'Casal' }}
-              </span>
-              <span class="material-icons dropdown-icon">expand_more</span>
+              <span class="material-icons user-icon">{% if isCasal == 'N' %}person {% else %} people {% endif %}</span>
             </div>
         
-            <div id="dropdown-menu" class="dropdown-menu">
-              {% if temConjuge  %}
-              <div class="dropdown-item" onclick="changeUser('Casal')">Casal</div>
-              {% endif %}
-              <div class="dropdown-item" onclick="changeUser('{{ usuario.split('@')[0] }}')">{{ usuario.split('@')[0] }}</div>
+            <div id="main-dropdown" class="dropdown-menu">
+              <div class="profile-header">
+                <span  id="user-icon" class="material-icons profile-icon">{% if isCasal == 'N' %}person {% else %} people {% endif %}</span>
+                <div  id="current-username"  class="profile-name">{{ usuario.split('@')[0] | upper }}</div>
+              </div>
+        
+              <div class="dropdown-item" onclick="toggleModeDropdown()">
+                Modo
+                <span class="material-icons">expand_more</span>
+              </div>
+        
+              <!-- submenu do modo -->
+              <div id="mode-dropdown" class="dropdown-submenu">
+                {% if temConjuge %}
+                <div class="dropdown-item" onclick="changeMode('S')">Casal</div>
+                {% endif %}
+                <div class="dropdown-item" onclick="changeMode('N')">Individual</div>
+              </div>
+        
+              <div class="dropdown-item">
+                Idioma
+                <div class="language-selector">
+                  <span>Português</span>
+                  <img src="https://flagcdn.com/w40/br.png" alt="BR" width="16" />
+                </div>
+              </div>
+        
+              <div class="dropdown-item" onclick="signOut()">Sign out</div>
             </div>
           </div>
         </div>
@@ -123,7 +142,7 @@
                     <tr class="gasto"
                     data-id="{{ gasto[4] }}"
                      
-                     style="background-color: {% if  gasto[5]  == 'S' %}rgba(247, 236, 247, 0.65){% else %}rgba(222, 251, 255, 0.65) {% endif %}; line-height: 1.6;"
+                     style="background-color: {% if  gasto[5]  == 'S' %}rgba(247, 236, 247, 0.65){% else %}rgba(128, 255, 238, 0.25) {% endif %}; line-height: 1.6;"
                      >
                         <td>{{ gasto[0] }}</td>
                         <td>{{ gasto[1] }}</td>
@@ -164,34 +183,19 @@
         </table>
 
         <div style="text-align: right; margin-top: 10px;">
+
+          <button class="btn-left">Adicionar Gasto</button> 
+
             <a href="{{ url_for('gasto.exportar_excel', data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria')) }}" class="button-detalhes" style="background: linear-gradient(135deg, #28a745, #218838);">Exportar Excel</a>
 
             <a id="enviapdf" href="{{ url_for('gasto.exportar_pdf', data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria')) }}" class="button-detalhes" style="background: linear-gradient(135deg, #e04b4bc9, #e62121);">Exportar PDF</a>
         </div>
 
 
-        <!-- Paginação -->
-        <div class="pagination">
+        <!-- Paginação  REMOVIDO PAGINACAO-->
+     
 
-                <!-- <a href="{{ url_for('gasto.cadastrar_gasto') }}"><button class="btn-left">Adicionar Gasto</button></a>  -->
-                <button class="btn-left">Adicionar Gasto</button> 
-            {% if page > 1 %}
-                <!-- <a href="{{ url_for('gasto.extrato', page=page-1) }}" class="button">← Anterior</a> -->
-                <a href="{{ url_for('gasto.extrato', page=page-1, data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria')) }}" class="button">← Anterior</a>
-
-            {% endif %}
-            
-            <span>Página {{ page }}</span>
-
-            {% if total > page * per_page %}
-                <!-- <a href="{{ url_for('gasto.extrato', page=page+1) }}" class="button">Próxima →</a> -->
-                <a href="{{ url_for('gasto.extrato', page=page+1, data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria')) }}" class="button">Próxima →</a>
-
-            {% endif %}
-            <!-- <a href="{{ url_for('gasto.index') }}" class="button-detalhes">Voltar</a> -->
-        </div>
-
-        
+        <br><br><br><br>
     </div>
 
     <div class="footer-bar">

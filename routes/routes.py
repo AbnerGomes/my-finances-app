@@ -152,8 +152,8 @@ def extrato():
     if request.method == 'GET':
         isCasal =request.args.get('isCasal')
 
-    page = request.args.get('page', 1, type=int)  # Obtém o número da página (padrão é 1)
-    per_page = 12  # Número de gastos por página
+    #page = request.args.get('page', 1, type=int)  # Obtém o número da página (padrão é 1)
+    #per_page = 12  # Número de gastos por página
     
      # pega data atual
     hoje = date.today()
@@ -169,22 +169,22 @@ def extrato():
 
     total_gastos = len(gastos)
 
-    start = (page - 1) * per_page
-    end = start + per_page
+    #start = (page - 1) * per_page
+    #end = start + per_page
 
-    gastos_pagina = gastos[start:end]
+    #gastos_pagina = gastos[start:end]
 
     # Agrupar os gastos por data
     gastos_agrupados = defaultdict(list)
-    for gasto in gastos_pagina:
-        data = gasto[3]  # Supondo que o 4º item (índice 3) seja a data
-        gastos_agrupados[data].append(gasto)
+    for gasto in gastos:
+       data = gasto[3]  # Supondo que o 4º item (índice 3) seja a data
+       gastos_agrupados[data].append(gasto)
 
 
     # lista de categorias
     categorias = gasto_bp.gasto_service.get_categorias_disponiveis(usuario)
 
-    gastos_pagina = gastos[start:end]
+    #gastos_pagina = gastos[start:end]
 
     soma_gastos = 0
 
@@ -194,12 +194,15 @@ def extrato():
     #verifica se é conta casal e exibe dropdon
     tem_conjuge = gasto_bp.gasto_service.tem_conjuge(usuario)
 
+    if isCasal is None:
+        isCasal ='N'
+
     return render_template(
         'extrato.html',
         gastos_agrupados=gastos_agrupados,
-        page=page,
+        #page=page,
         total=total_gastos,
-        per_page=per_page,
+        #per_page=per_page,
         now=datetime.now(),
         data_inicio=data_inicio,
         data_fim=data_fim,
@@ -333,13 +336,21 @@ def despesas():
 
     tem_conjuge = despesa_bp.despesa_service.tem_conjuge(usuario)
 
+    soma_despesas = 0
+
+    soma_despesas = sum(despesa[2] for despesa in despesas)
+
+    if isCasal is None:
+        isCasal ='N'
+
     return render_template(
         'despesas.html',
         despesas=despesas,
         mes_ano=mes_ano_str[-7:]  # yyyy-mm para o input month
         ,usuario=usuario,
         isCasal=isCasal,
-        temConjuge=tem_conjuge
+        temConjuge=tem_conjuge,
+        somaDespesas=soma_despesas
     )
 
 @despesa_bp.route('/atualizar_status', methods=['POST'])

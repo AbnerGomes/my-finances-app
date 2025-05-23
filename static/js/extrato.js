@@ -47,6 +47,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    //validacao icone de casal
+
 });
 
 
@@ -213,3 +215,6 @@ document.getElementById("enviapdf").addEventListener("click", function (e) {
   link.click();
   document.body.removeChild(link);
 });
+
+
+
