@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, redirect, url_for, request, flash,jsonify, send_file, request
+from flask import Blueprint, render_template, session, redirect, url_for, request, flash,jsonify, send_file, request, Response
 from service.gasto_service import GastoService
 from io import BytesIO
 import pandas as pd
@@ -460,8 +460,9 @@ def exportar_excel():
     # Busca os gastos ordenados do mais recente para o mais antigo
     gastos = gasto_bp.gasto_service.extrato_gastos(usuario,data_inicio,data_fim,categoria,isCasal)  
 
-    colunas = [ 'categoria', 'gasto' ,'valor','data','id']  # ajuste conforme sua estrutura real
-    df = pd.DataFrame(gastos,columns=colunas)
+    colunas = [ 'categoria', 'gasto' ,'valor','data'] 
+    gastos_filtrados = [g[:4] for g in gastos]
+    df = pd.DataFrame(gastos_filtrados,columns=colunas)
     output = BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         df.to_excel(writer, index=False, sheet_name='Extrato')
@@ -472,6 +473,15 @@ def exportar_excel():
 
 @gasto_bp.route('/exportar/pdf')
 def exportar_pdf():
+    # monta a URL pública do PDF com os mesmos parâmetros
+    pdf_url = url_for('gasto.gerar_pdf', _external=True, **request.args)
+    
+    viewer_url = f"https://docs.google.com/viewer?embedded=true&url={pdf_url}"
+
+    return redirect(viewer_url)
+
+@gasto_bp.route('/gerar/pdf')
+def gerar_pdf():    
     usuario = session['usuario']
 
     if request.is_json:
@@ -501,8 +511,14 @@ def exportar_pdf():
     pisa.CreatePDF(html, dest=output)
     output.seek(0)
 
-    return send_file(output, download_name='extrato.pdf', as_attachment=True)
+    # response = Response(output.getvalue(), mimetype='application/pdf')
+    # response.headers['Content-Disposition'] = 'inline; filename=extrato.pdf'
+    # return response
 
+    # return redirect(f"https://docs.google.com/viewer?embedded=true&url={url_for('gasto.exportar_pdf', _external=True)}")
+
+    # return send_file(output, download_name='extrato.pdf', as_attachment=True)
+    return send_file(output, mimetype='application/pdf', download_name='extrato.pdf')
 
 @gasto_bp.route('/valida_mensalista', methods=['GET'], strict_slashes=False)
 def valida_mensalista():
