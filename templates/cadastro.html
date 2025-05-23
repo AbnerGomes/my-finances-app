@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Usuário</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/cadastro_usu.css') }}">
+    <script src="static/js/cadastro.js" defer></script>
 </head>
 <body>
     <div class="container">
@@ -21,7 +22,10 @@
         <h3>Cadastro de Usuário</h3>
         <form class="form-box" action="{{ url_for('gasto.cadastro') }}" method="POST">
           <!-- <div class="validate-input" data-validate = "Um email válido deve conter: algumacoisa@algumaoutracoisa.c"> -->
-          <input type="email" name="email" placeholder="Email" required >
+            <input type="text" name="nome" placeholder="Nome" required >
+            <input type="email" name="email" placeholder="Email" required >
+            
+            <input type="text" id="telefone" name="telefone" maxlength="15"  placeholder="Telefone" required >
             <input type="password" name="senha" placeholder="Senha" required>
         <!-- </div> -->
             <br><br>

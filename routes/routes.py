@@ -58,10 +58,14 @@ def login_post():
         print(usuario)
         senha = request.form['senha']
         print(senha)
-        if gasto_bp.gasto_service.validar_login(usuario, senha):
-            session['usuario'] = usuario
+
+        usuario_bd =  gasto_bp.gasto_service.validar_login(usuario, senha)
+
+        if usuario_bd is not None:
             
-            dados = gasto_bp.gasto_service.filtrarGastos('mesatual',usuario,'N')
+            session['usuario'] = usuario_bd
+            
+            dados = gasto_bp.gasto_service.filtrarGastos('mesatual',usuario_bd,'N')
 
             total_gasto = sum([
                 float(item.get('valor', 0)) 
@@ -203,7 +207,7 @@ def extrato():
         soma_gastos=soma_gastos
         ,usuario =usuario,
         isCasal=isCasal,
-        temConjue=tem_conjuge
+        temConjuge=tem_conjuge
     )
 
 
@@ -238,8 +242,10 @@ def cadastro():
     if request.method == "POST":
         usuario = request.form["email"]
         senha = request.form["senha"]
+        nome = request.form["nome"]
+        telefone = request.form["telefone"]
 
-        dados = gasto_bp.gasto_service.valida_usuario_existente(usuario,senha)   
+        dados = gasto_bp.gasto_service.valida_usuario_existente(usuario,senha,nome,telefone)   
         
         if dados:
             flash("Usuário já existe! 🤦🏽‍♂️")
