@@ -200,3 +200,16 @@ form.addEventListener('submit', function(e) {
 });
 
 
+//baixar pdf force
+document.getElementById("enviapdf").addEventListener("click", function (e) {
+  e.preventDefault(); // evita que o link redirecione a página
+
+  const url = this.href; // pega a URL completa já montada no atributo href
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "extrato.pdf";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+});
