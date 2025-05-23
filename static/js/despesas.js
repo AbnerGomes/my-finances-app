@@ -134,7 +134,7 @@ else
     document.getElementById('editar-id').value = id;
 
     const modal = document.getElementById('modal-editar');
-    modal.style.display = 'flex';
+    modal.style.display = 'block';
   }
 
    //cadastrar 
