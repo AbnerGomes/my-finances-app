@@ -16,7 +16,7 @@
 	<meta property="og:image" content="https://my-financess-app.onrender.com/static/images/favicon.ico">
 	<meta property="og:url" content="https://my-financess-app.onrender.com">
 	<meta property="og:type" content="website">
-
+  <script src="static/js/comum.js" defer></script>
 </head>
 <body>
  
@@ -26,7 +26,7 @@
       <span class="company-name">A&A - Finance Dashboard</span>
     </div>
   
-    <div class="user-info">
+    <!-- <div class="user-info">
       <div class="dropdown">
         <div class="dropdown-toggle" onclick="toggleDropdown()">
           
@@ -43,7 +43,46 @@
           <div class="dropdown-item" onclick="changeUser('{{ usuario.split('@')[0] }}')">{{ usuario.split('@')[0] }}</div>
         </div>
       </div>
+    </div> -->
+
+    <div class="user-info">
+      <div class="dropdown">
+        <div class="dropdown-toggle" onclick="toggleDropdown()">
+          <span id="user-icon1" class="material-icons user-icon">person</span>
+        </div>
+    
+        <div id="main-dropdown" class="dropdown-menu">
+          <div class="profile-header">
+            <span  id="user-icon" class="material-icons profile-icon">person</span>
+            <div  id="current-username"  class="profile-name">{{ usuario.split('@')[0] | upper }}</div>
+          </div>
+    
+          <div id="dropMode" class="dropdown-item" onclick="toggleModeDropdown()">
+            Modo
+            <span class="material-icons">expand_more</span>
+          </div>
+    
+          <!-- submenu do modo -->
+          <div id="mode-dropdown" class="dropdown-submenu">
+            {% if temConjuge %}
+            <div class="dropdown-item" onclick="changeMode('S')">Casal</div>
+            {% endif %}
+            <div class="dropdown-item" onclick="changeMode('N')">Individual</div>
+          </div>
+    
+          <div class="dropdown-item">
+            Idioma
+            <div class="language-selector">
+              <span>Português</span>
+              <img src="https://flagcdn.com/w40/br.png" alt="BR" width="16" />
+            </div>
+          </div>
+    
+          <div class="dropdown-item" onclick="signOut()">Sign out</div>
+        </div>
+      </div>
     </div>
+    
     
   </div>
   
@@ -146,5 +185,6 @@
 {% endif %}
 
   <script src="static/js/scripts.js" defer></script>
+  <!-- <script src="static/js/comum.js" defer></script> -->
 </body>
 </html>

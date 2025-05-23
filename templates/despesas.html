@@ -24,18 +24,37 @@
     <div class="user-info">
       <div class="dropdown">
         <div class="dropdown-toggle" onclick="toggleDropdown()">
-          <span id="user-icon" class="material-icons user-icon">{{ 'person' if isCasal != 'S' else 'people' }}</span>
-          <span id="current-username" class="user-name">
-            {{ usuario.split('@')[0] if isCasal != 'S' else 'Casal' }}
-          </span>
-          <span class="material-icons dropdown-icon">expand_more</span>
+          <span class="material-icons user-icon">{% if isCasal == 'N' %}person {% else %} people {% endif %}</span>
         </div>
     
-        <div id="dropdown-menu" class="dropdown-menu">
-          {% if temConjuge  %}
-          <div class="dropdown-item" onclick="changeUser('Casal')">Casal</div>
-          {% endif %}
-          <div class="dropdown-item" onclick="changeUser('{{ usuario.split('@')[0] }}')">{{ usuario.split('@')[0] }}</div>
+        <div id="main-dropdown" class="dropdown-menu">
+          <div class="profile-header">
+            <span  id="user-icon" class="material-icons profile-icon">{% if isCasal == 'N' %}person {% else %} people {% endif %}</span>
+            <div  id="current-username"  class="profile-name">{{ usuario.split('@')[0] | upper }}</div>
+          </div>
+    
+          <div class="dropdown-item" onclick="toggleModeDropdown()">
+            Modo
+            <span class="material-icons">expand_more</span>
+          </div>
+    
+          <!-- submenu do modo -->
+          <div id="mode-dropdown" class="dropdown-submenu">
+            {% if temConjuge %}
+            <div class="dropdown-item" onclick="changeMode('S')">Casal</div>
+            {% endif %}
+            <div class="dropdown-item" onclick="changeMode('N')">Individual</div>
+          </div>
+    
+          <div class="dropdown-item">
+            Idioma
+            <div class="language-selector">
+              <span>Português</span>
+              <img src="https://flagcdn.com/w40/br.png" alt="BR" width="16" />
+            </div>
+          </div>
+    
+          <div class="dropdown-item" onclick="signOut()">Sign out</div>
         </div>
       </div>
     </div>
@@ -138,6 +157,16 @@
       </tr>
       {% endfor %}
     </tbody>
+    <tfoot>
+      <tr>
+          <td colspan="4" style="text-align: left; font-weight: bold;">Total do período:</td>
+          <td></td>
+          <td colspan="3" style="font-weight: bold;">
+              R$ {{ '%.2f' | format(somaDespesas) }}
+          </td>
+      </tr>
+      
+  </tfoot>
   </table>
 </div>
   <div class="button-container">
