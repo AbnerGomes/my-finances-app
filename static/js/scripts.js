@@ -172,7 +172,7 @@ barChart = new Chart(ctxBar, {
       datasets: [{
           label: 'Gastos Mensais (R$)',
           data: [100, 5000, 1500, 10000, 1800, 600, 20],
-          backgroundColor: ['#003f5c','#003f5c','#003f5c','#003f5c','#003f5c','#003f5c','#003f5c'], // Cores suaves
+          backgroundColor: ['#0abfa7','#0abfa7','#0abfa7','#0abfa7','#0abfa7','#0abfa7','#0abfa7'], // Cores suaves
           borderColor: '#F1F1F1', // Borda suave
           borderWidth: 1
       }]
@@ -220,7 +220,7 @@ barChart = new Chart(ctxBar, {
               title: {
                   display: false,
                   text: 'Valor Gasto (R$)',
-                  color: '#2E3B55',
+                  color: '#2ECC71',
                   font: {
                       size: 12,
                       weight: 'bold'

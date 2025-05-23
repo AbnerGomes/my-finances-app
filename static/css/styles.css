@@ -279,7 +279,7 @@ body {
   }
 
   .period-button {
-    background: linear-gradient(135deg, #105c80, #003f5c);
+    background: linear-gradient(135deg, #5be9d6, #0abfa7);
     color: white;
     font-size: 9px;
     font-weight: 800;
@@ -292,12 +292,12 @@ body {
   }
 
   .period-button:hover {
-    background: linear-gradient(135deg, #0f5575, #003f5c);
+    background: linear-gradient(135deg, #5be9d6, #0abfa7);
     transform: translateY(-3px)
   }
 
    .period-button.active {
-    background: linear-gradient(135deg, #155872, #123e5c);
+    background: linear-gradient(135deg, #5be9d6, #0abfa7);
     color: white;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   } 

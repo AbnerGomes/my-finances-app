@@ -5,7 +5,8 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: #003f5c; /* Verde moderninho */
+    /* background-color: #003f5c; Verde moderninho */
+    background-color: #0abfa7; /*#3ABF7F;*/
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -50,7 +51,7 @@
     left: 0;
     width: 100%;
     /* background-color: #009688; */
-    background-color: #003f5c;
+    background-color: #0abfa7;
     display: flex;
     justify-content: left; /* Centraliza o bloco logo + texto */
     align-items: left;
@@ -97,7 +98,7 @@
   
 
   .footer-btn.active {
-    background-color: #003f5c; /* cor levemente mais escura para o botão ativo */
+    background-color: #0abfa7; /* cor levemente mais escura para o botão ativo */
     /* border-radius: 10px; */
     transform: translateY(-6px);
     /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); */

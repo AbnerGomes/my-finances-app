@@ -132,14 +132,14 @@ document.addEventListener('click', function (event) {
       modal.style.display = 'block';
     }
   
-    //cadastro ok  
-    if (event.target && event.target.classList.contains('botao-salvar')) {
-      const modal_ok = document.getElementById('modal-cadastro-ok');
-      const modal_cad = document.getElementById('modal-cadastrar');
-      modal_cad.style.display = 'none';
-      modal_ok.style.display = 'block';
+  //   //cadastro ok  
+  //   if (event.target && event.target.classList.contains('botao-salvar')) {
+  //     const modal_ok = document.getElementById('modal-cadastro-ok');
+  //     const modal_cad = document.getElementById('modal-cadastrar');
+  //     modal_cad.style.display = 'none';
+  //     modal_ok.style.display = 'block';
   
-   }
+  //  }
 
     // Fechar o modal quando clicar no botão de fechar ou fora do modal
     const fecharModal = document.getElementById('fechar-modal');

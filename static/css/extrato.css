@@ -16,7 +16,7 @@ table {
 }
 
 thead {
-    background-color: #003f5c;
+    background-color: #0abfa7;
     color: white;
 }
 
@@ -36,7 +36,7 @@ tbody tr:hover {
 }
 
 tfoot td {
-    background-color: #003f5c;
+    background-color: #0abfa7;
     font-weight: bold;
     color: white;
 }
@@ -65,7 +65,7 @@ tfoot td {
     display: inline-block;
     padding: 10px 15px;
     text-decoration: none;
-    background: linear-gradient(135deg, #13648a, #003f5c);
+    background: linear-gradient(135deg, #4ee7d3, #0abfa7);
     color: white;
     border-radius: 5px;
     margin: 5px;
@@ -110,29 +110,29 @@ tfoot td {
 select, #categoria {
     /* padding: 8px 12px; */
     padding: 4px 120px 7px 11px;
-    border: 1px solid #003f5c;
+    border: 1px solid #038b79;
     border-radius: 6px;
     background-color: #f0fafa;
     font-size: 10px;
-    color: #003f5c;
+    color: #0abfa7;
     margin-right: 10px;
     transition: border 0.3s ease;
     margin-bottom: 5px;
 }
 
 select, #categoria:focus {
-    border-color: #003f5c;
+    border-color: #0abfa7;
     outline: none;
 }
 
 /* Estilo do campo de data */
 input#periodo-picker {
     padding: 8px 12px;
-    border: 1px solid #003f5c;
+    border: 1px solid #046e60;
     border-radius: 6px;
     background-color: #f0fafa;
     font-size: 10px;
-    color: #003f5c;
+    color: #0abfa7;
     width: 220px;
     margin-right: 10px;
 }
@@ -144,13 +144,13 @@ input#periodo-picker:focus {
 
 
 .botao-filtrar {
-    background-color: #003f5c;
+    background-color: #0abfa7;
     color: white;
     border: none;
     cursor: pointer;
     font-size: medium;
     text-decoration: none;
-    background: linear-gradient(135deg, #075b81, #0e506e);
+    background: linear-gradient(135deg, #4cf0da, #0abfa7);
     color: white;
     border-radius: 5px;
     transition: background-color 0.3s ease, transform 0.2s ease;
@@ -258,7 +258,7 @@ input#periodo-picker:focus {
   
   .botao-salvar, .btn-ok {
     width: 100%;
-    background-color: #003f5c;
+    background-color: #0abfa7;
     color: white;
     border: none;
     padding: 8px;
@@ -268,7 +268,7 @@ input#periodo-picker:focus {
   }
   
   .botao-salvar:hover {
-    background-color: #003f5c;
+    background-color: #0abfa7;
   }
   
   /* Responsivo (mobile first) */
@@ -343,7 +343,7 @@ input#periodo-picker:focus {
 
 
 .btn-left {
-  background: linear-gradient(135deg, #13648a, #003f5c);
+  background: linear-gradient(135deg, #61f0dd, #0abfa7);
   margin-right: 10px;
 }
 
