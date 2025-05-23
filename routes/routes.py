@@ -473,15 +473,6 @@ def exportar_excel():
 
 @gasto_bp.route('/exportar/pdf')
 def exportar_pdf():
-    # monta a URL pública do PDF com os mesmos parâmetros
-    pdf_url = url_for('gasto.gerar_pdf', _external=True, **request.args)
-    
-    viewer_url = f"https://docs.google.com/viewer?embedded=true&url={pdf_url}"
-
-    return redirect(viewer_url)
-
-@gasto_bp.route('/gerar/pdf')
-def gerar_pdf():    
     usuario = session['usuario']
 
     if request.is_json:
@@ -498,6 +489,29 @@ def gerar_pdf():
     data_inicio = request.args.get('data_inicio') or primeiro_dia.strftime('%Y-%m-%d')
     data_fim = request.args.get('data_fim') or hoje.strftime('%Y-%m-%d')
     categoria = request.args.get('categoria') or 'Todas'
+
+    # Monta a URL do PDF com os filtros
+    pdf_url = url_for(
+        'gasto.gerar_pdf',
+        _external=True,
+        data_inicio=data_inicio,
+        data_fim=data_fim,
+        categoria=categoria,
+        usuario=usuario
+    )
+    
+    viewer_url = f"https://docs.google.com/viewer?embedded=true&url={pdf_url}"
+
+    return redirect(viewer_url)
+
+@gasto_bp.route('/gerar/pdf')
+def gerar_pdf():    
+    print("#################GERAR################")
+    # Pega filtros da URL ou define padrão
+    data_inicio = request.args.get('data_inicio') 
+    data_fim = request.args.get('data_fim') 
+    categoria = request.args.get('categoria') or 'Todas'
+    usuario =request.args.get('usuario') or None
 
     # Busca os gastos ordenados do mais recente para o mais antigo
     gastos = gasto_bp.gasto_service.extrato_gastos(usuario,data_inicio,data_fim,categoria,isCasal)  
