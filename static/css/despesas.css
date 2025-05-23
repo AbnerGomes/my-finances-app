@@ -169,10 +169,11 @@ input#periodo-picker:focus {
     padding: 16px; /* Diminuí o padding */
     border-radius: 8px;
     width: 100%;
-    max-width: 240px; /* Diminui mais a largura */
+    max-width: 230px; /* Diminui mais a largura */
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
     position: relative;
     animation: fadeIn 0.2s ease-in-out;
+    
   }
   
   @keyframes fadeIn {
@@ -245,7 +246,7 @@ input#periodo-picker:focus {
   /* Responsivo (mobile first) */
   @media (max-width: 400px) {
     .modal-content {
-      padding: 10px; /* Menos padding para telas pequenas */
+      padding: 14px; /* Menos padding para telas pequenas */
       max-width: 90%;
     }
   
