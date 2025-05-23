@@ -7,13 +7,14 @@ class GastoService:
 
     def __init__(self):
         #self.db_path = db_path
-        self._create_db()
+        #self._create_db()
+        pass
 
     # def _conectar(self):
     #     return sqlite3.connect(self.db_path)
 
-    def _create_db(self):
-        print("ok")
+    # def _create_db(self):
+    #     print("ok")
         # os.makedirs('instance', exist_ok=True)  # Garante que a pasta instance existe
         # conn = get_connection()
         # cursor = conn.cursor()
@@ -30,9 +31,22 @@ class GastoService:
         # conn.commit()
         # conn.close()
 
+    def get_usuario_by_name(self,nome):
+        conn = get_connection()
+        c = conn.cursor()
+
+        c.execute('SELECT usuario from AUTENTICACAO where nome = %s',(nome,))
+        usuario = c.fetchall()
+        conn.close()
+
+        return usuario[0] if usuario else None 
+
 
     #função para verificar se exitem dados para o donut
     def verifica_dados_bd(self,usuario):
+
+        usuario = self.get_usuario_by_name(usuario)
+        
         # Verificar se há dados no banco
         conn = get_connection()
         c = conn.cursor()
@@ -58,6 +72,8 @@ class GastoService:
     # Função para salvar o gasto no banco
     def salvar_gasto(self,gasto, valor, data, categoria,usuario):
         try:
+            usuario = self.get_usuario_by_name(usuario)
+
             conn = get_connection()
             cursor = conn.cursor()
             cursor.execute('''
@@ -72,7 +88,10 @@ class GastoService:
 
 
 
-    def filtrarGastosMensais(self,usuario,isCasal):                
+    def filtrarGastosMensais(self,usuario,isCasal): 
+
+        usuario = self.get_usuario_by_name(usuario)
+
         conn = get_connection()
         cursor = conn.cursor()
 
@@ -129,6 +148,8 @@ class GastoService:
         try: 
             if periodo is None:
                 periodo='mesatual'
+
+            usuario = self.get_usuario_by_name(usuario)
 
             conn = get_connection()
             cursor = conn.cursor()
@@ -209,6 +230,9 @@ class GastoService:
             return ""
 
     def extrato_gastos(self,usuario,data_inicial,data_fim,categoria,isCasal):
+
+        usuario = self.get_usuario_by_name(usuario)
+        
         conn = get_connection()
         cursor = conn.cursor()
 
@@ -239,15 +263,19 @@ class GastoService:
 
     # Função para checar login
     def validar_login(self, usuario, senha):
+
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM AUTENTICACAO WHERE usuario=%s AND senha=%s AND ativo=1", (usuario, senha))
+        cursor.execute("SELECT nome FROM AUTENTICACAO WHERE usuario=%s AND senha=%s AND ativo=1", (usuario, senha))
         resultado = cursor.fetchone()
         conn.close()
 
-        return resultado is not None
+        return resultado[0] if resultado else None
 
-    def valida_usuario_existente(self, usuario, senha):
+    def valida_usuario_existente(self, usuario, senha,nome,telefone):
+
+        usuario = self.get_usuario_by_name(usuario)
+
         conn = get_connection()
         c = conn.cursor()
                 
@@ -257,13 +285,16 @@ class GastoService:
         dados = c.fetchone()
         if not dados:
             # Insere novo usuário
-            c.execute("INSERT INTO AUTENTICACAO (usuario, senha, ativo) VALUES (%s, %s, 1)", (usuario, senha))
+            c.execute("INSERT INTO AUTENTICACAO (usuario, senha, ativo, nome, telefone) VALUES (%s, %s, 1, %s, %s)", (usuario, senha,nome,telefone))
             conn.commit()
             conn.close()
         return dados   is not None  
 
 
     def get_categorias_disponiveis(self,usuario):
+
+        usuario = self.get_usuario_by_name(usuario)
+
         conn = get_connection()
         c = conn.cursor()
                 
@@ -276,6 +307,7 @@ class GastoService:
 
 
     def editar_gasto(self,gasto,categoria,valor,data,id):
+        
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("update gastos set gasto= %s , categoria = %s, valor_gasto = %s, data = %s WHERE id = %s", (gasto,categoria,valor,data,id,) )
@@ -291,6 +323,9 @@ class GastoService:
         conn.close()
 
     def tem_conjuge(self,usuario):
+
+        usuario = self.get_usuario_by_name(usuario)
+
         conn = get_connection()
         cursor = conn.cursor()
 

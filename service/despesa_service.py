@@ -9,8 +9,22 @@ class DespesaService:
         #self.db_path = db_path
         #self._create_db()
 
+    def get_usuario_by_name(self,nome):
+        conn = get_connection()
+        c = conn.cursor()
+
+        c.execute('SELECT usuario from AUTENTICACAO where nome = %s',(nome,))
+        usuario = c.fetchall()
+        conn.close()
+
+        return usuario[0] if usuario else None 
+
+
     # Função para salvar o gasto no banco
     def salvar_despesa(self,despesa, valor, data, categoria,usuario,tipo_despesa):
+
+        usuario = self.get_usuario_by_name(usuario)
+
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute('''
@@ -19,17 +33,6 @@ class DespesaService:
         ''', (despesa, valor, data, categoria,usuario,tipo_despesa))
         conn.commit()
         conn.close()
-
-
-    # Função para checar login
-    # def validar_login(self, usuario, senha):
-    #     conn = get_connection()
-    #     cursor = conn.cursor()
-    #     cursor.execute("SELECT * FROM AUTENTICACAO WHERE usuario=%s AND senha=%s AND ativo=1", (usuario, senha))
-    #     resultado = cursor.fetchone()
-    #     conn.close()
-
-    #     return resultado is not None
 
 
     def deletar_despesa(self, id_gasto):
@@ -41,6 +44,8 @@ class DespesaService:
 
 
     def busca_despesas(self,usuario,mes_ano,categoria,isCasal):
+        usuario = self.get_usuario_by_name(usuario)
+
         conn = get_connection()
         cursor = conn.cursor()
 
@@ -100,6 +105,9 @@ class DespesaService:
         conn.close()        
 
     def tem_conjuge(self,usuario):
+
+        usuario = self.get_usuario_by_name(usuario)
+
         conn = get_connection()
         cursor = conn.cursor()
 
