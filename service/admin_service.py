@@ -38,7 +38,7 @@ class AdminService:
 
     def valida_mensalista(self,usuario,mes_ano):
 
-        usuario = get_usuario_by_name(usuario)
+        usuario = self.get_usuario_by_name(usuario)
         
         conn = get_connection()
         cursor = conn.cursor()
