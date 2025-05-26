@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard de Receitas</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/receitas.css') }}">
+</head>
+<body>
+    <h1>Receitas</h1>
+
+  <!-- <div class="card filters"> -->
+    <form method="get" class="filters" action="/receitas">
+        <select name="mes" onchange="this.form.submit()">
+            <option disabled selected>Selecione o Mês</option>
+            {% for m in meses %}
+              <option value="{{ m }}" {% if m == mes_atual %}selected{% endif %}>{{ m|capitalize }}</option>
+            {% endfor %}
+          </select>
+        </form>
+  <!-- </div> -->
+
+  <div class="card" id="chart-container">
+    <canvas id="receitasChart" data-labels='{{ labels|tojson }}'
+    data-values='{{ values|tojson }}'></canvas>
+           
+            <div class="custom-legend" id="custom-legend"></div>
+        
+
+    <!-- <div class="legend-container" id="legend">
+       Legendas serão geradas pelo JS 
+    </div> -->
+  </div>
+
+  <div class="total-gasto">
+    Total Recebido no período: R$ <strong>{{ values | sum | round(2) }}</strong>
+  </div>
+
+
+  <button id="addReceitaBtn">Adicionar Receita</button>
+
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="fecharModal()">&times;</span>
+      <h2>Nova Receita</h2>
+      <form action="/salvar_receita" method="POST">
+        <label for="receita">Receita:</label>
+        <input type="text" name="receita" id="receita" required />
+  
+        <label for="valor">Valor:</label>
+        <input type="number" name="valor" id="valor" step="0.01" required />
+  
+        <label for="mes">Mês:</label>
+        <input type="text" name="mes" id="mes" placeholder="ex: maio" required />
+  
+        <button type="submit">Salvar</button>
+      </form>
+    </div>
+  </div>
+
+    <script src="static/js/receitas.js" defer></script>
+</body>
+</html>

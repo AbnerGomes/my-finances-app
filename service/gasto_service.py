@@ -338,3 +338,23 @@ class GastoService:
             return False
         else:
             return True    
+
+    def get_receitas_mes(self,usuario, mes_ano,categorias):
+        conn = get_connection()
+        cursor = conn.cursor()        
+
+        query = """SELECT  origem, sum(valor), mes_referencia 
+        FROM receitas r inner join usuarios u on r.id_usuario = u.id 
+        WHERE %s IN (u.nome )
+        and mes_referencia = %s
+        and (origem in (%s) or %s = 'Todas')
+        group by origem, mes_referencia"""
+
+        cursor.execute(query, (usuario,mes_ano,categorias,categorias))
+        
+        resultado = cursor.fetchall()
+        conn.close()
+
+        return  resultado
+        
+        

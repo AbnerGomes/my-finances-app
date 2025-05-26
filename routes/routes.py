@@ -13,6 +13,8 @@ from service.despesa_service import DespesaService
 
 from service.admin_service import AdminService
 
+import locale
+
 gasto_bp = Blueprint('gasto', __name__)
 despesa_bp = Blueprint('despesa', __name__)
 admin_bp = Blueprint('admin', __name__)
@@ -648,3 +650,36 @@ def metas():
         }
     ]
     return render_template("metas.html", cards=cards,usuario='Abner Gomes',isCasal='N')
+
+
+@gasto_bp.route('/receitas')
+def receitas():
+    mes = request.args.get('mes', '05-2025')
+    categorias = request.args.getlist('categorias') or 'Todas'
+
+    categorias = categorias.format(','.join('?' * len(categorias)))
+
+    usuario = session['usuario']
+
+    resultados = gasto_bp.gasto_service.get_receitas_mes(usuario,mes,categorias)
+
+    todas_categorias = sorted([row[0] for row in resultados])
+
+    labels = [r[0].capitalize() for r in resultados]
+    values = [float(r[1]) for r in resultados]
+
+    locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')  # Pode variar conforme o sistema
+
+    data = datetime.strptime(mes, '%m-%Y')
+
+    mes_nome = data.strftime('%B')  # 'maio'
+
+    meses = ['janeiro', 'fevereiro', 'marco', 'abril','maio']  # Adicione os demais
+
+    return render_template('receitas.html',
+                           labels=labels,
+                           values=values,
+                           meses=meses,
+                           mes_atual=mes_nome,
+                           categorias=categorias,
+                           todas_categorias=todas_categorias)
