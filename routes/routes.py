@@ -668,7 +668,11 @@ def receitas():
     labels = [r[0].capitalize() for r in resultados]
     values = [float(r[1]) for r in resultados]
 
-    locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')  # Pode variar conforme o sistema
+    try:
+        locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+    except locale.Error:
+        # fallback para padrão do sistema
+        locale.setlocale(locale.LC_TIME, '')
 
     data = datetime.strptime(mes, '%m-%Y')
 
@@ -699,7 +703,11 @@ def salvar_receita():
     valor = data.get("valor")
     mes = data.get("mes")
 
-    locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')  # Pode variar conforme o sistema
+    try:
+        locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+    except locale.Error:
+        # fallback para padrão do sistema
+        locale.setlocale(locale.LC_TIME, '')
 
     mes_referencia = datetime.strptime(mes, '%B') 
 
@@ -725,7 +733,11 @@ def dados_receitas():
 
     mes = request.args.get("mes")
 
-    locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')  # Pode variar conforme o sistema
+    try:
+        locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+    except locale.Error:
+        # fallback para padrão do sistema
+        locale.setlocale(locale.LC_TIME, '')
 
     mes_referencia = datetime.strptime(mes, '%B') 
 
