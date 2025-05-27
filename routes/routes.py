@@ -676,10 +676,72 @@ def receitas():
 
     meses = ['janeiro', 'fevereiro', 'marco', 'abril','maio']  # Adicione os demais
 
+    #verifica se é conta casal e exibe dropdon
+    tem_conjuge = gasto_bp.gasto_service.tem_conjuge(usuario)
+
     return render_template('receitas.html',
+                           usuario=usuario,
+                           temConjuge=tem_conjuge,
                            labels=labels,
                            values=values,
                            meses=meses,
                            mes_atual=mes_nome,
                            categorias=categorias,
                            todas_categorias=todas_categorias)
+
+@gasto_bp.route('/salvar_receita', methods=['GET','POST'], strict_slashes=False)
+def salvar_receita():
+
+    usuario = session['usuario']
+
+    data = request.get_json()
+    origem = data.get("receita")
+    valor = data.get("valor")
+    mes = data.get("mes")
+
+    locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')  # Pode variar conforme o sistema
+
+    mes_referencia = datetime.strptime(mes, '%B') 
+
+    # Formata para 'mm-yyyy'
+    mes_formatado = str(mes_referencia.month) + '-2025'
+
+    if len(mes_formatado) == 6:
+        mes_formatado = '0' + mes_formatado
+
+    # Salve no banco (exemplo com SQLAlchemy ou seu método atual)
+    try:
+        if gasto_bp.gasto_service.salvar_receita(usuario,mes_formatado,origem,valor) is True:
+            return jsonify({"success": True})
+        else:
+            return jsonify({"alert": False})    
+    except Exception as e:
+        return str(e), 500                           
+
+
+@gasto_bp.route('/dados_receitas', methods=['GET'], strict_slashes=False)
+def dados_receitas():
+    usuario = session['usuario']
+
+    mes = request.args.get("mes")
+
+    locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')  # Pode variar conforme o sistema
+
+    mes_referencia = datetime.strptime(mes, '%B') 
+
+    # Formata para 'mm-yyyy'
+    mes_formatado = str(mes_referencia.month) + '-2025'
+
+    if len(mes_formatado) == 6:
+        mes_formatado = '0' + mes_formatado
+
+    receitas = gasto_bp.gasto_service.get_receitas_mes(usuario,mes_formatado,'Todas')
+
+    dados = {}
+    for r in receitas:
+        dados[r[0]] = dados.get(r[0], 0) + r[1]
+
+    return jsonify({
+        "labels": list(dados.keys()),
+        "values": list(dados.values())
+    })

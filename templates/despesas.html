@@ -115,7 +115,7 @@
     <tbody>
         {% for despesa in despesas %}
       <tr data-data="{{ despesa[3] }}" data-id="{{ despesa[6] }}"
-      {% if despesa[5] == 'FIXA' %} class="linha-fixa" {% endif %}
+      {% if despesa[5] == 'FIXA' %} class="linha-fixa-REMOVIDO" {% endif %}
       style="background-color: {% if  despesa[7]  == 'S' %}rgba(247, 236, 247, 0.65){% else %}rgba(222, 251, 255, 0.65)
       {% endif %}; line-height: 1.6;"
       >
@@ -135,7 +135,7 @@
               </select>
         </td>
         <td class="icones">
-          {% if despesa[5] != 'FIXA' %}
+          {% if despesa[5] != 'FIXA-REMOVIDO' %}
             <i class="fas fa-edit edit-icon"
             data-data="{{ despesa[3] }}"
             data-categoria="{{ despesa[0] }}"
@@ -146,7 +146,7 @@
           {% endif %}
       </td>
       <td class="icones">
-        {% if despesa[5] != 'FIXA' %}
+        {% if despesa[5] != 'FIXA-REMOVIDO' %}
           <i class="fa-solid fa-trash"
           data-id="{{ despesa[6] }}"
           ></i>

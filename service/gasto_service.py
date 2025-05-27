@@ -41,6 +41,16 @@ class GastoService:
 
         return usuario[0] if usuario else None 
 
+    def get_id_usuario_by_name(self,nome):
+        conn = get_connection()
+        c = conn.cursor()
+
+        c.execute('SELECT id from usuarios where nome = %s',(nome,))
+        usuario = c.fetchall()
+        conn.close()
+
+        return usuario[0] if usuario else None 
+
 
     #função para verificar se exitem dados para o donut
     def verifica_dados_bd(self,usuario):
@@ -358,4 +368,19 @@ class GastoService:
 
         return  resultado
         
-        
+    def salvar_receita(self, usuario, mes,origem,valor):
+
+        try:
+            id_usuario = self.get_id_usuario_by_name(usuario)
+
+            conn = get_connection()
+            c = conn.cursor()
+                    
+            # Insere nova receita
+            c.execute("INSERT INTO RECEITAS (id_usuario, mes_referencia, origem, valor) VALUES (%s, %s, %s, %s)", (id_usuario, mes,origem,valor))
+            conn.commit()
+            conn.close()
+
+            return True
+        except Exception as e:
+            return False         

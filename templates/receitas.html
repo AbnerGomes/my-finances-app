@@ -5,9 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard de Receitas</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/receitas.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
+  <script src="static/js/receitas.js" defer></script>
 </head>
 <body>
+
+  <div class="header-bar center">
+    <div class="logo-text">
+      <img src="{{ url_for('static', filename='images/A&A.png') }}" alt="Logo" class="logo">
+      <span class="company-name">A&A - Finance Dashboard</span>
+    </div>
+  
+    <div class="user-info">
+      <div class="dropdown">
+        <div class="dropdown-toggle" onclick="toggleDropdown()">
+          <span id="user-icon1" class="material-icons user-icon">person</span>
+        </div>
+    
+        <div id="main-dropdown" class="dropdown-menu">
+          <div class="profile-header">
+            <span  id="user-icon" class="material-icons profile-icon">person</span>
+            <div  id="current-username"  class="profile-name">{{ usuario.split('@')[0] | upper }}</div>
+          </div>
+    
+          <div id="dropMode" class="dropdown-item" onclick="toggleModeDropdown()">
+            Modo
+            <span class="material-icons">expand_more</span>
+          </div>
+    
+          <!-- submenu do modo -->
+          <div id="mode-dropdown" class="dropdown-submenu">
+            {% if temConjuge %}
+            <div class="dropdown-item" onclick="changeMode('S')">Casal</div>
+            {% endif %}
+            <div class="dropdown-item" onclick="changeMode('N')">Individual</div>
+          </div>
+    
+          <div class="dropdown-item">
+            Idioma
+            <div class="language-selector">
+              <span>Português</span>
+              <img src="https://flagcdn.com/w40/br.png" alt="BR" width="16" />
+            </div>
+          </div>
+    
+          <div class="dropdown-item" onclick="signOut()">Sign out</div>
+        </div>
+      </div>
+    </div>
+    
+    
+  </div>
+
     <h1>Receitas</h1>
 
   <!-- <div class="card filters"> -->
@@ -45,7 +96,7 @@
     <div class="modal-content">
       <span class="close-btn" onclick="fecharModal()">&times;</span>
       <h2>Nova Receita</h2>
-      <form action="/salvar_receita" method="POST">
+      <form id="formReceita" method="POST">
         <label for="receita">Receita:</label>
         <input type="text" name="receita" id="receita" required />
   
@@ -53,13 +104,67 @@
         <input type="number" name="valor" id="valor" step="0.01" required />
   
         <label for="mes">Mês:</label>
-        <input type="text" name="mes" id="mes" placeholder="ex: maio" required />
+        <select name="mes" id="mes" required>
+          <option value="" disabled selected>Selecione o mês</option>
+          <option value="janeiro">Janeiro</option>
+          <option value="fevereiro">Fevereiro</option>
+          <option value="março">Março</option>
+          <option value="abril">Abril</option>
+          <option value="maio">Maio</option>
+          <option value="junho">Junho</option>
+          <option value="julho">Julho</option>
+          <option value="agosto">Agosto</option>
+          <option value="setembro">Setembro</option>
+          <option value="outubro">Outubro</option>
+          <option value="novembro">Novembro</option>
+          <option value="dezembro">Dezembro</option>
+        </select>
   
         <button type="submit">Salvar</button>
       </form>
     </div>
   </div>
 
-    <script src="static/js/receitas.js" defer></script>
+  <div class="footer-bar">
+    <a>
+      <button class="footer-btn">
+        <span class="material-icons">dashboard</span>
+        <span class="footer-text">Visão Geral</span>
+      </button>
+    </a>
+    <a href="{{ url_for('despesa.despesas') }}">
+      <button class="footer-btn">
+        <span class="material-icons">bar_chart</span>
+        <span class="footer-text">Despesas</span>
+      </button>
+    </a>
+    <a href="{{ url_for('gasto.extrato') }}">
+      <button class="footer-btn">
+        <span class="material-icons">account_balance_wallet</span>
+        <span class="footer-text">Transações</span>
+      </button>
+    </a>
+    <a href="{{ url_for('gasto.receitas') }}">
+      <button class="footer-btn active">
+        <span class="material-icons">payment</span>
+        <span class="footer-text">Receitas</span>
+      </button>
+    </a>
+    <!-- <a href="{{ url_for('despesa.metas') }}">
+      <button class="footer-btn">
+        <span class="material-icons">payment</span>
+        <span class="footer-text">Limites</span>
+      </button>
+    </a> -->
+    <a href="{{ url_for('gasto.configuracoes') }}">
+      <button class="footer-btn">
+        <span class="material-icons">settings</span>
+        <span class="footer-text">Configurações</span>
+      </button>
+    </a>
+  </div>
+  
+
+    <script src="static/js/comum.js" defer></script>
 </body>
 </html>
