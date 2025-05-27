@@ -652,7 +652,7 @@ def metas():
     return render_template("metas.html", cards=cards,usuario='Abner Gomes',isCasal='N')
 
 
-@gasto_bp.route('/receitas',methods=['GET','POST'], strict_slashes=False)
+@gasto_bp.route('/receitas',methods=['GET'], strict_slashes=False)
 def receitas():
     mes = request.args.get('mes', '05-2025')
     categorias = request.args.getlist('categorias') or 'Todas'
@@ -724,6 +724,8 @@ def salvar_receita():
 
     mes_formatado = f"{numero_mes}-2025"
 
+    print(mes_formatado)
+
     try:
         sucesso = gasto_bp.gasto_service.salvar_receita(usuario, mes_formatado, origem, valor)
         return jsonify({"success": True}) if sucesso else jsonify({"alert": False})
@@ -757,6 +759,8 @@ def dados_receitas():
         return jsonify({"error": "Mês inválido"}), 400
 
     mes_formatado = f"{numero_mes}-2025"
+     
+    print(mes_formatado) 
 
     receitas = gasto_bp.gasto_service.get_receitas_mes(usuario,mes_formatado,'Todas')
 
