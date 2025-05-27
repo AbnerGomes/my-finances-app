@@ -652,7 +652,7 @@ def metas():
     return render_template("metas.html", cards=cards,usuario='Abner Gomes',isCasal='N')
 
 
-@gasto_bp.route('/receitas')
+@gasto_bp.route('/receitas',methods=['GET','POST'], strict_slashes=False)
 def receitas():
     mes = request.args.get('mes', '05-2025')
     categorias = request.args.getlist('categorias') or 'Todas'
