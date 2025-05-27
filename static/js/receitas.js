@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
   criarGrafico(labels, values);
 
   const modal = document.getElementById("modal");
-  const addBtn = document.getElementById("addReceitaBtn");
+  const addBtn = document.getElementById("addReceitaBtn-REMOVIDO");
   const form = document.getElementById("formReceita");
 
   addBtn.addEventListener("click", () => {

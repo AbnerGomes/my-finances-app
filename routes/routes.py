@@ -695,8 +695,10 @@ def receitas():
 
     
 
-    meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
-             'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
+    # meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+    #          'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
+
+    meses = ['maio']
 
     tem_conjuge = gasto_bp.gasto_service.tem_conjuge(usuario)
 
