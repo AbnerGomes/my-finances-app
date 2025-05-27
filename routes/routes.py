@@ -697,32 +697,36 @@ def receitas():
 def salvar_receita():
 
     usuario = session['usuario']
-
     data = request.get_json()
+    
     origem = data.get("receita")
     valor = data.get("valor")
-    mes = data.get("mes")
+    mes = data.get("mes").lower()  # converte para minúsculo
+
+    meses_portugues = {
+        "janeiro": "01",
+        "fevereiro": "02",
+        "março": "03",
+        "abril": "04",
+        "maio": "05",
+        "junho": "06",
+        "julho": "07",
+        "agosto": "08",
+        "setembro": "09",
+        "outubro": "10",
+        "novembro": "11",
+        "dezembro": "12"
+    }
+
+    numero_mes = meses_portugues.get(mes)
+    if not numero_mes:
+        return jsonify({"error": "Mês inválido"}), 400
+
+    mes_formatado = f"{numero_mes}-2025"
 
     try:
-        locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
-    except locale.Error:
-        # fallback para padrão do sistema
-        locale.setlocale(locale.LC_TIME, '')
-
-    mes_referencia = datetime.strptime(mes, '%B') 
-
-    # Formata para 'mm-yyyy'
-    mes_formatado = str(mes_referencia.month) + '-2025'
-
-    if len(mes_formatado) == 6:
-        mes_formatado = '0' + mes_formatado
-
-    # Salve no banco (exemplo com SQLAlchemy ou seu método atual)
-    try:
-        if gasto_bp.gasto_service.salvar_receita(usuario,mes_formatado,origem,valor) is True:
-            return jsonify({"success": True})
-        else:
-            return jsonify({"alert": False})    
+        sucesso = gasto_bp.gasto_service.salvar_receita(usuario, mes_formatado, origem, valor)
+        return jsonify({"success": True}) if sucesso else jsonify({"alert": False})
     except Exception as e:
         return str(e), 500                           
 
@@ -733,19 +737,26 @@ def dados_receitas():
 
     mes = request.args.get("mes")
 
-    try:
-        locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
-    except locale.Error:
-        # fallback para padrão do sistema
-        locale.setlocale(locale.LC_TIME, '')
+     meses_portugues = {
+        "janeiro": "01",
+        "fevereiro": "02",
+        "março": "03",
+        "abril": "04",
+        "maio": "05",
+        "junho": "06",
+        "julho": "07",
+        "agosto": "08",
+        "setembro": "09",
+        "outubro": "10",
+        "novembro": "11",
+        "dezembro": "12"
+    }
 
-    mes_referencia = datetime.strptime(mes, '%B') 
+    numero_mes = meses_portugues.get(mes)
+    if not numero_mes:
+        return jsonify({"error": "Mês inválido"}), 400
 
-    # Formata para 'mm-yyyy'
-    mes_formatado = str(mes_referencia.month) + '-2025'
-
-    if len(mes_formatado) == 6:
-        mes_formatado = '0' + mes_formatado
+    mes_formatado = f"{numero_mes}-2025"
 
     receitas = gasto_bp.gasto_service.get_receitas_mes(usuario,mes_formatado,'Todas')
 
