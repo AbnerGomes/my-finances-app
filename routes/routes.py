@@ -652,18 +652,21 @@ def metas():
     return render_template("metas.html", cards=cards,usuario='Abner Gomes',isCasal='N')
 
 
-@gasto_bp.route('/receitas',methods=['GET'], strict_slashes=False)
+@gasto_bp.route('/receitas', methods=['GET', 'POST'], strict_slashes=False)
 def receitas():
     mes = request.args.get('mes', '05-2025')
-    categorias = request.args.getlist('categorias') or 'Todas'
-
-    categorias = categorias.format(','.join('?' * len(categorias)))
-
+    categorias = request.args.getlist('categorias')
     usuario = session['usuario']
 
-    resultados = gasto_bp.gasto_service.get_receitas_mes(usuario,mes,categorias)
+    # Se não há categorias, define como 'Todas'
+    if not categorias:
+        categorias = ['Todas']
 
-    todas_categorias = sorted([row[0] for row in resultados])
+    # Verifica se o get_receitas_mes está preparado para receber ['Todas']
+    resultados = gasto_bp.gasto_service.get_receitas_mes(usuario, mes, categorias)
+
+    # Evita erro se resultados estiver vazio
+    todas_categorias = sorted(set(row[0] for row in resultados)) if resultados else []
 
     labels = [r[0].capitalize() for r in resultados]
     values = [float(r[1]) for r in resultados]
@@ -671,16 +674,18 @@ def receitas():
     try:
         locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
     except locale.Error:
-        # fallback para padrão do sistema
+        # fallback se locale não estiver disponível no sistema
         locale.setlocale(locale.LC_TIME, '')
 
-    data = datetime.strptime(mes, '%m-%Y')
+    try:
+        data = datetime.strptime(mes, '%m-%Y')
+        mes_nome = data.strftime('%B')
+    except ValueError:
+        mes_nome = mes  # fallback se der erro no formato
 
-    mes_nome = data.strftime('%B')  # 'maio'
+    meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+             'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
 
-    meses = ['janeiro', 'fevereiro', 'marco', 'abril','maio']  # Adicione os demais
-
-    #verifica se é conta casal e exibe dropdon
     tem_conjuge = gasto_bp.gasto_service.tem_conjuge(usuario)
 
     return render_template('receitas.html',
