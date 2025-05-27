@@ -694,7 +694,7 @@ def receitas():
                            labels=labels,
                            values=values,
                            meses=meses,
-                           mes_atual=mes_nome,
+                           mes_atual="maio",
                            categorias=categorias,
                            todas_categorias=todas_categorias)
 

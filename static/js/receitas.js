@@ -86,26 +86,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const mesSelecionado = data.mes;
 
-    try {
-      const response = await fetch("/salvar_receita", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
+      //em testes de prod
+    // try {
+    //   const response = await fetch("/salvar_receita", {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify(data)
+    //   });
 
-      if (response.ok) {
-        const dadosAtualizados = await fetch(`/dados_receitas?mes=${encodeURIComponent(mesSelecionado)}`);
-        const json = await dadosAtualizados.json();
+    //   if (response.ok) {
+    //     const dadosAtualizados = await fetch(`/dados_receitas?mes=${encodeURIComponent(mesSelecionado)}`);
+    //     const json = await dadosAtualizados.json();
 
-        criarGrafico(json.labels, json.values);
+    //     criarGrafico(json.labels, json.values);
 
-        modal.style.display = "none";
-        form.reset();
-      } else {
-        alert("Erro ao salvar receita." + response);
-      }
-    } catch (error) {
-      alert("Erro de conexão: " + error.message);
-    }
+    //     modal.style.display = "none";
+    //     form.reset();
+    //   } else {
+    //     alert("Erro ao salvar receita." + response);
+    //   }
+    // } catch (error) {
+    //   alert("Erro de conexão: " + error.message);
+    // }
   });
 });
