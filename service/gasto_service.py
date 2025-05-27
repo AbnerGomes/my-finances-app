@@ -268,9 +268,10 @@ class GastoService:
         cursor = conn.cursor()
         cursor.execute("SELECT nome FROM AUTENTICACAO WHERE usuario=%s AND senha=%s AND ativo=1", (usuario, senha))
         resultado = cursor.fetchone()
+        dados = resultado[0] if resultado else None
         conn.close()
 
-        return resultado[0] if resultado else None
+        return dados
 
     def valida_usuario_existente(self, usuario, senha,nome,telefone):
 
