@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
         modal.style.display = "none";
         form.reset();
       } else {
-        alert("Erro ao salvar receita.");
+        alert("Erro ao salvar receita." + response);
       }
     } catch (error) {
       alert("Erro de conexão: " + error.message);
