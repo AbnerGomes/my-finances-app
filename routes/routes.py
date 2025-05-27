@@ -654,7 +654,7 @@ def metas():
 
 @gasto_bp.route('/receitas', methods=['GET', 'POST'], strict_slashes=False)
 def receitas():
-    mes = request.args.get('mes', '05-2025')
+    mes = request.args.get('mes') or 'maio'
     categorias = request.args.getlist('categorias')
     usuario = session['usuario']
 
@@ -662,8 +662,30 @@ def receitas():
     if not categorias:
         categorias = ['Todas']
 
+
+    meses_portugues = {
+            "janeiro": "01",
+            "fevereiro": "02",
+            "março": "03",
+            "abril": "04",
+            "maio": "05",
+            "junho": "06",
+            "julho": "07",
+            "agosto": "08",
+            "setembro": "09",
+            "outubro": "10",
+            "novembro": "11",
+            "dezembro": "12"
+        }
+
+    numero_mes = meses_portugues.get(mes)
+    if not numero_mes:
+        return jsonify({"error": "Mês inválido"}), 400
+
+    mes_formatado = f"{numero_mes}-2025"
+
     # Verifica se o get_receitas_mes está preparado para receber ['Todas']
-    resultados = gasto_bp.gasto_service.get_receitas_mes(usuario, mes, categorias)
+    resultados = gasto_bp.gasto_service.get_receitas_mes(usuario, mes_formatado, categorias)
 
     # Evita erro se resultados estiver vazio
     todas_categorias = sorted(set(row[0] for row in resultados)) if resultados else []
@@ -671,17 +693,7 @@ def receitas():
     labels = [r[0].capitalize() for r in resultados]
     values = [float(r[1]) for r in resultados]
 
-    try:
-        locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
-    except locale.Error:
-        # fallback se locale não estiver disponível no sistema
-        locale.setlocale(locale.LC_TIME, '')
-
-    try:
-        data = datetime.strptime(mes, '%m-%Y')
-        mes_nome = data.strftime('%B')
-    except ValueError:
-        mes_nome = mes  # fallback se der erro no formato
+    
 
     meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
              'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
@@ -694,11 +706,11 @@ def receitas():
                            labels=labels,
                            values=values,
                            meses=meses,
-                           mes_atual="maio",
+                           mes_atual=mes,
                            categorias=categorias,
                            todas_categorias=todas_categorias)
 
-@gasto_bp.route('/salvar_receita', methods=['GET','POST'], strict_slashes=False)
+@gasto_bp.route('/salvar_receita', methods=['POST'], strict_slashes=False)
 def salvar_receita():
 
     usuario = session['usuario']
@@ -744,7 +756,7 @@ def dados_receitas():
 
     mes = request.args.get("mes")
 
-     meses_portugues = {
+    meses_portugues = {
         "janeiro": "01",
         "fevereiro": "02",
         "março": "03",

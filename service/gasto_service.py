@@ -361,7 +361,8 @@ class GastoService:
         and (origem in (%s) or %s = 'Todas')
         group by origem, mes_referencia"""
 
-        cursor.execute(query, (usuario,mes_ano,categorias,categorias))
+
+        cursor.execute(query, (usuario,mes_ano,'Toda','Todas'))
         
         resultado = cursor.fetchall()
         conn.close()
