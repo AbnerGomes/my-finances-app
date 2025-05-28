@@ -33,7 +33,7 @@ function atualizarStatus(selectElement) {
       return response.json();
     })
     .then(data => {
-      console.log('Status atualizado:', data);
+      console.log('Status atualizado:');
     })
     .catch(error => {
       alert('Erro ao atualizar status: ' + error.message);
@@ -94,7 +94,7 @@ document.addEventListener('click', function (event) {
 fetch('/valida_mensalista')
       .then(response => response.json())  // Converte a resposta para JSON
       .then(dados => {
-        console.log('STATUS recebido:', dados); // Verificando o que está vindo no JS
+        console.log('STATUS recebido'); // Verificando o que está vindo no JS
 
         if (dados.status === 'ok') {
            document.getElementById('modal-cadastrar').style.display = 'block';

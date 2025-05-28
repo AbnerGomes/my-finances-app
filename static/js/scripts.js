@@ -38,9 +38,6 @@ function filtrarGastos(periodo,isCasal) {
                 total.style.display = "none"
             }
             else {
-                console.log(periodo)
-                console.log(dados)
-                console.log('cai aqui')
                 total.style.display = "block";
                 mensagem.style.display = "none";
                 let categorias = dados.map(item => item.categoria);
@@ -247,10 +244,7 @@ barChart = new Chart(ctxBar, {
 
  });
 
-window.onload = function () {
-    console.log("window.onload foi chamado!");
-    console.log(document.getElementById("donutChart").getContext('2d'));
-};
+
 
 // data atual ja carregada no cadastro de gasto
 document.addEventListener("DOMContentLoaded", function() {

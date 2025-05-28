@@ -1,9 +1,3 @@
-document.addEventListener("DOMContentLoaded", function () {
-        console.log("EXTRATO carregado, tentando renderizar o gráfico...");
-});
-
-
-
 document.addEventListener('DOMContentLoaded', function () {
     // Pega as datas do formulário
     const dataInicioStr = document.getElementById('data_inicio')?.value;
@@ -63,7 +57,6 @@ document.addEventListener('click', function (event) {
       fetch('/valida_mensalista')
       .then(response => response.json())  // Converte a resposta para JSON
       .then(dados => {
-        console.log('STATUS recebido:', dados); // Verificando o que está vindo no JS
 
         if (dados.status === 'ok') {
            document.getElementById('modal-cadastrar').style.display = 'block';
