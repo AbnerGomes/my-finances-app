@@ -103,7 +103,7 @@ input#periodo-picker {
     border: 1px solid #038a78;
     border-radius: 6px;
     background-color: #f0fafa;
-    font-size: 10px;
+    font-size: 8px;
     /* color: #0abfa7; */
     width: 220px;
     margin-right: 10px;
@@ -128,7 +128,7 @@ input#periodo-picker:focus {
     transition: background-color 0.3s ease, transform 0.2s ease;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     /* font-weight: bold; */
-    font-size: 10px;
+    font-size: 8px;
     display: inline-block;
     text-align: center;
 
@@ -431,7 +431,7 @@ h2 {
 }
 
 .casal-icon {
-  width: 20px;
+  width: 10px;
   height: 10px;
 }
 
@@ -446,7 +446,7 @@ h2 {
 
 .barra-pesquisa{
   margin-bottom: 20px; 
-  display: inline-flex; 
+  display: flex; 
   /* gap: 4px;  */
   align-items: center; 
   flex-wrap: wrap;
