@@ -105,8 +105,7 @@ function filtrarGastosMensais(isCasal) {
 
     // let name = document.getElementById('current-username').textContent;
     // let texto = document.getElementById('current-username').innerHTML;
-    // console.log(name);
-    // console.log(texto);
+
 
     // if (name == 'analidiacadribeiro28') {    
     //     const modal_mo = document.getElementById('modal-mo');
@@ -116,8 +115,6 @@ function filtrarGastosMensais(isCasal) {
 
 filtrarGastos('mesatual','N');
 filtrarGastosMensais('N');
-
-   console.log("JavaScript carregado, tentando renderizar o gráfico...");
     
     var ctx = document.getElementById('donutChart');
     
@@ -257,7 +254,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 document.addEventListener('DOMContentLoaded', function () {
     const buttons = document.querySelectorAll('.period-button');
-console.log('okokokokok')
+
     buttons.forEach(button => {
       button.addEventListener('click', function () {
         // Remove a classe "active" de todos
