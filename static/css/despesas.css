@@ -443,3 +443,11 @@ h2 {
 .dela {
   background-color: rgba(247, 236, 247, 0.65);
 }
+
+.barra-pesquisa{
+  margin-bottom: 20px; 
+  display: flex; 
+  /* gap: 4px;  */
+  align-items: center; 
+  flex-wrap: wrap;
+}
