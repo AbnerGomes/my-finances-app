@@ -1,5 +1,6 @@
 body{
     font-size: 12px;
+    margin:0%;
 }
 
 table {
@@ -23,7 +24,8 @@ thead, th {
 
 th, td {
     /* padding: 12px 16px; */
-    padding: 10px 10px 10px 0px;
+    padding: 10px 4px 10px 2px;
+    margin-left: 2px;;
 }
 
 tbody tr:nth-child(even) {
@@ -207,6 +209,7 @@ input#periodo-picker:focus {
     color: #333;
   }
   
+
   form label {
     display: block;
     font-size: 10px;
@@ -260,6 +263,10 @@ input#periodo-picker:focus {
   
     .botao-salvar {
       font-size: 10px;
+    }
+
+    .tabela{
+      width: 100%;
     }
   }
   
@@ -450,4 +457,9 @@ h2 {
   /* gap: 4px;  */
   align-items: center; 
   flex-wrap: wrap;
+  margin: 2px;
+}
+
+.tabela{
+  padding: 0px;
 }
