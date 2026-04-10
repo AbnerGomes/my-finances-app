@@ -133,9 +133,16 @@
 
         <div class="gasto-acoes">
           <i class="fas fa-edit edit-icon"
-             data-id="{{ gasto[4] }}"></i>
+             data-id="{{ gasto[4] }}"
+             data-data="{{ gasto[3] }}"
+             data-categoria="{{ gasto[0] }}"
+             data-descricao="{{ gasto[1] }}"
+             data-valor="{{ gasto[2] }}">
+          </i>
+        
           <i class="fa-solid fa-trash"
-             data-id="{{ gasto[4] }}"></i>
+             data-id="{{ gasto[4] }}">
+          </i>
         </div>
   
       </div>

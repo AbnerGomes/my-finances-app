@@ -557,6 +557,14 @@ body {
   z-index: 1;
 }
 
+.gasto-categoria {
+  pointer-events: none;
+}
+
+.gasto-acoes {
+  position: relative;
+  z-index: 2;
+}
 
 .categoria-Saude { background: rgba(34,197,94,0.15); color: #22c55e; }
 .categoria-Moradia { background: rgba(59,130,246,0.15); color: #3b82f6; }
@@ -565,6 +573,8 @@ body {
 .categoria-Mobilidade { background: rgba(113, 150, 253, 0.15); color: #2618ee; }
 .categoria-Outros { background: rgba(86, 243, 243, 0.15); color: #55e4f7; }
 .categoria-Entretenimento { background: rgba(168,85,247,0.15); color: #a855f7; }
+
+
 
 .filtro-card {
   display: flex;
