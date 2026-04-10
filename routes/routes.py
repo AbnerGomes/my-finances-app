@@ -199,6 +199,9 @@ def extrato():
     if isCasal is None:
         isCasal ='N'
 
+    print(categorias)
+    print(categoria)
+
     return render_template(
         'extrato.html',
         gastos_agrupados=gastos_agrupados,
@@ -208,11 +211,12 @@ def extrato():
         now=datetime.now(),
         data_inicio=data_inicio,
         data_fim=data_fim,
-        categoria=categoria,
+        categoria= categoria,
         soma_gastos=soma_gastos
         ,usuario =usuario,
         isCasal=isCasal,
-        temConjuge=tem_conjuge
+        temConjuge=tem_conjuge,
+        categorias=categorias
     )
 
 

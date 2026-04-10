@@ -69,35 +69,24 @@
         <div class="filtro-container">
 
 <!-- Filtro -->
-<form method="GET" action="{{ url_for('gasto.extrato') }}" class="filtro-form" id="filtro-form">
-    <!-- Botão de período -->
-    <div class="periodo-wrapper">
-        <label for="data">Período:</label>
-        <input type="text" id="periodo-picker" readonly placeholder="Selecione o período" />
-        <input type="hidden" id="data_inicio" name="data_inicio" value="{{ data_inicio }}">
-<input type="hidden" id="data_fim" name="data_fim" value="{{ data_fim }}">
+<form method="GET" action="{{ url_for('gasto.extrato') }}" class="filtro-card" id="filtro-form">
 
-<!-- <input type="hidden" id="categoria" name="categoria" value="{{ categoria }}"> -->
-    </div>
-    <!-- Dropdown de categoria -->
-    <label for="categoria">Categoria:</label>
-    <select name="categoria" id="categoria">
-        <option value="Todas">Todas</option>
-        <option value="Alimentação">Alimentação</option>
-        <option value="Saúde">Saúde</option>
-        <option value="Mobilidade">Mobilidade</option>
-        <option value="Entretenimento">Entretenimento</option>
-        <option value="Moradia">Moradia</option>
-        <option value="Outros">Outros</option>
-        <option value="Dívidas">Dívidas</option>
-        <option value="Educação">Educação</option>
+  <input type="text" id="periodo-picker" readonly />
 
-        {% for cat in categorias %}
-            <option value="{{ cat }}" {% if request.args.get('categoria') == cat %}selected{% endif %}>{{ cat }}</option>
-        {% endfor %}
-    </select>
+  <input type="hidden" id="data_inicio" name="data_inicio" value="{{ data_inicio }}">
+  <input type="hidden" id="data_fim" name="data_fim" value="{{ data_fim }}">
 
-    <button type="submit" class="botao-filtrar">Filtrar</button>
+  <select name="categoria">
+      <option value="Todas">Todas</option>
+      {% for cat in categorias %}
+          <option value="{{ cat }}" {% if request.args.get('categoria') == cat %}selected{% endif %}>
+              {{ cat }}
+          </option>
+      {% endfor %}
+  </select>
+
+  <button type="submit">Filtrar</button>
+
 </form>
 
 <!-- dele/dela (só exibir se for visualziacao de casal)--> 
@@ -117,79 +106,55 @@
 </div>
 <br>
 
-        <table>
-            <thead>
-                <tr>
-                    <!-- <th>Data</th> -->
-                    <th>Categoria</th>
-                    <th>Descrição</th>
-                    <th>Valor (R$)</th>
-                    <th colspan="2"> </th>
+<div class="lista-gastos">
 
-                    <!-- <th></th> -->
-                </tr>
-            </thead>
-            <tbody>
-             
-
-                {% for data, lista in gastos_agrupados.items() %}
-                <!-- Linha com a data -->
-                <tr style="background-color: #f5f5f5d2;">
-                    <td colspan="5" style="text-align: justify; padding: 8px 0;"><strong>📅 {{ data }}</strong></td>
-                </tr>
-            
-                {% for gasto in lista %}
-                    <tr class="gasto"
-                    data-id="{{ gasto[4] }}"
-                     
-                     style="background-color: {% if  gasto[5]  == 'S' %}rgba(247, 236, 247, 0.65){% else %}rgba(128, 255, 238, 0.25) {% endif %}; line-height: 1.6;"
-                     >
-                        <td>{{ gasto[0] }}</td>
-                        <td>{{ gasto[1] }}</td>
-                        <td>R$ {{ gasto[2] | round(2) }}</td>
-                        <td>
-                            <i class="fas fa-edit edit-icon"
-                            data-data="{{ gasto[3] }}"
-                            data-categoria="{{ gasto[0] }}"
-                            data-descricao="{{ gasto[1] }}"
-                            data-valor="{{ gasto[2] }}"
-                            data-id="{{ gasto[4] }}"
-                            title="Editar"></i>
-                        </td>
-                        <td>
-                            <i class="fa-solid fa-trash"
-                            data-id="{{ gasto[4] }}"
-                            ></i>
-                        </td>
-                    </tr>
-                {% endfor %}
-            {% endfor %}
-            
-
-              </tbody>
-              <tfoot>
-                <tr>
-                    <td colspan="2" style="text-align: left; font-weight: bold;">Total do período:</td>
-                    <td></td>
-                    <td colspan="2" style="font-weight: bold;">
-                        R$ {{ '%.2f' | format(soma_gastos) }}
-                    </td>
-                </tr>
-                
-            </tfoot>
-            
-                      
-
-        </table>
-
-        <div style="text-align: right; margin-top: 10px;">
-
-          <button class="btn-left">Adicionar Gasto</button> 
-
-            <a href="{{ url_for('gasto.exportar_excel', data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria')) }}" class="button-detalhes" style="background: linear-gradient(135deg, #28a745, #218838);">Exportar Excel</a>
-
-            <a id="enviapdf" href="{{ url_for('gasto.exportar_pdf', data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria')) }}" class="button-detalhes" style="background: linear-gradient(135deg, #e04b4bc9, #e62121);">Exportar PDF</a>
+  {% for data, lista in gastos_agrupados.items() %}
+    <div class="data-grupo">📅 {{ data }}</div>
+  
+    {% for gasto in lista %}
+      <div class="gasto-card" data-id="{{ gasto[4] }}">
+        
+        <div class="gasto-info">
+          <div class="gasto-categoria categoria-{{ gasto[0]|replace(' ', '')|replace('í','i') }}">
+            {{ gasto[0] }}
+          </div>
+          <div class="gasto-descricao">{{ gasto[1] }}</div>
         </div>
+  
+        <div class="gasto-valor">
+          R$ {{ gasto[2] | round(2) }}
+        </div>
+  
+        <div class="gasto-acoes">
+          <i class="fas fa-edit edit-icon"
+             data-id="{{ gasto[4] }}"></i>
+          <i class="fa-solid fa-trash"
+             data-id="{{ gasto[4] }}"></i>
+        </div>
+  
+      </div>
+    {% endfor %}
+  
+  {% endfor %}
+  
+  </div>
+
+       <div class="acoes-final">
+
+          <button class="btn-acao primary btn-adicionar">+ Adicionar</button>
+
+          <a href="{{ url_for('gasto.exportar_excel', data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria')) }}" 
+            class="btn-acao">
+            Excel
+          </a>
+
+          <a id="enviapdf"
+            href="{{ url_for('gasto.exportar_pdf', data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria')) }}" 
+            class="btn-acao danger">
+            PDF
+          </a>
+
+       </div>
 
 
         <!-- Paginação  REMOVIDO PAGINACAO-->

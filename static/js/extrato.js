@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('click', function (event) {
     // Verifica se o evento foi disparado por um botão de edição
     
-    if (event.target.classList.contains('btn-left')) {
+    if (event.target.classList.contains('btn-adicionar')) {
       event.preventDefault(); // evita comportamento padrão do botão/link
 
       //comentado temporariamente para testes  
@@ -121,20 +121,12 @@ document.addEventListener('click', function (event) {
      }
 
      //cadastrar 
-     if (event.target && event.target.classList.contains('btn-left')) {
+     if (event.target && event.target.classList.contains('btn-adicionar')) {
   
       const modal = document.getElementById('modal-cadastrar');
       modal.style.display = 'block';
     }
   
-  //   //cadastro ok  
-  //   if (event.target && event.target.classList.contains('botao-salvar')) {
-  //     const modal_ok = document.getElementById('modal-cadastro-ok');
-  //     const modal_cad = document.getElementById('modal-cadastrar');
-  //     modal_cad.style.display = 'none';
-  //     modal_ok.style.display = 'block';
-  
-  //  }
 
     // Fechar o modal quando clicar no botão de fechar ou fora do modal
     const fecharModal = document.getElementById('fechar-modal');

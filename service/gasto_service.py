@@ -312,9 +312,11 @@ class GastoService:
         # Verifica se o usuário já existe
         c.execute("SELECT distinct categoria FROM gastos WHERE usuario = %s", (usuario,))
         
-        dados = c.fetchone()
+        dados = c.fetchall()   
+        conn.close()
 
-        return dados   is not None      
+        # transforma [('Alimentação',), ('Saúde',)] em ['Alimentação', 'Saúde']
+        return [row[0] for row in dados]     
 
 
     def editar_gasto(self,gasto,categoria,valor,data,id):
