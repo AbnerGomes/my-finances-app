@@ -59,7 +59,7 @@ document.addEventListener('click', function (event) {
       .then(dados => {
 
         if (dados.status === 'ok') {
-           document.getElementById('modal-cadastrar').style.display = 'block';
+           document.getElementById('modal-cadastrar').style.display = 'none';
         } else {
           document.getElementById('modal-mensalista').style.display = 'block';
         }
