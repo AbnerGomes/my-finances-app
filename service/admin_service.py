@@ -42,7 +42,8 @@ class AdminService:
         
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("select status from mensalidade where usuario = %s and mes_ano = %s",(usuario,mes_ano))
+        #cursor.execute("select status from mensalidade where usuario = %s and mes_ano = %s",(usuario,mes_ano))
+        cursor.execute("select 'ok')
         
         resultados = cursor.fetchall()
         
