@@ -115,10 +115,13 @@
       <div class="gasto-card" data-id="{{ gasto[4] }}">
         
         <div class="gasto-info">
+  
+          <div class="gasto-descricao">{{ gasto[1] }}</div>
+        
           <div class="gasto-categoria categoria-{{ gasto[0]|replace(' ', '')|replace('í','i') }}">
             {{ gasto[0] }}
           </div>
-          <div class="gasto-descricao">{{ gasto[1] }}</div>
+        
         </div>
   
         <div class="gasto-valor">
