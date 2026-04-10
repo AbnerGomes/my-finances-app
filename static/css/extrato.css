@@ -128,7 +128,7 @@ select, #categoria:focus {
 }
 
 /* Estilo do campo de data */
-input#periodo-picker {
+/* input#periodo-picker {
   padding: 8px 12px;
   border: 1px solid #046e60;
   border-radius: 6px;
@@ -137,6 +137,18 @@ input#periodo-picker {
   color: #0d0e0d;
   width: 220px;
   margin-right: 10px;
+} */
+
+
+input#periodo-picker {
+  flex: 1;              /* ocupa espaço disponível */
+  min-width: 120px;     /* mínimo antes de esmagar demais */
+  max-width: 180px;     /* 👈 diminui largura (antes tava gigante) */
+  border: 1px solid #046e60;
+  border-radius: 6px;
+  background-color: #f0fafa;
+  padding: 6px 10px;
+  font-size: 12px;
 }
 
 input#periodo-picker:focus {
@@ -145,25 +157,41 @@ input#periodo-picker:focus {
 }
 
 
-.botao-filtrar {
-  background-color: #0abfa7;
-  color: white;
-  border: none;
+.filtro-card button.botao-filtrar {
+  flex-shrink: 0;
+  white-space: nowrap;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
-  font-size: medium;
-  text-decoration: none;
-  background: linear-gradient(135deg, #4cf0da, #0abfa7);
-  color: white;
-  border-radius: 5px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  font-weight: bold;
-  font-size: 14px;
-  display: inline-block;
-  text-align: center;
 
+  border: 1px solid rgba(10, 191, 167, 0.25);
 
+  background: rgba(10, 191, 167, 0.12);
+  color: #0abfa7;
+
+  backdrop-filter: blur(6px); /* 👈 glass effect */
+  transition: all 0.2s ease;
 }
+
+/* ÍCONE */
+.botao-filtrar .material-icons {
+  font-size: 16px;
+}
+
+/* HOVER */
+.filtro-card button.botao-filtrar:hover {
+  background: rgba(10, 191, 167, 0.2);
+  transform: translateY(-1px);
+}
+
 
 .edit-icon {
   color: #003f5c;
@@ -546,24 +574,23 @@ body {
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* 👈 impede quebrar linha */
 }
 
 .filtro-card input,
 .filtro-card select {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #e5e7eb;
+  flex: 0 0 110px;   /* largura fixa menor */
+  max-width: 110px;
+
+  padding: 6px 8px;  /* 👈 remove aquele padding gigante */
+  font-size: 12px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.filtro-card button {
-  background: #0abfa7;
-  color: #fff;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-}
+
 
 
 
@@ -614,4 +641,18 @@ body {
 
 .btn-acao {
   backdrop-filter: blur(6px);
+}
+
+.total-gastos {
+  margin-top: 20px;
+  text-align: right;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.total-gastos span {
+  font-size: 18px;
+  font-weight: bold;
+  color: #0abfa7;
 }

@@ -85,7 +85,10 @@
       {% endfor %}
   </select>
 
-  <button type="submit">Filtrar</button>
+  <button type="submit" class="botao-filtrar">
+    <span class="material-icons">search</span>
+    Filtrar
+  </button>
 
 </form>
 
@@ -127,7 +130,7 @@
         <div class="gasto-valor">
           R$ {{ gasto[2] | round(2) }}
         </div>
-  
+
         <div class="gasto-acoes">
           <i class="fas fa-edit edit-icon"
              data-id="{{ gasto[4] }}"></i>
@@ -141,6 +144,10 @@
   {% endfor %}
   
   </div>
+
+      <div class="total-gastos">
+        Total: <span>R$ {{ soma_gastos | round(2) }}</span>
+      </div>
 
        <div class="acoes-final">
 
