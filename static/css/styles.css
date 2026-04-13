@@ -610,3 +610,7 @@ background-color: #003f5c;
 body {
   overflow-x: hidden;
 }
+
+.grupo-receitas {
+  margin-bottom: 12px;
+}

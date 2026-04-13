@@ -98,42 +98,44 @@
 
       {% for origem, lista in receitas_agrupadas.items() %}
     
-        <!-- TÍTULO DO GRUPO -->
-        <div class="grupo-titulo">
-          {{ origem }}
-        </div>
+        <div class="grupo-receitas"> <!-- 🔥 NOVO -->
     
-        <!-- ITENS DO GRUPO -->
-        {% for r in lista %}
-          <div class="receita-card">
-    
-            <div class="receita-info">
-              <div class="receita-descricao">{{ r[1] }}</div>
-            </div>
-    
-            <div class="receita-direita">
-    
-              <div class="receita-valor">
-                R$ {{ r[2] | round(2) }}
-              </div>
-    
-              <div class="receita-acoes">
-                <i class="fas fa-edit edit-receita"
-                   data-id="{{ r[0] }}"
-                   data-descricao="{{ r[1] }}"
-                   data-valor="{{ r[2] }}"
-                   data-mes="{{ mes_atual }}">
-                </i>
-    
-                <i class="fa-solid fa-trash delete-receita"
-                   data-id="{{ r[0] }}">
-                </i>
-              </div>
-    
-            </div>
-    
+          <div class="grupo-titulo">
+            {{ origem }}
           </div>
-        {% endfor %}
+    
+          {% for r in lista %}
+            <div class="receita-card">
+    
+              <div class="receita-info">
+                <div class="receita-descricao">{{ r[1] }}</div>
+              </div>
+    
+              <div class="receita-direita">
+    
+                <div class="receita-valor">
+                  R$ {{ r[2] | round(2) }}
+                </div>
+    
+                <div class="receita-acoes">
+                  <i class="fas fa-edit edit-receita"
+                     data-id="{{ r[0] }}"
+                     data-descricao="{{ r[1] }}"
+                     data-valor="{{ r[2] }}"
+                     data-mes="{{ mes_atual }}">
+                  </i>
+    
+                  <i class="fa-solid fa-trash delete-receita"
+                     data-id="{{ r[0] }}">
+                  </i>
+                </div>
+    
+              </div>
+    
+            </div>
+          {% endfor %}
+    
+        </div> <!--  FECHA GRUPO -->
     
       {% endfor %}
     

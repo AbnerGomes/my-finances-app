@@ -710,6 +710,8 @@ def receitas():
     #  ISSO É O PRINCIPAL AGORA
     receitas_lista = gasto_bp.gasto_service.listar_receitas(usuario, mes_formatado)
 
+    receitas_agrupadas = agrupar_receitas(receitas_lista)
+
     total_receitas = sum(r[2] for r in receitas_lista)
 
     agrupado = defaultdict(list)
@@ -734,7 +736,8 @@ def receitas():
 
                            receitas_lista=receitas_lista,
                            total_receitas=total_receitas,
-                           receitas_agrupadas=agrupado
+                           #receitas_agrupadas=agrupado,
+                           receitas_agrupadas=receitas_agrupadas
                            )
 
 @gasto_bp.route('/salvar_receita', methods=['POST'], strict_slashes=False)
@@ -890,3 +893,18 @@ def total_receitas_mes():
     total = gasto_bp.gasto_service.get_total_receitas_mes(usuario)
 
     return jsonify({"total": total or 0})        
+
+
+def agrupar_receitas(receitas):
+    agrupado = defaultdict(list)
+
+    for r in receitas:
+        # r[1] = descrição
+        descricao = r[1]
+
+        # 🔥 pega primeira palavra
+        chave = descricao.split(" ")[0]
+
+        agrupado[chave].append(r)
+
+    return dict(agrupado)    

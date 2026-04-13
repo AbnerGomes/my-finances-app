@@ -69,13 +69,21 @@ document.addEventListener("DOMContentLoaded", () => {
   
       showToast("Receita excluída!");
   
+      cardParaRemover = e.target.closest(".receita-card");
+      const grupo = cardParaRemover?.closest(".grupo-receitas");
+
       if (cardParaRemover) {
         cardParaRemover.style.transition = "0.3s";
         cardParaRemover.style.transform = "translateX(-100%)";
         cardParaRemover.style.opacity = "0";
-  
+
         setTimeout(() => {
           cardParaRemover.remove();
+
+          if (grupo && grupo.querySelectorAll(".receita-card").length === 0) {
+            grupo.remove();
+          }
+
         }, 300);
       }
   
