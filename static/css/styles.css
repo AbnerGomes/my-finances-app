@@ -585,14 +585,22 @@ background-color: #003f5c;
   font-size: 15px;
 }
 
+/* .dashboard-wrapper {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+
+  padding-top: 80px;   
+  padding-bottom: 90px; /* espaço pro footer 
+} */
+
 .dashboard-wrapper {
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
 
-  /* 🔥 ESSENCIAL */
-  padding-top: 80px;   /* espaço pro header */
-  padding-bottom: 90px; /* espaço pro footer */
+  padding-top: 100px;   /* 🔥 aumenta aqui */
+  padding-bottom: 90px;
 }
 
 .card-resumo {
