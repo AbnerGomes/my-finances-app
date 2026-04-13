@@ -50,6 +50,31 @@ function filtrarGastos(periodo,isCasal) {
 
                     // Calcula e mostra o total
                 let totalGasto = valores.reduce((acc, val) => acc + parseFloat(val || 0), 0);
+
+                // Atualiza gastos
+                document.getElementById("total-gastos").innerText =
+                totalGasto.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+                // 👉 buscar receitas do backend
+                fetch("/total_receitas_mes")
+                .then(res => res.json())
+                .then(data => {
+
+                let totalReceitas = parseFloat(data.total || 0);
+
+                document.getElementById("total-receitas").innerText =
+                    totalReceitas.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+                let saldo = totalReceitas - totalGasto;
+
+                let saldoEl = document.getElementById("saldo-total");
+
+                saldoEl.innerText =
+                    saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+                saldoEl.style.color = saldo >= 0 ? "#16a34a" : "#dc2626";
+                });    
+
                 let totalFormatado = totalGasto.toLocaleString('pt-BR', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2

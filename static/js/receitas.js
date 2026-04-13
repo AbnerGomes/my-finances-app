@@ -1,112 +1,170 @@
-let receitasChart = null;
-
-function criarGrafico(labels, values) {
-  const canvas = document.getElementById('receitasChart');
-  const ctx = canvas.getContext('2d');
-
-  const backgroundColors = [
-    'rgba(26, 188, 156, 1)',
-    'rgba(255, 206, 86, 0.7)',
-    'rgba(199, 65, 25, 0.7)',
-    'rgba(176, 224, 230, 1)'
-  ];
-
-  if (receitasChart) {
-    receitasChart.destroy();
-  }
-
-  receitasChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: labels,
-      datasets: [{
-        data: values,
-        backgroundColor: backgroundColors.slice(0, labels.length),
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: true,
-          position: 'bottom',
-          labels: {
-            boxWidth: 20,
-            padding: 15
-          }
-        },
-        tooltip: {
-          callbacks: {
-            label: function(context) {
-              const value = context.parsed;
-              return `${context.label}: R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-            }
-          }
-        }
-      }
-    }
-  });
-}
-
+console.log("JS RECEITAS CARREGOU");
 document.addEventListener("DOMContentLoaded", () => {
-  const canvas = document.getElementById('receitasChart');
-  const labels = JSON.parse(canvas.dataset.labels);
-  const values = JSON.parse(canvas.dataset.values);
-
-  criarGrafico(labels, values);
 
   const modal = document.getElementById("modal");
-  const addBtn = document.getElementById("addReceitaBtn-REMOVIDO");
+  const addBtn = document.getElementById("addReceitaBtn");
   const form = document.getElementById("formReceita");
 
+  const idInput = document.getElementById("receita-id");
+  const descInput = document.getElementById("receita-desc");
+  const valorInput = document.getElementById("receita-valor");
+  const mesInput = document.getElementById("receita-mes");
+
+  // abrir modal novo
   addBtn.addEventListener("click", () => {
+    console.log("clicou"); // TESTE
+    idInput.value = "";
+    descInput.value = "";
+    valorInput.value = "";
     modal.style.display = "flex";
   });
 
+  // editar
+  document.addEventListener("click", function (e) {
+
+    if (e.target.classList.contains("edit-receita")) {
+  
+      document.getElementById("modal").style.display = "flex";
+  
+      document.getElementById("modal-title").innerText = "Editar Receita";
+  
+      document.getElementById("receita-id").value = e.target.dataset.id;
+      document.getElementById("receita-desc").value = e.target.dataset.descricao;
+      document.getElementById("receita-valor").value = e.target.dataset.valor;
+      document.getElementById("receita-mes").value = e.target.dataset.mes;
+    }
+  
+  });
+
+  // deletar
+  document.addEventListener("click", function (e) {
+
+    if (e.target.classList.contains("delete-receita")) {
+  
+      const id = e.target.dataset.id;
+  
+      if (confirm("Deseja excluir essa receita?")) {
+  
+        fetch("/deletar_receita", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ id })
+        })
+        .then(() => {
+          showToast("Receita excluída!");
+          e.target.closest(".receita-card").remove();
+        })
+        .catch(() => showToast("Erro ao excluir", false));
+      }
+    }
+  
+  });
+
+  // fechar modal
   window.fecharModal = function () {
     modal.style.display = "none";
   };
 
-  window.onclick = function (event) {
-    if (event.target === modal) {
-      modal.style.display = "none";
-    }
+  window.onclick = function (e) {
+    if (e.target === modal) modal.style.display = "none";
   };
 
-  form.addEventListener("submit", async function (e) {
-    e.preventDefault();
+  // salvar (create + update)
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    const formData = new FormData(form);
-    const data = {
-      receita: formData.get("receita"),
-      valor: formData.get("valor"),
-      mes: formData.get("mes")
-    };
+  const id = idInput.value;
 
-    const mesSelecionado = data.mes;
+  const data = {
+    id: id,
+    receita: descInput.value,
+    valor: valorInput.value,
+    mes: mesInput.value
+  };
 
-      //em testes de prod
-    // try {
-    //   const response = await fetch("/salvar_receita", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(data)
-    //   });
+  // 
+  const url = id ? "/editar_receita" : "/salvar_receita";
 
-    //   if (response.ok) {
-    //     const dadosAtualizados = await fetch(`/dados_receitas?mes=${encodeURIComponent(mesSelecionado)}`);
-    //     const json = await dadosAtualizados.json();
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(data)
+    });
 
-    //     criarGrafico(json.labels, json.values);
+    if (response.ok) {
+      showToast(id ? "Receita atualizada!" : "Receita criada!");
+      location.reload();
+    } else {
+      showToast("Erro ao salvar", false);
+      return;
+    }
 
-    //     modal.style.display = "none";
-    //     form.reset();
-    //   } else {
-    //     alert("Erro ao salvar receita." + response);
-    //   }
-    // } catch (error) {
-    //   alert("Erro de conexão: " + error.message);
-    // }
+  } catch (err) {
+    showToast("Erro de conexão", false);
+  }
+});
+
+});
+
+
+function showToast(msg, success = true) {
+  const toast = document.getElementById("toast");
+
+  toast.textContent = msg;
+  toast.style.background = success ? "#16a34a" : "#dc2626";
+
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2500);
+}
+
+let startX = 0;
+
+document.querySelectorAll(".receita-card").forEach(card => {
+
+  card.addEventListener("touchstart", e => {
+    startX = e.touches[0].clientX;
   });
+
+  card.addEventListener("touchend", e => {
+    let endX = e.changedTouches[0].clientX;
+
+    if (startX - endX > 80) {
+      card.style.transform = "translateX(-100px)";
+      card.style.opacity = "0.5";
+
+      const id = card.querySelector(".delete-receita").dataset.id;
+
+      setTimeout(() => {
+        if (confirm("Excluir receita?")) {
+          fetch("/deletar_receita", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ id })
+          }).then(() => location.reload());
+        } else {
+          card.style.transform = "translateX(0)";
+          card.style.opacity = "1";
+        }
+      }, 200);
+    }
+  });
+
+});
+
+addReceitaBtn.addEventListener("click", () => {
+  console.log("clicou");
+
+  idInput.value = "";
+  descInput.value = "";
+  valorInput.value = "";
+
+  document.getElementById("modal-title").innerText = "Nova Receita"; // 🔥 ADD ISSO
+
+  modal.style.display = "flex";
 });

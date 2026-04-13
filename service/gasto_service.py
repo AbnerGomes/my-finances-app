@@ -370,6 +370,25 @@ class GastoService:
         conn.close()
 
         return  resultado
+
+    def listar_receitas(self, usuario, mes_ano):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = """
+        SELECT r.id, origem, valor
+        FROM receitas r
+        INNER JOIN usuarios u ON r.id_usuario = u.id
+        WHERE u.nome = %s
+        AND mes_referencia = %s
+        ORDER BY id DESC
+        """
+
+        cursor.execute(query, (usuario, mes_ano))
+        resultado = cursor.fetchall()
+        conn.close()
+
+        return resultado    
         
     def salvar_receita(self, usuario, mes,origem,valor):
 
@@ -387,3 +406,78 @@ class GastoService:
             return True
         except Exception as e:
             return False         
+
+    def deletar_receita(self, usuario, id_receita):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        try:
+            query = """
+            DELETE FROM receitas
+            WHERE id = %s
+            AND id_usuario = (
+                SELECT id FROM usuarios WHERE nome = %s
+            )
+            """
+
+            cursor.execute(query, (id_receita, usuario))
+            conn.commit()
+
+            return cursor.rowcount > 0
+
+        except Exception as e:
+            conn.rollback()
+            print("Erro ao deletar receita:", e)
+            return False
+
+        finally:
+            conn.close()
+
+    def editar_receita(self, usuario, id_receita, origem, valor, mes):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        try:
+            query = """
+            UPDATE receitas
+            SET origem = %s,
+                valor = %s,
+                mes_referencia = %s
+            WHERE id = %s
+            AND id_usuario = (
+                SELECT id FROM usuarios WHERE nome = %s
+            )
+            """
+
+            print(id_receita)
+
+            cursor.execute(query, (origem, valor, mes, id_receita, usuario))
+            conn.commit()
+
+            return True
+
+        except Exception as e:
+            conn.rollback()
+            print("Erro ao editar receita:", e)
+            return False
+
+        finally:
+            conn.close()
+
+    def get_total_receitas_mes(self, usuario):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = """
+            SELECT SUM(valor)
+            FROM receitas
+            WHERE id_usuario = (
+                SELECT id FROM usuarios WHERE nome = %s
+            )
+        """
+
+        cursor.execute(query, (usuario,))
+        total = cursor.fetchone()[0]
+
+        conn.close()
+        return total        

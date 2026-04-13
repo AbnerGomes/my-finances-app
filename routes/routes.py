@@ -9,6 +9,8 @@ from datetime import date
 from collections import defaultdict
 import calendar
 
+from collections import defaultdict
+
 from service.despesa_service import DespesaService
 
 from service.admin_service import AdminService
@@ -659,13 +661,12 @@ def metas():
 @gasto_bp.route('/receitas', methods=['GET', 'POST'], strict_slashes=False)
 def receitas():
     mes = request.args.get('mes') or 'maio'
-    categorias = request.args.getlist('categorias')
+    categorias = request.args.getlist('categorias')  # ❌ NÃO PRECISA MAIS (não usa filtro por categoria)
     usuario = session['usuario']
 
     # Se não há categorias, define como 'Todas'
     if not categorias:
-        categorias = ['Todas']
-
+        categorias = ['Todas']  # ❌ NÃO PRECISA MAIS
 
     meses_portugues = {
             "janeiro": "01",
@@ -688,33 +689,53 @@ def receitas():
 
     mes_formatado = f"{numero_mes}-2025"
 
-    # Verifica se o get_receitas_mes está preparado para receber ['Todas']
-    resultados = gasto_bp.gasto_service.get_receitas_mes(usuario, mes_formatado, categorias)
+    # ❌ NÃO PRECISA MAIS (isso era pro gráfico)
+    # resultados = gasto_bp.gasto_service.get_receitas_mes(usuario, mes_formatado, categorias)
 
-    # Evita erro se resultados estiver vazio
-    todas_categorias = sorted(set(row[0] for row in resultados)) if resultados else []
+    # ❌ NÃO PRECISA MAIS (dependia do resultados)
+    # todas_categorias = sorted(set(row[0] for row in resultados)) if resultados else []
 
-    labels = [r[0].capitalize() for r in resultados]
-    values = [float(r[1]) for r in resultados]
+    # ❌ NÃO PRECISA MAIS (gráfico)
+    # labels = [r[0].capitalize() for r in resultados]
+    # values = [float(r[1]) for r in resultados]
 
-    
+    # ❌ PODE MELHORAR (isso aqui tá fixo só maio)
+    # meses = ['maio']
 
-    # meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
-    #          'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
-
-    meses = ['maio']
+    meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+             'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
 
     tem_conjuge = gasto_bp.gasto_service.tem_conjuge(usuario)
+
+    #  ISSO É O PRINCIPAL AGORA
+    receitas_lista = gasto_bp.gasto_service.listar_receitas(usuario, mes_formatado)
+
+    total_receitas = sum(r[2] for r in receitas_lista)
+
+    agrupado = defaultdict(list)
+
+    for r in receitas_lista:
+        agrupado[r[1]].append(r)
 
     return render_template('receitas.html',
                            usuario=usuario,
                            temConjuge=tem_conjuge,
-                           labels=labels,
-                           values=values,
+
+                           # ❌ NÃO PRECISA MAIS
+                           # labels=labels,
+                           # values=values,
+
                            meses=meses,
                            mes_atual=mes,
-                           categorias=categorias,
-                           todas_categorias=todas_categorias)
+
+                           # ❌ NÃO PRECISA MAIS
+                           # categorias=categorias,
+                           # todas_categorias=todas_categorias,
+
+                           receitas_lista=receitas_lista,
+                           total_receitas=total_receitas,
+                           receitas_agrupadas=agrupado
+                           )
 
 @gasto_bp.route('/salvar_receita', methods=['POST'], strict_slashes=False)
 def salvar_receita():
@@ -795,3 +816,77 @@ def dados_receitas():
         "labels": list(dados.keys()),
         "values": list(dados.values())
     })
+
+@gasto_bp.route('/deletar_receita', methods=['POST'], strict_slashes=False)
+def deletar_receita():
+    usuario = session['usuario']
+    data = request.get_json()
+
+    id_receita = data.get('id')
+
+    if not id_receita:
+        return jsonify({"error": "ID não informado"}), 400
+
+    try:
+        sucesso = gasto_bp.gasto_service.deletar_receita(usuario, id_receita)
+
+        if sucesso:
+            return jsonify({"success": True})
+        else:
+            return jsonify({"error": "Não foi possível deletar"}), 500
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@gasto_bp.route('/editar_receita', methods=['POST'], strict_slashes=False)
+def editar_receita():
+    usuario = session['usuario']
+    data = request.get_json()
+
+    id_receita = data.get("id")
+    origem = data.get("receita")
+    valor = data.get("valor")
+    mes = data.get("mes").lower()
+
+    meses_portugues = {
+        "janeiro": "01",
+        "fevereiro": "02",
+        "março": "03",
+        "abril": "04",
+        "maio": "05",
+        "junho": "06",
+        "julho": "07",
+        "agosto": "08",
+        "setembro": "09",
+        "outubro": "10",
+        "novembro": "11",
+        "dezembro": "12"
+    }
+
+    numero_mes = meses_portugues.get(mes)
+    if not numero_mes:
+        return jsonify({"error": "Mês inválido"}), 400
+
+    mes_formatado = f"{numero_mes}-2025"
+
+    try:
+        sucesso = gasto_bp.gasto_service.editar_receita(
+            usuario, id_receita, origem, valor, mes_formatado
+        )
+
+        if sucesso:
+            return jsonify({"success": True})
+        else:
+            return jsonify({"error": "Falha ao editar"}), 500
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500        
+
+
+@gasto_bp.route('/total_receitas_mes')
+def total_receitas_mes():
+    usuario = session['usuario']
+
+    total = gasto_bp.gasto_service.get_total_receitas_mes(usuario)
+
+    return jsonify({"total": total or 0})        

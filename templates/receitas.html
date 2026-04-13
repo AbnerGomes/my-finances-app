@@ -3,128 +3,185 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard de Receitas</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>Receitas</title>
+
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/receitas.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
+
+  <!-- CSS -->
+ 
   <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
-  <script src="static/js/receitas.js" defer></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/receitas.css') }}">
+
+  <!-- JS -->
+  
+  <script src="{{ url_for('static', filename='js/comum.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/receitas.js') }}" defer></script>
 </head>
+
 <body>
 
+  <!-- HEADER -->
   <div class="header-bar center">
     <div class="logo-text">
       <img src="{{ url_for('static', filename='images/A&A.png') }}" alt="Logo" class="logo">
       <span class="company-name">A&A - Finance Dashboard</span>
     </div>
-  
+
     <div class="user-info">
       <div class="dropdown">
         <div class="dropdown-toggle" onclick="toggleDropdown()">
           <span id="user-icon1" class="material-icons user-icon">person</span>
         </div>
-    
+
         <div id="main-dropdown" class="dropdown-menu">
           <div class="profile-header">
-            <span  id="user-icon" class="material-icons profile-icon">person</span>
-            <div  id="current-username"  class="profile-name">{{ usuario.split('@')[0] | upper }}</div>
+            <span id="user-icon" class="material-icons profile-icon">person</span>
+            <div id="current-username" class="profile-name">
+              {{ usuario.split('@')[0] | upper }}
+            </div>
           </div>
-    
-          <div id="dropMode" class="dropdown-item" onclick="toggleModeDropdown()">
+
+          <div class="dropdown-item" onclick="toggleModeDropdown()">
             Modo
             <span class="material-icons">expand_more</span>
           </div>
-    
-          <!-- submenu do modo -->
+
           <div id="mode-dropdown" class="dropdown-submenu">
             {% if temConjuge %}
-            <div class="dropdown-item" onclick="changeMode('S')">Casal</div>
+              <div class="dropdown-item" onclick="changeMode('S')">Casal</div>
             {% endif %}
             <div class="dropdown-item" onclick="changeMode('N')">Individual</div>
           </div>
-    
+
           <div class="dropdown-item">
             Idioma
             <div class="language-selector">
               <span>Português</span>
-              <img src="https://flagcdn.com/w40/br.png" alt="BR" width="16" />
+              <img src="https://flagcdn.com/w40/br.png" width="16" />
             </div>
           </div>
-    
+
           <div class="dropdown-item" onclick="signOut()">Sign out</div>
         </div>
       </div>
     </div>
-    
-    
   </div>
+
+  <!-- CONTAINER -->
+  <div class="container-receitas">
 
     <h1>Receitas</h1>
 
-  <!-- <div class="card filters"> -->
-    <form method="get" class="filters">
+    <!-- FILTRO -->
+    <div class="topo-card">
+
+      <form method="get" class="filters">
         <select name="mes" onchange="this.form.submit()">
-            <option disabled selected>Selecione o Mês</option>
-            {% for m in meses %}
-              <option value="{{ m }}" {% if m == mes_atual %}selected{% endif %}>{{ m|capitalize }}</option>
-            {% endfor %}
-          </select>
-        </form>
-  <!-- </div> -->
+          {% for m in meses %}
+            <option value="{{ m }}" {% if m == mes_atual %}selected{% endif %}>
+              {{ m|capitalize }}
+            </option>
+          {% endfor %}
+        </select>
+      </form>
+    
+      <div class="total-receitas">
+        <span>Total do mês</span>
+        <strong>R$ {{ total_receitas | round(2) }}</strong>
+      </div>
+    
+    </div>
 
-  <div class="card" id="chart-container">
-    <canvas id="receitasChart" data-labels='{{ labels|tojson }}'
-    data-values='{{ values|tojson }}'></canvas>
-           
-            <div class="custom-legend" id="custom-legend"></div>
-        
+    <!-- LISTA -->
+    <div class="lista-receitas">
 
-    <!-- <div class="legend-container" id="legend">
-       Legendas serão geradas pelo JS 
-    </div> -->
+      {% for origem, lista in receitas_agrupadas.items() %}
+    
+        <!-- TÍTULO DO GRUPO -->
+        <div class="grupo-titulo">
+          {{ origem }}
+        </div>
+    
+        <!-- ITENS DO GRUPO -->
+        {% for r in lista %}
+          <div class="receita-card">
+    
+            <div class="receita-info">
+              <div class="receita-descricao">{{ r[1] }}</div>
+            </div>
+    
+            <div class="receita-direita">
+    
+              <div class="receita-valor">
+                R$ {{ r[2] | round(2) }}
+              </div>
+    
+              <div class="receita-acoes">
+                <i class="fas fa-edit edit-receita"
+                   data-id="{{ r[0] }}"
+                   data-descricao="{{ r[1] }}"
+                   data-valor="{{ r[2] }}"
+                   data-mes="{{ mes_atual }}">
+                </i>
+    
+                <i class="fa-solid fa-trash delete-receita"
+                   data-id="{{ r[0] }}">
+                </i>
+              </div>
+    
+            </div>
+    
+          </div>
+        {% endfor %}
+    
+      {% endfor %}
+    
+    </div>
+
+    <!-- BOTÃO -->
+    <div class="acoes-final">
+      <button id="addReceitaBtn" class="btn-adicionar-floating">
+        <span class="material-icons">add</span>
+        <span>Adicionar</span>
+      </button>
+    </div>
+
   </div>
 
-  <div class="total-gasto">
-    Total Recebido no período: R$ <strong>{{ values | sum | round(2) }}</strong>
-  </div>
-
-
-  <button id="addReceitaBtn">Adicionar Receita</button>
-
-  <!-- Modal -->
+  <!-- MODAL -->
   <div id="modal" class="modal">
     <div class="modal-content">
+
       <span class="close-btn" onclick="fecharModal()">&times;</span>
-      <h2>Nova Receita</h2>
-      <form id="formReceita" method="POST">
-        <label for="receita">Receita:</label>
-        <input type="text" name="receita" id="receita" required />
-  
-        <label for="valor">Valor:</label>
-        <input type="number" name="valor" id="valor" step="0.01" required />
-  
-        <label for="mes">Mês:</label>
-        <select name="mes" id="mes" required>
-          <option value="" disabled >Selecione o mês</option>
-          <option value="janeiro">Janeiro</option>
-          <option value="fevereiro">Fevereiro</option>
-          <option value="março">Março</option>
-          <option value="abril">Abril</option>
-          <option value="maio" selected>Maio</option>
-          <option value="junho">Junho</option>
-          <option value="julho">Julho</option>
-          <option value="agosto">Agosto</option>
-          <option value="setembro">Setembro</option>
-          <option value="outubro">Outubro</option>
-          <option value="novembro">Novembro</option>
-          <option value="dezembro">Dezembro</option>
+
+      <h3 id="modal-title">Nova Receita</h3>
+
+      <form id="formReceita">
+        <input type="hidden" id="receita-id">
+
+        <label>Descrição</label>
+        <input type="text" id="receita-desc" required>
+
+        <label>Valor</label>
+        <input type="number" id="receita-valor" step="0.01" required>
+
+        <label>Mês</label>
+        <select id="receita-mes">
+          {% for m in meses %}
+            <option value="{{ m }}" {% if m == mes_atual %}selected{% endif %}>
+              {{ m|capitalize }}
+            </option>
+          {% endfor %}
         </select>
-  
-        <button type="submit">Salvar</button>
+
+        <button type="submit" class="btn-acao primary">Salvar</button>
       </form>
+
     </div>
   </div>
 
+  <!-- FOOTER -->
   <div class="footer-bar">
     <a href="{{ url_for('gasto.index') }}">
       <button class="footer-btn">
@@ -132,30 +189,28 @@
         <span class="footer-text">Visão Geral</span>
       </button>
     </a>
+
     <a href="{{ url_for('despesa.despesas') }}">
       <button class="footer-btn">
         <span class="material-icons">bar_chart</span>
         <span class="footer-text">Despesas</span>
       </button>
     </a>
+
     <a href="{{ url_for('gasto.extrato') }}">
       <button class="footer-btn">
         <span class="material-icons">account_balance_wallet</span>
         <span class="footer-text">Transações</span>
       </button>
     </a>
+
     <a href="#">
       <button class="footer-btn active">
         <span class="material-icons">payment</span>
         <span class="footer-text">Receitas</span>
       </button>
     </a>
-    <!-- <a href="{{ url_for('despesa.metas') }}">
-      <button class="footer-btn">
-        <span class="material-icons">payment</span>
-        <span class="footer-text">Limites</span>
-      </button>
-    </a> -->
+
     <a href="{{ url_for('gasto.configuracoes') }}">
       <button class="footer-btn">
         <span class="material-icons">settings</span>
@@ -163,8 +218,6 @@
       </button>
     </a>
   </div>
-  
-
-    <script src="static/js/comum.js" defer></script>
+  <div id="toast" class="toast"></div>
 </body>
 </html>
