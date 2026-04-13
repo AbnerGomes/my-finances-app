@@ -37,30 +37,64 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // deletar
+  let receitaIdParaDeletar = null;
+  let cardParaRemover = null;
+
+  // abrir modal ao clicar na lixeira
   document.addEventListener("click", function (e) {
 
     if (e.target.classList.contains("delete-receita")) {
+
+      receitaIdParaDeletar = e.target.dataset.id;
+      cardParaRemover = e.target.closest(".receita-card");
+
+      document.getElementById("modal-confirm").style.display = "flex";
+    }
+
+  });
+
+  //confirmação do delete
+  document.getElementById("btn-confirmar-delete").addEventListener("click", async () => {
+
+    if (!receitaIdParaDeletar) return;
   
-      const id = e.target.dataset.id;
+    try {
+      await fetch("/deletar_receita", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ id: receitaIdParaDeletar })
+      });
   
-      if (confirm("Deseja excluir essa receita?")) {
+      showToast("Receita excluída!");
   
-        fetch("/deletar_receita", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ id })
-        })
-        .then(() => {
-          showToast("Receita excluída!");
-          e.target.closest(".receita-card").remove();
-        })
-        .catch(() => showToast("Erro ao excluir", false));
+      if (cardParaRemover) {
+        cardParaRemover.style.transition = "0.3s";
+        cardParaRemover.style.transform = "translateX(-100%)";
+        cardParaRemover.style.opacity = "0";
+  
+        setTimeout(() => {
+          cardParaRemover.remove();
+        }, 300);
       }
+  
+    } catch {
+      showToast("Erro ao excluir", false);
     }
   
+    fecharModalConfirm();
   });
+
+  //cancelar + fechar
+  document.getElementById("btn-cancelar").addEventListener("click", fecharModalConfirm);
+
+  function fecharModalConfirm() {
+    document.getElementById("modal-confirm").style.display = "none";
+    receitaIdParaDeletar = null;
+    cardParaRemover = null;
+  }
+
 
   // fechar modal
   window.fecharModal = function () {

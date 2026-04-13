@@ -440,3 +440,17 @@ h1 {
   font-weight: bold;
   color: #6b7280;
 }
+
+
+.btn-acao.danger {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.btn-acao.danger:hover {
+  background: #fecaca;
+}
+
+.receita-card {
+  transition: all 0.3s ease;
+}

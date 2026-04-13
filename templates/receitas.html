@@ -219,5 +219,24 @@
     </a>
   </div>
   <div id="toast" class="toast"></div>
+
+  <!-- modal confirmação delete -->
+    <div id="modal-confirm" class="modal">
+    <div class="modal-content">
+  
+      <span class="close-btn" onclick="fecharModalConfirm()">&times;</span>
+  
+      <h3>Excluir Receita</h3>
+      <p style="text-align:center; font-size:13px; color:#6b7280;">
+        Tem certeza que deseja excluir?
+      </p>
+  
+      <div style="display:flex; gap:10px; margin-top:15px;">
+        <button id="btn-cancelar" class="btn-acao">Cancelar</button>
+        <button id="btn-confirmar-delete" class="btn-acao danger">Excluir</button>
+      </div>
+  
+    </div>
+  </div>
 </body>
 </html>
