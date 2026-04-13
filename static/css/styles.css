@@ -584,3 +584,21 @@ background-color: #003f5c;
   font-weight: bold;
   font-size: 15px;
 }
+
+.dashboard-wrapper {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+
+  /* 🔥 ESSENCIAL */
+  padding-top: 80px;   /* espaço pro header */
+  padding-bottom: 90px; /* espaço pro footer */
+}
+
+.card-resumo {
+  margin-bottom: 10px;
+}
+
+body {
+  overflow-x: hidden;
+}
