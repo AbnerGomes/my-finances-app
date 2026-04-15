@@ -97,14 +97,16 @@
 
   <div class="chart-and-buttons">
 <div class="container-btn">
-<div class="period-container-wrapper" id="period-buttons">
-  <button class="period-button " onclick="filtrarGastosBtn('semanaatual')">Semana Atual</button>
-  <button class="period-button " onclick="filtrarGastosBtn('ontem')">Ontem</button>
-  <button class="period-button " onclick="filtrarGastosBtn('hoje')">Hoje</button>
-  <button class="period-button " onclick="filtrarGastosBtn('semanapassada')">Semana Passada</button>
-  <button class="period-button " onclick="filtrarGastosBtn('mesatual')">Mês Atual</button>
-  <button class="period-button " onclick="filtrarGastosBtn('mesanterior')">Mês Anterior</button>
-</div>
+  <div class="period-container-wrapper" id="period-buttons">
+
+    <button class="period-chip active" onclick="filtrarGastosBtn('mesatual')">Mês</button>
+    <button class="period-chip" onclick="filtrarGastosBtn('hoje')">Hoje</button>
+    <button class="period-chip" onclick="filtrarGastosBtn('ontem')">Ontem</button>
+    <button class="period-chip" onclick="filtrarGastosBtn('semanaatual')">Semana</button>
+    <button class="period-chip" onclick="filtrarGastosBtn('semanapassada')">Sem. Ant</button>
+    <button class="period-chip" onclick="filtrarGastosBtn('mesanterior')">Mês Ant</button>
+  
+  </div>
 </div>
 
 <!-- <br><br> -->

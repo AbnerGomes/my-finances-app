@@ -278,7 +278,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    const buttons = document.querySelectorAll('.period-button');
+    const buttons = document.querySelectorAll('.period-chip');
 
     buttons.forEach(button => {
       button.addEventListener('click', function () {
@@ -306,9 +306,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.addEventListener("click", function (e) {
     // Verifica se clicou num botão com a classe "period-button"
-    if (e.target.classList.contains("period-button")) {
+    if (e.target.classList.contains("period-chip")) {
       // Remove 'active' de todos
-      document.querySelectorAll(".period-button").forEach(btn => {
+      document.querySelectorAll(".period-chip").forEach(btn => {
         btn.classList.remove("active");
       });
 

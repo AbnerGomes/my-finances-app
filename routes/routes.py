@@ -689,18 +689,15 @@ def receitas():
 
     mes_formatado = f"{numero_mes}-2025"
 
-    # ❌ NÃO PRECISA MAIS (isso era pro gráfico)
+    #  NÃO PRECISA MAIS (isso era pro gráfico)
     # resultados = gasto_bp.gasto_service.get_receitas_mes(usuario, mes_formatado, categorias)
 
-    # ❌ NÃO PRECISA MAIS (dependia do resultados)
+    #  NÃO PRECISA MAIS (dependia do resultados)
     # todas_categorias = sorted(set(row[0] for row in resultados)) if resultados else []
 
-    # ❌ NÃO PRECISA MAIS (gráfico)
+    #  NÃO PRECISA MAIS (gráfico)
     # labels = [r[0].capitalize() for r in resultados]
     # values = [float(r[1]) for r in resultados]
-
-    # ❌ PODE MELHORAR (isso aqui tá fixo só maio)
-    # meses = ['maio']
 
     meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
              'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
@@ -723,14 +720,14 @@ def receitas():
                            usuario=usuario,
                            temConjuge=tem_conjuge,
 
-                           # ❌ NÃO PRECISA MAIS
+                           #  NÃO PRECISA MAIS
                            # labels=labels,
                            # values=values,
 
                            meses=meses,
                            mes_atual=mes,
 
-                           # ❌ NÃO PRECISA MAIS
+                           #  NÃO PRECISA MAIS
                            # categorias=categorias,
                            # todas_categorias=todas_categorias,
 
