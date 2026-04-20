@@ -469,6 +469,7 @@ h2 {
   flex-direction: column;
   gap: 10px;
   padding: 10px;
+  padding-bottom: 140px; /* ajuste conforme altura do footer */
 }
 
 .despesa-card {
