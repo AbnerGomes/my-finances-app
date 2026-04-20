@@ -109,13 +109,12 @@
 <div class="lista-despesas">
 
   {% for despesa in despesas %}
-  <div class="despesa-card"
-       data-id="{{ despesa[6] }}"
-       data-status="{{ despesa[4] }}"
-       style="border-left: 4px solid 
-       {% if despesa[4] == 'Pago' %}#22c55e
-       {% elif despesa[4] == 'Parcial' %}#f59e0b
-       {% else %}#ef4444{% endif %};">
+  <div class="despesa-card 
+  {% if despesa[4] == 'Pago' %}status-pago
+  {% elif despesa[4] == 'Parcial' %}status-parcial
+  {% else %}status-pendente{% endif %}"
+  data-id="{{ despesa[6] }}"
+  data-status="{{ despesa[4] }}">
 
     <!-- TOPO (AGORA COM 3 COLUNAS) -->
     <div class="despesa-topo">

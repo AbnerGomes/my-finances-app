@@ -19,6 +19,19 @@ function atualizarStatus(selectElement) {
   const idDespesa = card.dataset.id;
   const novoStatus = selectElement.value;
 
+  // 🔥 remove classes antigas
+  card.classList.remove("status-pago", "status-parcial", "status-pendente");
+
+  // 🔥 adiciona nova
+  if (novoStatus === "Pago") {
+    card.classList.add("status-pago");
+  } else if (novoStatus === "Parcial") {
+    card.classList.add("status-parcial");
+  } else {
+    card.classList.add("status-pendente");
+  }
+
+  // backend
   fetch('/atualizar_status', {
     method: 'POST',
     headers: {
