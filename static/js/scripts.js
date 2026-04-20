@@ -322,10 +322,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
       const modal_mo = document.getElementById('modal-mo');
       modal_mo.style.display = 'none'; 
-   } 
+    } 
 
 
-  });
+});      
 
 //   function toggleDropdown() {
 //     const menu = document.getElementById('dropdown-menu');

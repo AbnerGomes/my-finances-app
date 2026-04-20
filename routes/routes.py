@@ -436,25 +436,22 @@ def editar_despesa():
 
 @despesa_bp.route('/deletar_despesa', methods=['POST'])
 def deletar_despesa():
-    print('foi')
-    if 'usuario' not in session:
-        flash('Você precisa estar logado para deletar uma despesa.')
-        return redirect(url_for('gasto.login')) 
 
-    id_despesa = request.form.get('id')
+    if request.is_json:
+        data = request.get_json()
+        id_despesa = data.get('id')
+    else:
+        id_despesa = request.form.get('id')
 
     if not id_despesa:
-        flash('ID do despesa não fornecido!', 'danger')
-        return redirect(url_for('gasto.extrato')) 
+        return jsonify({'erro': 'ID não enviado'}), 400
 
     try:
         despesa_bp.despesa_service.deletar_despesa(id_despesa)
-        flash('Despesa deletada com sucesso!', 'success')
+        return jsonify({'sucesso': True})
     except Exception as e:
-        print("Erro ao deletar despesa:", e)
-        flash('Erro ao tentar deletar o despesa. 😓', 'danger')
-
-    return despesas() 
+        print("Erro ao deletar:", e)
+        return jsonify({'erro': 'Falha ao deletar'}), 500
 
 #exportação
 @gasto_bp.route('/exportar/excel')
