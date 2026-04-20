@@ -660,15 +660,26 @@ def metas():
 def receitas():
 
     data_atual = datetime.now()
-    mes_por_extenso = data_atual.strftime("%B")
+
+    # pega número do mês (1-12)
+    mes_num = data_atual.month
+
+    # mapa reverso (número -> nome em português)
+    meses_portugues_lista = [
+        "janeiro", "fevereiro", "março", "abril",
+        "maio", "junho", "julho", "agosto",
+        "setembro", "outubro", "novembro", "dezembro"
+    ]
+
+    mes_por_extenso = meses_portugues_lista[mes_num - 1]
 
     mes = request.args.get('mes') or mes_por_extenso.lower()
-    categorias = request.args.getlist('categorias')  # ❌ NÃO PRECISA MAIS (não usa filtro por categoria)
+    #categorias = request.args.getlist('categorias')  # ❌ NÃO PRECISA MAIS (não usa filtro por categoria)
     usuario = session['usuario']
 
     # Se não há categorias, define como 'Todas'
-    if not categorias:
-        categorias = ['Todas']  # ❌ NÃO PRECISA MAIS
+    #if not categorias:
+    #   categorias = ['Todas']  # ❌ NÃO PRECISA MAIS
 
     meses_portugues = {
             "janeiro": "01",
@@ -689,17 +700,7 @@ def receitas():
     if not numero_mes:
         return jsonify({"error": "Mês inválido"}), 400
 
-    mes_formatado = f"{numero_mes}-2025"
-
-    #  NÃO PRECISA MAIS (isso era pro gráfico)
-    # resultados = gasto_bp.gasto_service.get_receitas_mes(usuario, mes_formatado, categorias)
-
-    #  NÃO PRECISA MAIS (dependia do resultados)
-    # todas_categorias = sorted(set(row[0] for row in resultados)) if resultados else []
-
-    #  NÃO PRECISA MAIS (gráfico)
-    # labels = [r[0].capitalize() for r in resultados]
-    # values = [float(r[1]) for r in resultados]
+    mes_formatado = f"{numero_mes}-2026"
 
     meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
              'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
@@ -721,18 +722,8 @@ def receitas():
     return render_template('receitas.html',
                            usuario=usuario,
                            temConjuge=tem_conjuge,
-
-                           #  NÃO PRECISA MAIS
-                           # labels=labels,
-                           # values=values,
-
                            meses=meses,
                            mes_atual=mes,
-
-                           #  NÃO PRECISA MAIS
-                           # categorias=categorias,
-                           # todas_categorias=todas_categorias,
-
                            receitas_lista=receitas_lista,
                            total_receitas=total_receitas,
                            #receitas_agrupadas=agrupado,
