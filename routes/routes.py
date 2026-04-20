@@ -659,7 +659,6 @@ def metas():
 @gasto_bp.route('/receitas', methods=['GET', 'POST'], strict_slashes=False)
 def receitas():
 
-    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
     data_atual = datetime.now()
     mes_por_extenso = data_atual.strftime("%B")
 
