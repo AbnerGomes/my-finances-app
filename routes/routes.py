@@ -8,6 +8,7 @@ from datetime import datetime
 from datetime import date
 from collections import defaultdict
 import calendar
+import locale
 
 from collections import defaultdict
 
@@ -657,7 +658,12 @@ def metas():
 
 @gasto_bp.route('/receitas', methods=['GET', 'POST'], strict_slashes=False)
 def receitas():
-    mes = request.args.get('mes') or 'maio'
+
+    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+    data_atual = datetime.now()
+    mes_por_extenso = data_atual.strftime("%B")
+
+    mes = request.args.get('mes') or mes_por_extenso.lower()
     categorias = request.args.getlist('categorias')  # ❌ NÃO PRECISA MAIS (não usa filtro por categoria)
     usuario = session['usuario']
 

@@ -53,26 +53,26 @@ document.addEventListener('click', function (event) {
     document.getElementById('modal-cadastrar').style.display = 'block';
 
     //nao validar por enquanto
-    // if (event.target.classList.contains('btn-adicionar')) {
-    //   event.preventDefault(); // evita comportamento padrão do botão/link
+    if (event.target.classList.contains('btn-adicionar')) {
+      event.preventDefault(); // evita comportamento padrão do botão/link
 
-    //   //comentado temporariamente para testes  
-    //   fetch('/valida_mensalista')
-    //   .then(response => response.json())  // Converte a resposta para JSON
-    //   .then(dados => {
+      //comentado temporariamente para testes  
+      // fetch('/valida_mensalista')
+      // .then(response => response.json())  // Converte a resposta para JSON
+      // .then(dados => {
 
-    //     if (dados.status === 'ok') {
-    //        document.getElementById('modal-cadastrar').style.display = 'block';
-    //     } else {
-    //       document.getElementById('modal-mensalista').style.display = 'block';
-    //     }
-    //   })
-    //   .catch(error => {
-    //     console.error('Erro na requisição:', error);
-    //   }); 
-    // }
-    // else
-    // {
+      //   if (dados.status === 'ok') {
+      //      document.getElementById('modal-cadastrar').style.display = 'block';
+      //   } else {
+      //     document.getElementById('modal-mensalista').style.display = 'block';
+      //   }
+      // })
+      // .catch(error => {
+      //   console.error('Erro na requisição:', error);
+      // }); 
+    }
+    else
+    {
     
     //ok mensalista
     if (event.target && event.target.classList.contains('btn-ok')) {
