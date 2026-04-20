@@ -600,16 +600,13 @@ body {
   text-overflow: ellipsis;
 }
 
-
-
-
-
-
 .acoes-final {
   display: flex;
   justify-content: space-between;
   gap: 10px;
   margin-top: 15px;
+
+  padding-bottom: 2px;
 }
 
 /* BASE */
@@ -655,7 +652,7 @@ body {
 
 .total-gastos {
   margin-top: 20px;
-  text-align: right;
+  text-align: left;
   font-size: 14px;
   font-weight: 500;
   color: #6b7280;
@@ -665,4 +662,87 @@ body {
   font-size: 18px;
   font-weight: bold;
   color: #0abfa7;
+}
+
+.btn-adicionar{
+  position: fixed;
+  bottom: 66px;
+
+  left: 50%;
+  transform: translateX(-50%); /* CENTRALIZA PERFEITO */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 12px 18px;
+
+  background: linear-gradient(135deg, #65e2eb, #26c9d4); /* verde suave */
+  color: white;
+
+  border: none;
+  border-radius: 30px;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+
+  z-index: 1000;
+
+  transition: all 0.25s ease;
+}
+
+/* BASE DOS BOTÕES LATERAIS */
+.btn-float-acao {
+  position: fixed;
+  bottom: 66px;
+
+  width: 50px;
+  height: 50px;
+
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: white;
+  text-decoration: none;
+
+  box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+  z-index: 1000;
+
+  transition: all 0.2s ease;
+}
+
+/* POSIÇÕES */
+.btn-float-acao.excel {
+  right: 80px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.btn-float-acao.pdf {
+  right: 20px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+/* EFEITOS */
+.btn-float-acao:hover {
+  transform: translateY(-2px);
+}
+
+.btn-float-acao:active {
+  transform: scale(0.92);
+}
+
+/* ÍCONE */
+.btn-float-acao .material-icons {
+  font-size: 22px;
+}
+
+.btn-float-acao {
+  backdrop-filter: blur(6px);
 }

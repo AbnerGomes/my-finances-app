@@ -57,7 +57,7 @@ function filtrarPorMes() {
 
 // ================= MODAIS =================
 function abrirModal(id) {
-  document.getElementById(id).style.display = "flex";
+    document.getElementById(id).style.display = "block"; 
 }
 
 function fecharModal(id) {
