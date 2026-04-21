@@ -50,12 +50,12 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('click', function (event) {
     // Verifica se o evento foi disparado por um botão de edição
     
-    document.getElementById('modal-cadastrar').style.display = 'block';
+    
 
     //nao validar por enquanto
     if (event.target.classList.contains('btn-adicionar')) {
       event.preventDefault(); // evita comportamento padrão do botão/link
-
+      document.getElementById('modal-cadastrar').style.display = 'block';
       //comentado temporariamente para testes  
       // fetch('/valida_mensalista')
       // .then(response => response.json())  // Converte a resposta para JSON

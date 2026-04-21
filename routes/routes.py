@@ -726,7 +726,6 @@ def receitas():
                            mes_atual=mes,
                            receitas_lista=receitas_lista,
                            total_receitas=total_receitas,
-                           #receitas_agrupadas=agrupado,
                            receitas_agrupadas=receitas_agrupadas
                            )
 
