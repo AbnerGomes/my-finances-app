@@ -1,4 +1,5 @@
 console.log("JS RECEITAS CARREGOU");
+
 document.addEventListener("DOMContentLoaded", () => {
 
   const modal = document.getElementById("modal");
@@ -10,54 +11,61 @@ document.addEventListener("DOMContentLoaded", () => {
   const valorInput = document.getElementById("receita-valor");
   const mesInput = document.getElementById("receita-mes");
 
-  // abrir modal novo
+  // ================= ABRIR MODAL =================
   addBtn.addEventListener("click", () => {
-    console.log("clicou"); // TESTE
     idInput.value = "";
     descInput.value = "";
     valorInput.value = "";
+
+    document.getElementById("modal-title").innerText = "Nova Receita";
+
     modal.style.display = "flex";
   });
 
-  // editar
+  // ================= EDITAR =================
   document.addEventListener("click", function (e) {
-
     if (e.target.classList.contains("edit-receita")) {
-  
-      document.getElementById("modal").style.display = "flex";
-  
+
+      modal.style.display = "flex";
+
       document.getElementById("modal-title").innerText = "Editar Receita";
-  
-      document.getElementById("receita-id").value = e.target.dataset.id;
-      document.getElementById("receita-desc").value = e.target.dataset.descricao;
-      document.getElementById("receita-valor").value = e.target.dataset.valor;
-      document.getElementById("receita-mes").value = e.target.dataset.mes;
+
+      idInput.value = e.target.dataset.id;
+      descInput.value = e.target.dataset.descricao;
+      valorInput.value = e.target.dataset.valor;
+      mesInput.value = e.target.dataset.mes;
     }
-  
   });
 
-  // deletar
+  // ================= DELETE =================
   let receitaIdParaDeletar = null;
   let cardParaRemover = null;
 
-  // abrir modal ao clicar na lixeira
   document.addEventListener("click", function (e) {
 
-    if (e.target.classList.contains("delete-receita")) {
-
-      receitaIdParaDeletar = e.target.dataset.id;
-      cardParaRemover = e.target.closest(".receita-card");
-
+    const btn = e.target.closest(".delete-receita"); // 🔥 MELHOR
+  
+    if (btn) {
+      receitaIdParaDeletar = btn.dataset.id;
+      cardParaRemover = btn.closest(".receita-card");
+  
+      console.log("CARD:", cardParaRemover); // debug
+  
       document.getElementById("modal-confirm").style.display = "flex";
     }
-
+  
   });
 
-  //confirmação do delete
   document.getElementById("btn-confirmar-delete").addEventListener("click", async () => {
 
-    if (!receitaIdParaDeletar) return;
+    if (!receitaIdParaDeletar || !cardParaRemover) {
+      console.error("Dados inválidos para delete");
+      return;
+    }
   
+    const card = cardParaRemover; // 🔥 SALVA REFERÊNCIA
+    const grupo = card.closest(".grupo-receitas");
+
     try {
       await fetch("/deletar_receita", {
         method: "POST",
@@ -69,32 +77,43 @@ document.addEventListener("DOMContentLoaded", () => {
   
       showToast("Receita excluída!");
   
-      cardParaRemover = e.target.closest(".receita-card");
-      const grupo = cardParaRemover?.closest(".grupo-receitas");
-
-      if (cardParaRemover) {
-        cardParaRemover.style.transition = "0.3s";
-        cardParaRemover.style.transform = "translateX(-100%)";
-        cardParaRemover.style.opacity = "0";
-
-        setTimeout(() => {
-          cardParaRemover.remove();
-
-          if (grupo && grupo.querySelectorAll(".receita-card").length === 0) {
-            grupo.remove();
-          }
-
-        }, 300);
-      }
+      // const grupo = cardParaRemover.closest(".grupo-receitas");
   
-    } catch {
+      card.style.transition = "0.3s";
+      card.style.transform = "translateX(-100%)";
+      card.style.opacity = "0";
+
+      setTimeout(() => {
+        console.log(card)
+        if (card) {
+          card.remove();
+          console.log("ENTROU ??????")
+        }
+      
+        // 🔥 DEBUG
+        console.log("Grupo HTML:", grupo?.innerHTML);
+      
+        console.log("TAMANHO ANTES DA REMOCAO");
+        console.log(grupo.querySelectorAll(".receita-card").length);
+        if (grupo && grupo.querySelectorAll(".receita-card").length === 0) {
+          console.log("REMOVENDO GRUPO");
+      
+          grupo.innerHTML = ""; // limpa tudo
+          grupo.remove();
+          console.log("TAMANHO APOS A REMOCAO");
+        }
+        
+      }, 300);
+  
+    } catch (err) {
+      console.error(err);
       showToast("Erro ao excluir", false);
     }
   
     fecharModalConfirm();
   });
 
-  //cancelar + fechar
+  // ================= CANCELAR MODAL =================
   document.getElementById("btn-cancelar").addEventListener("click", fecharModalConfirm);
 
   function fecharModalConfirm() {
@@ -103,8 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cardParaRemover = null;
   }
 
-
-  // fechar modal
+  // ================= FECHAR MODAL =================
   window.fecharModal = function () {
     modal.style.display = "none";
   };
@@ -113,45 +131,79 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === modal) modal.style.display = "none";
   };
 
-  // salvar (create + update)
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+  // ================= SALVAR =================
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  const id = idInput.value;
+    const id = idInput.value;
 
-  const data = {
-    id: id,
-    receita: descInput.value,
-    valor: valorInput.value,
-    mes: mesInput.value
-  };
+    const data = {
+      id: id,
+      receita: descInput.value,
+      valor: valorInput.value,
+      mes: mesInput.value
+    };
 
-  // 
-  const url = id ? "/editar_receita" : "/salvar_receita";
+    const url = id ? "/editar_receita" : "/salvar_receita";
 
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(data)
-    });
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+      });
 
-    if (response.ok) {
-      showToast(id ? "Receita atualizada!" : "Receita criada!");
-      location.reload();
-    } else {
-      showToast("Erro ao salvar", false);
-      return;
+      if (response.ok) {
+        showToast(id ? "Receita atualizada!" : "Receita criada!");
+        location.reload();
+      } else {
+        showToast("Erro ao salvar", false);
+      }
+
+    } catch {
+      showToast("Erro de conexão", false);
     }
+  });
 
-  } catch (err) {
-    showToast("Erro de conexão", false);
-  }
+  // ================= SWIPE DELETE =================
+  // let startX = 0;
+
+  // document.querySelectorAll(".receita-card").forEach(card => {
+
+  //   card.addEventListener("touchstart", e => {
+  //     startX = e.touches[0].clientX;
+  //   });
+
+  //   card.addEventListener("touchend", e => {
+  //     let endX = e.changedTouches[0].clientX;
+
+  //     if (startX - endX > 80) {
+  //       card.style.transform = "translateX(-100px)";
+  //       card.style.opacity = "0.5";
+
+  //       const id = card.querySelector(".delete-receita").dataset.id;
+
+  //       setTimeout(() => {
+  //         if (confirm("Excluir receita?")) {
+  //           fetch("/deletar_receita", {
+  //             method: "POST",
+  //             headers: {"Content-Type": "application/json"},
+  //             body: JSON.stringify({ id })
+  //           }).then(() => location.reload());
+  //         } else {
+  //           card.style.transform = "translateX(0)";
+  //           card.style.opacity = "1";
+  //         }
+  //       }, 200);
+  //     }
+  //   });
+
+  // });
+
 });
 
-});
 
-
+// ================= TOAST =================
 function showToast(msg, success = true) {
   const toast = document.getElementById("toast");
 
@@ -164,49 +216,3 @@ function showToast(msg, success = true) {
     toast.classList.remove("show");
   }, 2500);
 }
-
-let startX = 0;
-
-document.querySelectorAll(".receita-card").forEach(card => {
-
-  card.addEventListener("touchstart", e => {
-    startX = e.touches[0].clientX;
-  });
-
-  card.addEventListener("touchend", e => {
-    let endX = e.changedTouches[0].clientX;
-
-    if (startX - endX > 80) {
-      card.style.transform = "translateX(-100px)";
-      card.style.opacity = "0.5";
-
-      const id = card.querySelector(".delete-receita").dataset.id;
-
-      setTimeout(() => {
-        if (confirm("Excluir receita?")) {
-          fetch("/deletar_receita", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ id })
-          }).then(() => location.reload());
-        } else {
-          card.style.transform = "translateX(0)";
-          card.style.opacity = "1";
-        }
-      }, 200);
-    }
-  });
-
-});
-
-addReceitaBtn.addEventListener("click", () => {
-  console.log("clicou");
-
-  idInput.value = "";
-  descInput.value = "";
-  valorInput.value = "";
-
-  document.getElementById("modal-title").innerText = "Nova Receita"; // 🔥 ADD ISSO
-
-  modal.style.display = "flex";
-});

@@ -71,7 +71,10 @@
   <!-- CONTAINER -->
   <div class="container-receitas">
 
-    <h1>Receitas</h1>
+    <div class="header-receitas">
+      <h1>Receitas</h1>
+      <span class="sub">Controle mensal de entradas</span>
+    </div>
 
     <!-- FILTRO -->
     <div class="topo-card">
@@ -86,9 +89,15 @@
         </select>
       </form>
     
-      <div class="total-receitas">
-        <span>Total do mês</span>
-        <strong>R$ {{ total_receitas | round(2) }}</strong>
+      <div class="card-total-receita">
+        <div class="icone">
+          <span class="material-icons">trending_up</span>
+        </div>
+
+        <div>
+          <div class="label">Total do mês</div>
+          <div class="valor">R$ {{ total_receitas | round(2) }}</div>
+        </div>
       </div>
     
     </div>
@@ -105,34 +114,37 @@
           </div>
     
           {% for r in lista %}
-            <div class="receita-card">
-    
-              <div class="receita-info">
+          <div class="receita-card">
+
+            <div class="left">
+              <span class="material-icons receita-icon">payments</span>
+          
+              <div>
                 <div class="receita-descricao">{{ r[1] }}</div>
+                <div class="receita-meta">Entrada mensal</div>
               </div>
-    
-              <div class="receita-direita">
-    
-                <div class="receita-valor">
-                  R$ {{ r[2] | round(2) }}
-                </div>
-    
-                <div class="receita-acoes">
-                  <i class="fas fa-edit edit-receita"
-                     data-id="{{ r[0] }}"
-                     data-descricao="{{ r[1] }}"
-                     data-valor="{{ r[2] }}"
-                     data-mes="{{ mes_atual }}">
-                  </i>
-    
-                  <i class="fa-solid fa-trash delete-receita"
-                     data-id="{{ r[0] }}">
-                  </i>
-                </div>
-    
-              </div>
-    
             </div>
+          
+            <div class="right">
+              <div class="receita-valor">
+                + R$ {{ r[2] | round(2) }}
+              </div>
+          
+              <div class="receita-acoes">
+                <i class="fas fa-edit edit-receita"
+                   data-id="{{ r[0] }}"
+                   data-descricao="{{ r[1] }}"
+                   data-valor="{{ r[2] }}"
+                   data-mes="{{ mes_atual }}">
+                </i>
+          
+                <i class="fa-solid fa-trash delete-receita"
+                   data-id="{{ r[0] }}">
+                </i>
+              </div>
+            </div>
+          
+          </div>
           {% endfor %}
     
         </div> <!--  FECHA GRUPO -->

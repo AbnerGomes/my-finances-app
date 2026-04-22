@@ -250,16 +250,14 @@ h1 {
 /* CARD */
 .receita-card {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
 
   background: #fff;
-  padding: 14px 16px;
-  border-radius: 12px;
-  margin-bottom: 10px;
+  border-radius: 14px;
+  padding: 10px;
 
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   transition: 0.2s;
 }
 
@@ -267,45 +265,44 @@ h1 {
   transform: translateY(-2px);
 }
 
-/* ESQUERDA */
-.receita-info {
-  flex: 1;
-}
-
-.receita-descricao {
-  font-size: 15px;
-  font-weight: 500;
-}
-
-/* DIREITA */
-.receita-direita {
+/* lado esquerdo */
+.receita-card .left {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-/* VALOR */
-.receita-valor {
-  font-weight: bold;
-  color: #16a397;
-  min-width: 90px;
-  text-align: right;
-}
-
-/* AÇÕES */
-.receita-acoes {
-  display: flex;
   gap: 10px;
 }
 
+.receita-icon {
+  background: rgba(16,185,129,0.15);
+  color: #10b981;
+  padding: 6px;
+  border-radius: 8px;
+  font-size: 18px;
+}
+
+.receita-meta {
+  font-size: 10px;
+  color: #9ca3af;
+}
+
+/* direita */
+.receita-card .right {
+  text-align: right;
+}
+
+.receita-valor {
+  font-weight: bold;
+  color: #16a34a;
+}
+
 .receita-acoes i {
+  margin-left: 8px;
+  color: #9ca3af;
   cursor: pointer;
-  opacity: 0.5;
-  transition: 0.2s;
 }
 
 .receita-acoes i:hover {
-  opacity: 1;
+  color: #0abfa7;
 }
 
 .edit-receita {
@@ -411,9 +408,9 @@ h1 {
   }
 }
 
-.receita-card {
+/* .receita-card {
   animation: fadeInUp 0.3s ease;
-}
+} */
 
 .toast {
   position: fixed;
@@ -436,13 +433,13 @@ h1 {
   opacity: 1;
 }
 
-.grupo-titulo {
+/* .grupo-titulo {
   margin-top: 20px;
   margin-bottom: 6px;
   font-size: 13px;
   font-weight: bold;
   color: #6b7280;
-}
+} */
 
 
 .btn-acao.danger {
@@ -456,4 +453,73 @@ h1 {
 
 .receita-card {
   transition: all 0.3s ease;
+}
+
+
+/* HEADER */
+.header-receitas {
+  margin-bottom: 10px;
+}
+
+.header-receitas h1 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.header-receitas .sub {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* CARD TOTAL */
+.card-total-receita {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  border-radius: 14px;
+  padding: 12px;
+
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.card-total-receita .icone {
+  background: #16a34a;
+  color: white;
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+}
+
+.card-total-receita .label {
+  font-size: 11px;
+  color: #166534;
+}
+
+.card-total-receita .valor {
+  font-size: 16px;
+  font-weight: bold;
+  color: #14532d;
+}
+
+.grupo-receitas {
+  margin-bottom: 15px;
+}
+
+.grupo-titulo {
+  font-size: 12px;
+  font-weight: bold;
+  color: #374151;
+  margin-bottom: 6px;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.grupo-titulo::before {
+  content: "●";
+  color: #10b981;
+  font-size: 10px;
 }
