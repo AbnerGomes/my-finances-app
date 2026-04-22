@@ -859,7 +859,7 @@ def editar_receita():
     if not numero_mes:
         return jsonify({"error": "Mês inválido"}), 400
 
-    mes_formatado = f"{numero_mes}-2025"
+    mes_formatado = f"{numero_mes}-2026"
 
     try:
         sucesso = gasto_bp.gasto_service.editar_receita(
@@ -879,7 +879,9 @@ def editar_receita():
 def total_receitas_mes():
     usuario = session['usuario']
 
-    total = gasto_bp.gasto_service.get_total_receitas_mes(usuario)
+    periodo = request.args.get('periodo', 'mesatual')
+
+    total = gasto_bp.gasto_service.get_total_receitas_mes(usuario,periodo)
 
     return jsonify({"total": total or 0})        
 

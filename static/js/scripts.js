@@ -2,8 +2,12 @@ var donutChart = null; // Variável global inicializada
 
 var barChart =null;
 
+let periodoAtual = 'mesatual';
 
 function filtrarGastosBtn(periodo){
+
+    periodoAtual = periodo; // guarda o período
+
     let name = document.getElementById('current-username').textContent;
 
     let isCasal = name == 'Casal' ? 'S' : 'N'
@@ -56,7 +60,7 @@ function filtrarGastos(periodo,isCasal) {
                 totalGasto.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 
                 // 👉 buscar receitas do backend
-                fetch("/total_receitas_mes")
+                fetch(`/total_receitas_mes?periodo=${periodoAtual}`)
                 .then(res => res.json())
                 .then(data => {
 

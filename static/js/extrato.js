@@ -54,8 +54,9 @@ document.addEventListener('click', function (event) {
 
     //nao validar por enquanto
     if (event.target.classList.contains('btn-adicionar')) {
-      event.preventDefault(); // evita comportamento padrão do botão/link
       document.getElementById('modal-cadastrar').style.display = 'block';
+      event.preventDefault(); // evita comportamento padrão do botão/link
+      
       //comentado temporariamente para testes  
       // fetch('/valida_mensalista')
       // .then(response => response.json())  // Converte a resposta para JSON

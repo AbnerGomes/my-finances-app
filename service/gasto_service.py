@@ -364,7 +364,7 @@ class GastoService:
         group by origem, mes_referencia"""
 
 
-        cursor.execute(query, (usuario,mes_ano,'Toda','Todas'))
+        cursor.execute(query, (usuario,mes_ano,'Todas','Todas'))
         
         resultado = cursor.fetchall()
         conn.close()
@@ -464,7 +464,33 @@ class GastoService:
         finally:
             conn.close()
 
-    def get_total_receitas_mes(self, usuario):
+    def get_total_receitas_mes(self, usuario, periodo):
+
+        if periodo is None:
+                periodo='mesatual'
+
+        hoje = datetime.now().date()
+
+        mes_ano = None
+
+        if periodo == 'hoje' or periodo == 'mesatual':
+            mes_ano = hoje.strftime('%m-%Y')
+
+        elif periodo == 'ontem':
+            mes_ano = (hoje - timedelta(days=1)).strftime('%m-%Y')
+
+        elif periodo == 'semanaatual':
+            mes_ano = hoje.strftime('%m-%Y')
+
+        elif periodo == 'semanapassada':
+            data_ref = hoje - timedelta(days=7)
+            mes_ano = data_ref.strftime('%m-%Y')
+
+        elif periodo == 'mesanterior':
+            primeiro_dia_mes_atual = hoje.replace(day=1)
+            ultimo_dia_mes_anterior = primeiro_dia_mes_atual - timedelta(days=1)
+            mes_ano = ultimo_dia_mes_anterior.strftime('%m-%Y')
+
         conn = get_connection()
         cursor = conn.cursor()
 
@@ -473,10 +499,10 @@ class GastoService:
             FROM receitas
             WHERE id_usuario = (
                 SELECT id FROM usuarios WHERE nome = %s
-            )
+            ) and mes_referencia = %s
         """
-
-        cursor.execute(query, (usuario,))
+        print(mes_ano)
+        cursor.execute(query, (usuario,mes_ano))
         total = cursor.fetchone()[0]
 
         conn.close()
