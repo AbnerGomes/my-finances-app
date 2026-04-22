@@ -758,7 +758,7 @@ def salvar_receita():
     if not numero_mes:
         return jsonify({"error": "Mês inválido"}), 400
 
-    mes_formatado = f"{numero_mes}-2025"
+    mes_formatado = f"{numero_mes}-2026"
 
     print(mes_formatado)
 
