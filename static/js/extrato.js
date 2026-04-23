@@ -51,9 +51,9 @@ document.addEventListener('click', function (event) {
     // Verifica se o evento foi disparado por um botão de edição
     
     
+    const btn = event.target.closest('.btn-adicionar');
 
-    //nao validar por enquanto
-    if (event.target.classList.contains('btn-adicionar')) {
+    if (btn) {
       document.getElementById('modal-cadastrar').style.display = 'block';
       event.preventDefault(); // evita comportamento padrão do botão/link
       
