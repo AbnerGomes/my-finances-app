@@ -875,15 +875,18 @@ def editar_receita():
         return jsonify({"error": str(e)}), 500        
 
 
-@gasto_bp.route('/total_receitas_mes')
+@gasto_bp.route('/total_saldo_mes')
 def total_receitas_mes():
     usuario = session['usuario']
 
-    periodo = request.args.get('periodo', 'mesatual')
+    #periodo = request.args.get('periodo', 'mesatual')
 
-    total = gasto_bp.gasto_service.get_total_receitas_mes(usuario,periodo)
+    total_receitas = gasto_bp.gasto_service.get_total_receitas_mes(usuario,'mesatual')
+    total_gastos = gasto_bp.gasto_service.get_total_gastos_mes(usuario,'mesatual')
 
-    return jsonify({"total": total or 0})        
+    print(total_gastos)
+
+    return jsonify({"total_receitas": total_receitas or 0, "total_gastos": total_gastos or 0})        
 
 
 def agrupar_receitas(receitas):

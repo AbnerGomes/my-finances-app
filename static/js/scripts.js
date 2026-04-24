@@ -55,22 +55,28 @@ function filtrarGastos(periodo,isCasal) {
                     // Calcula e mostra o total
                 let totalGasto = valores.reduce((acc, val) => acc + parseFloat(val || 0), 0);
 
-                // Atualiza gastos
-                document.getElementById("total-gastos").innerText =
-                totalGasto.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                
 
                 // 👉 buscar receitas do backend
-                fetch(`/total_receitas_mes?periodo=${periodoAtual}`)
+                fetch(`/total_saldo_mes`)
                 .then(res => res.json())
                 .then(data => {
 
-                let totalReceitas = parseFloat(data.total || 0);
+                let totalReceitas = parseFloat(data.total_receitas || 0);
+                let totalGastos = parseFloat(data.total_gastos || 0);    
+
+                // Atualiza gastos
+                document.getElementById("total-gastos").innerText =
+                totalGastos.toLocaleString('pt-BR', { minimumFractionDigits: 2 });    
+
+                
 
                 document.getElementById("total-receitas").innerText =
                     totalReceitas.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 
-                let saldo = totalReceitas - totalGasto;
-
+                let saldo = totalReceitas - totalGastos; //aqui usa o total do mes
+                console.log(totalReceitas);
+                console.log(totalGastos);    
                 let saldoEl = document.getElementById("saldo-total");
 
                 saldoEl.innerText =
@@ -82,7 +88,7 @@ function filtrarGastos(periodo,isCasal) {
                 let totalFormatado = totalGasto.toLocaleString('pt-BR', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
-                });
+                }); //aqui o q foi selecionado
                 document.getElementById("valor-total").innerText = totalFormatado;
                 document.getElementById("valor-total").style.color = '#003f5c';
             }    

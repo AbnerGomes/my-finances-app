@@ -506,4 +506,58 @@ class GastoService:
         total = cursor.fetchone()[0]
 
         conn.close()
-        return total        
+        return total    
+
+    def get_total_gastos_mes(self, usuario, periodo):
+
+        usuario = self.get_usuario_by_name(usuario)
+
+        if periodo is None:
+                periodo='mesatual'
+
+        hoje = datetime.now().date()
+
+        inicio = fim = None
+
+        if periodo == 'ontem':
+            inicio = fim = hoje - timedelta(days=1)
+
+        elif periodo == 'hoje':
+            inicio = fim = hoje
+
+        elif periodo == 'semanaatual':
+            domingo_semana_atual = hoje - timedelta(days=hoje.weekday() + 1) if hoje.weekday() != 6 else hoje
+            inicio = domingo_semana_atual
+            fim = hoje
+
+        elif periodo == 'semanapassada':
+            # Domingo da semana passada (domingo anterior ao domingo da semana atual)
+            domingo_semana_atual = hoje - timedelta(days=hoje.weekday() + 1) if hoje.weekday() != 6 else hoje
+            domingo_passado = domingo_semana_atual - timedelta(days=7)
+            sabado_passado = domingo_passado + timedelta(days=6)
+            inicio = domingo_passado
+            fim = sabado_passado
+
+        elif periodo == 'mesatual':
+            inicio = hoje.replace(day=1)
+            fim = hoje
+
+        elif periodo == 'mesanterior':
+            primeiro_dia_mes_atual = hoje.replace(day=1)
+            ultimo_dia_mes_anterior = primeiro_dia_mes_atual - timedelta(days=1)
+            inicio = ultimo_dia_mes_anterior.replace(day=1)
+            fim = ultimo_dia_mes_anterior
+
+        conn = get_connection()
+        cursor = conn.cursor()
+        print(usuario)
+        query = """
+            SELECT SUM(valor_gasto)
+            FROM gastos
+            WHERE usuario IN (%s) AND data BETWEEN %s AND %s
+        """
+        cursor.execute(query, (usuario,inicio,fim))
+        total = cursor.fetchone()[0]
+
+        conn.close()
+        return total      
