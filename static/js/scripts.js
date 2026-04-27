@@ -67,12 +67,12 @@ function filtrarGastos(periodo,isCasal) {
 
                 // Atualiza gastos
                 document.getElementById("total-gastos").innerText =
-                totalGastos.toLocaleString('pt-BR', { minimumFractionDigits: 2 });    
-
+                totalGastos.toLocaleString('pt-BR', { minimumFractionDigits: 2,
+                    maximumFractionDigits: 2 });    
                 
-
                 document.getElementById("total-receitas").innerText =
-                    totalReceitas.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                    totalReceitas.toLocaleString('pt-BR', { minimumFractionDigits: 2,
+                        maximumFractionDigits: 2 });
 
                 let saldo = totalReceitas - totalGastos; //aqui usa o total do mes
                 console.log(totalReceitas);
@@ -80,7 +80,8 @@ function filtrarGastos(periodo,isCasal) {
                 let saldoEl = document.getElementById("saldo-total");
 
                 saldoEl.innerText =
-                    saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                    saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2 ,
+                        maximumFractionDigits: 2});
 
                 saldoEl.style.color = saldo >= 0 ? "#16a34a" : "#dc2626";
                 });    
