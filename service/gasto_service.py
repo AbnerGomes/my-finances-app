@@ -376,11 +376,11 @@ class GastoService:
         cursor = conn.cursor()
 
         query = """
-        SELECT r.id, origem, valor
+        SELECT r.id, origem, valor, data_receita
         FROM receitas r
         INNER JOIN usuarios u ON r.id_usuario = u.id
         WHERE u.nome = %s
-        AND mes_referencia = %s
+        AND DATE_TRUNC('month', data_receita) = DATE_TRUNC('month', %s::date)
         ORDER BY id DESC
         """
 
@@ -399,7 +399,7 @@ class GastoService:
             c = conn.cursor()
                     
             # Insere nova receita
-            c.execute("INSERT INTO RECEITAS (id_usuario, mes_referencia, origem, valor) VALUES (%s, %s, %s, %s)", (id_usuario, mes,origem,valor))
+            c.execute("INSERT INTO RECEITAS (id_usuario, data_receita, origem, valor) VALUES (%s, %s, %s, %s)", (id_usuario, mes,origem,valor))
             conn.commit()
             conn.close()
 

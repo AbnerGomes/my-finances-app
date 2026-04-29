@@ -9,7 +9,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const idInput = document.getElementById("receita-id");
   const descInput = document.getElementById("receita-desc");
   const valorInput = document.getElementById("receita-valor");
-  const mesInput = document.getElementById("receita-mes");
+
+  //const mesInput = document.getElementById("receita-mes");
+  const dataInput = document.getElementById("receita-data");
+  dataInput.value = new Date().toISOString().split("T")[0];
 
   // ================= ABRIR MODAL =================
   addBtn.addEventListener("click", () => {
@@ -33,7 +36,8 @@ document.addEventListener("DOMContentLoaded", () => {
       idInput.value = e.target.dataset.id;
       descInput.value = e.target.dataset.descricao;
       valorInput.value = e.target.dataset.valor;
-      mesInput.value = e.target.dataset.mes;
+      //mesInput.value = e.target.dataset.mes;
+      dataInput.value = e.target.dataset.data;
     }
   });
 
@@ -141,7 +145,8 @@ document.addEventListener("DOMContentLoaded", () => {
       id: id,
       receita: descInput.value,
       valor: valorInput.value,
-      mes: mesInput.value
+      //mes: mesInput.value
+      data: dataInput.value
     };
 
     const url = id ? "/editar_receita" : "/salvar_receita";

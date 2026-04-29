@@ -700,7 +700,8 @@ def receitas():
     if not numero_mes:
         return jsonify({"error": "Mês inválido"}), 400
 
-    mes_formatado = f"{numero_mes}-2026"
+    #mes_formatado = f"{numero_mes}-2026"
+    mes_formatado = f"2026-{numero_mes}-01"
 
     meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
              'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
@@ -737,7 +738,11 @@ def salvar_receita():
     
     origem = data.get("receita")
     valor = data.get("valor")
-    mes = data.get("mes").lower()  # converte para minúsculo
+
+     #receitas-refactor
+    #mes = data.get("mes").lower()  # converte para minúsculo
+
+    data_receita = data.get("data")  # yyyy-mm-dd
 
     meses_portugues = {
         "janeiro": "01",
@@ -758,12 +763,13 @@ def salvar_receita():
     if not numero_mes:
         return jsonify({"error": "Mês inválido"}), 400
 
-    mes_formatado = f"{numero_mes}-2026"
+    #receitas-refactor
+    #mes_formatado = f"{numero_mes}-2026"
 
     print(mes_formatado)
 
     try:
-        sucesso = gasto_bp.gasto_service.salvar_receita(usuario, mes_formatado, origem, valor)
+        sucesso = gasto_bp.gasto_service.salvar_receita(usuario, data_receita, origem, valor)
         return jsonify({"success": True}) if sucesso else jsonify({"alert": False})
     except Exception as e:
         return str(e), 500                           
@@ -838,7 +844,10 @@ def editar_receita():
     id_receita = data.get("id")
     origem = data.get("receita")
     valor = data.get("valor")
-    mes = data.get("mes").lower()
+    #receitas-refactor
+    #mes = data.get("mes").lower()
+
+    data_receita = data.get("data")
 
     meses_portugues = {
         "janeiro": "01",
@@ -859,11 +868,11 @@ def editar_receita():
     if not numero_mes:
         return jsonify({"error": "Mês inválido"}), 400
 
-    mes_formatado = f"{numero_mes}-2026"
+    #mes_formatado = f"{numero_mes}-2026"
 
     try:
         sucesso = gasto_bp.gasto_service.editar_receita(
-            usuario, id_receita, origem, valor, mes_formatado
+            usuario, id_receita, origem, valor, data_receita
         )
 
         if sucesso:
