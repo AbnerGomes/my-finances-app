@@ -759,14 +759,12 @@ def salvar_receita():
         "dezembro": "12"
     }
 
-    numero_mes = meses_portugues.get(mes)
-    if not numero_mes:
-        return jsonify({"error": "Mês inválido"}), 400
+    # numero_mes = meses_portugues.get(mes)
+    # if not numero_mes:
+    #     return jsonify({"error": "Mês inválido"}), 400
 
     #receitas-refactor
     #mes_formatado = f"{numero_mes}-2026"
-
-    print(mes_formatado)
 
     try:
         sucesso = gasto_bp.gasto_service.salvar_receita(usuario, data_receita, origem, valor)
@@ -864,9 +862,9 @@ def editar_receita():
         "dezembro": "12"
     }
 
-    numero_mes = meses_portugues.get(mes)
-    if not numero_mes:
-        return jsonify({"error": "Mês inválido"}), 400
+    #numero_mes = meses_portugues.get(mes)
+    # if not numero_mes:
+    #     return jsonify({"error": "Mês inválido"}), 400
 
     #mes_formatado = f"{numero_mes}-2026"
 
