@@ -62,6 +62,12 @@
   </div>
 
   <h2>Despesas Mensais</h2>
+  {% if temPendencias %}
+  <div class="alerta-pendencias"  onclick="filtrarPendentesAntigos(this)">
+    <span class="material-icons">warning</span>
+    Você possui {{ temPendencias }} despesas pendentes do mês anterior
+  </div>
+  {% endif %}
 <br>
 <div class="topo-filtro">
 

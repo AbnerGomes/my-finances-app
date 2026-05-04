@@ -4,8 +4,8 @@ from io import BytesIO
 import pandas as pd
 from xhtml2pdf import pisa
 import random
-from datetime import datetime
-from datetime import date
+from datetime import datetime, timedelta
+from datetime import date 
 from collections import defaultdict
 import calendar
 import locale
@@ -127,7 +127,7 @@ def cadastrar_gasto():
 
         gasto = request.form['gasto']
         valor = request.form['valor']
-        data = request.form['data']
+        data = request.form['data'] 
         categoria = request.form['categoria']
         
         usuario = session['usuario']
@@ -142,6 +142,30 @@ def cadastrar_gasto():
 
     # return render_template('cadastrar_gasto.html')
     return extrato()  
+
+@gasto_bp.route('/cadastrar_gasto_rapido', methods=['POST'])
+def cadastrar_gasto_rapido():
+
+    if 'usuario' not in session:
+        return jsonify({'erro': 'Não autenticado'}), 401
+
+    data = request.get_json()
+
+    descricao = data.get('gasto')
+    valor = data.get('valor')
+    categoria = data.get('categoria')
+    usuario = session['usuario']
+
+    hoje = datetime.now().strftime('%Y-%m-%d')
+
+    try:
+        gasto_bp.gasto_service.salvar_gasto(descricao, valor, hoje, categoria,usuario)
+
+        return jsonify({'sucesso': True})
+
+    except Exception as e:
+        print(e)
+        return jsonify({'erro': 'Falha ao salvar'}), 500
 
 @gasto_bp.route('/extrato', methods=['GET', 'POST'])
 @gasto_bp.route('/extrato/<isCasal>', methods=['GET', 'POST'])
@@ -337,14 +361,31 @@ def despesas():
     hoje = date.today()
     primeiro_mes = hoje.replace(day=1)
 
+    mes_atual = hoje.strftime('%Y-%m')
+
+    pendentes_antigos = request.args.get('pendentes_antigos')
+
     # Pega o filtro vindo da URL ou usa o primeiro dia do mês atual
-    mes_ano_str = request.args.get('mes_ano') or primeiro_mes.strftime('%Y-%m')
+    #mes_ano_str = request.args.get('mes_ano') or primeiro_mes.strftime('%Y-%m')
+    if pendentes_antigos == 'S':
+        hoje = datetime.today()
+        primeiro_dia_mes = hoje.replace(day=1)
+        mes_anterior = (primeiro_dia_mes - timedelta(days=1)).strftime('%Y-%m')
+
+        mes_ano_str = mes_anterior
+    else:
+        mes_ano_str = request.args.get('mes_ano') or primeiro_mes.strftime('%Y-%m')
 
     # Busca os gastos ordenados do mais recente para o mais antigo
     despesas = despesa_bp.despesa_service.busca_despesas(usuario,mes_ano_str[-7:],'Todas',isCasal)  
 
     tem_conjuge = despesa_bp.despesa_service.tem_conjuge(usuario)
 
+    tem_pendencias = despesa_bp.despesa_service.tem_pendencias_mes_anterior(usuario, isCasal)
+
+    if mes_ano_str < mes_atual:
+        tem_pendencias = False
+    
     soma_despesas = 0
 
     soma_despesas = sum(despesa[2] for despesa in despesas)
@@ -359,7 +400,8 @@ def despesas():
         ,usuario=usuario,
         isCasal=isCasal,
         temConjuge=tem_conjuge,
-        somaDespesas=soma_despesas
+        somaDespesas=soma_despesas,
+        temPendencias=tem_pendencias
     )
 
 @despesa_bp.route('/atualizar_status', methods=['POST'])

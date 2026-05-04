@@ -130,3 +130,46 @@ class DespesaService:
             return False
         else:
             return True    
+
+    def tem_pendencias_mes_anterior(self, usuario, isCasal):
+        usuario = self.get_usuario_by_name(usuario)
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        conjuge = None
+
+        if isCasal == 'S':
+            query = """
+            SELECT a.usuario AS conjuge 
+            FROM casal c 
+            JOIN autenticacao a 
+            ON a.usuario = CASE 
+                WHEN c.conjuge_1 = %s THEN c.conjuge_2 
+                ELSE c.conjuge_1 
+            END 
+            WHERE %s IN (c.conjuge_1, c.conjuge_2)
+            """
+            cursor.execute(query, (usuario, usuario))
+            resultado = cursor.fetchone()
+            if resultado:
+                conjuge = resultado[0]
+
+        # mês atual
+        hoje = datetime.today()
+        mes_atual = hoje.strftime('%Y-%m')
+
+        cursor.execute("""
+            SELECT COUNT(1)
+            FROM despesas
+            WHERE usuario IN (%s, %s)
+            AND status != 'Pago'
+            AND mes_ano < %s
+        """, (usuario, conjuge, mes_atual))
+
+        total = cursor.fetchone()[0]
+
+        conn.close()
+
+        return total #> 0
+

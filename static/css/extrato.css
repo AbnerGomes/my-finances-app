@@ -746,3 +746,97 @@ body {
 .btn-float-acao {
   backdrop-filter: blur(6px);
 }
+
+
+.quick-actions {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px;
+}
+
+.quick-tag {
+  background: linear-gradient(135deg, #b0f5ec, #62f1de);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  font-weight: bold;
+}
+
+.quick-tag:active {
+  transform: scale(0.9);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+
+
+/* filtro */
+.filtro-mes {
+  display: flex;
+  gap: 8px;
+}
+
+.filtro-mes input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.filtro-mes button {
+  background: linear-gradient(135deg, #42e7d1, #0abfa7);
+  border: none;
+  border-radius: 10px;
+  padding: 8px 10px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.1s ease;
+}
+
+/* hover leve */
+.filtro-mes button:hover {
+  filter: brightness(1.05);
+}
+
+/* efeito de clique */
+.filtro-mes button:active {
+  transform: scale(0.92);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2) inset;
+}
+
+
+.toast {
+  position: absolute;
+  top: -10px; /* fica acima das ações */
+  left: 50%;
+  transform: translate(-50%, -10px);
+
+  background: #111827;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.3s;
+
+  z-index: 10;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, -20px);
+}
+
+
+.quick-container {
+  position: relative;
+}

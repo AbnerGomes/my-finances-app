@@ -724,3 +724,39 @@ h2 {
   overflow: hidden;
   transition: height 0.3s ease;
 }
+
+.alerta-pendencias {
+  margin: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
+  color: #9a3412;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  border-left: 4px solid #f97316;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.alerta-pendencias {
+  position: sticky;
+  top: 60px;
+  z-index: 10;
+}
+
+.alerta-pendencias {
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  cursor: pointer;
+}
+
+.alerta-pendencias.clicando {
+  transform: scale(0.95);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2) inset;
+}

@@ -186,3 +186,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 });
+
+function filtrarPendentesAntigos(el) {
+
+  // aplica classe de clique
+  el.classList.add("clicando");
+
+  setTimeout(() => {
+    window.location.href = "/despesas?pendentes_antigos=S";
+  }, 150); // tempo da animação
+}

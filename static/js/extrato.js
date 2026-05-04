@@ -205,5 +205,45 @@ document.getElementById("enviapdf").addEventListener("click", function (e) {
   document.body.removeChild(link);
 });
 
+//add gasto rapido
+function quickAddGasto(descricao, valor, categoria) {
 
+  fetch('/cadastrar_gasto_rapido', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      gasto: descricao,
+      valor: valor,
+      categoria: categoria
+    })
+  })
+  .then(res => res.json())
+  .then(() => {
+    showToast("Gasto adicionado 🚀");
+    
+    // opcional: recarregar lista
+    setTimeout(() => {
+      location.reload();
+    }, 500);
+  })
+  .catch(() => {
+    showToast("Erro ao adicionar", false);
+  });
+}
+
+// ================= TOAST =================
+function showToast(msg, success = true) {
+  const toast = document.getElementById("toast");
+
+  toast.textContent = msg;
+  toast.style.background = success ? "#0abfa7" : "#ef4444";
+
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2500);
+}
 
