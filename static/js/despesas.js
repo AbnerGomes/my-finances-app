@@ -154,4 +154,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
   });
 
+  // clique no card detalhes
+  document.querySelectorAll(".despesa-card").forEach(card => {
+
+    card.addEventListener("click", (e) => {
+  
+      // evita conflito com botões
+      if (e.target.closest(".acoes") || e.target.tagName === "SELECT") return;
+  
+      const detalhe = card.querySelector(".despesa-detalhe");
+      const jaAberto = card.classList.contains("aberto");
+  
+      // fecha todos
+      document.querySelectorAll(".despesa-card").forEach(c => {
+        c.classList.remove("aberto");
+  
+        const det = c.querySelector(".despesa-detalhe");
+        if (det) det.style.height = "0px";
+      });
+  
+      // abre se não estava aberto
+      if (!jaAberto) {
+        card.classList.add("aberto");
+  
+        // ⚡ AQUI entra o teu código
+        detalhe.style.height = detalhe.scrollHeight + "px";
+      }
+  
+    });
+  
+  });
+
 });

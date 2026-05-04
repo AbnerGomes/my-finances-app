@@ -705,3 +705,22 @@ h2 {
 .despesa-card {
   transition: border-left 0.2s ease, transform 0.2s;
 }
+
+.despesa-detalhe {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  font-size: 11px;
+  color: #555;
+  margin-top: 5px;
+}
+
+.despesa-card.aberto .despesa-detalhe {
+  max-height: 200px; /* ajusta se precisar */
+}
+
+.despesa-detalhe {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.3s ease;
+}

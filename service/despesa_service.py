@@ -62,6 +62,7 @@ class DespesaService:
         cursor.execute("""
         SELECT categoria, despesa, valor, mes_ano , status, case when tipo_despesa = 'F' then 'FIXA' when tipo_despesa ='V' then 'Variavel' else 'Exceção' end, d.id
         , case when u.pronome = 'Ele/Dele' then 'H' else 'S' end pronome
+        ,data_pagamento
         FROM despesas d
         inner join usuarios u on d.usuario = u.email 
         WHERE usuario in( %s, %s)
@@ -80,9 +81,18 @@ class DespesaService:
         try:
             conn = get_connection()
             cursor = conn.cursor()
-            cursor.execute(
-                "UPDATE despesas SET status = %s WHERE id = %s", (novo_status, id_despesa)
-            )
+
+            if novo_status == "Pago":
+                cursor.execute(
+                    "UPDATE despesas SET status = %s, data_pagamento = CURRENT_DATE WHERE id = %s",
+                    (novo_status, id_despesa)
+                )
+            else:
+                cursor.execute(
+                    "UPDATE despesas SET status = %s, data_pagamento = NULL WHERE id = %s",
+                    (novo_status, id_despesa)
+                )
+
             conn.commit()
             return True
         except Exception as e:
