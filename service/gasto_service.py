@@ -433,7 +433,7 @@ class GastoService:
         finally:
             conn.close()
 
-    def editar_receita(self, usuario, id_receita, origem, valor, mes):
+    def editar_receita(self, usuario, id_receita, origem, valor, data_receita):
         conn = get_connection()
         cursor = conn.cursor()
 
@@ -442,7 +442,7 @@ class GastoService:
             UPDATE receitas
             SET origem = %s,
                 valor = %s,
-                mes_referencia = %s
+                data_receita = %s
             WHERE id = %s
             AND id_usuario = (
                 SELECT id FROM usuarios WHERE nome = %s
@@ -451,7 +451,7 @@ class GastoService:
 
             print(id_receita)
 
-            cursor.execute(query, (origem, valor, mes, id_receita, usuario))
+            cursor.execute(query, (origem, valor, data_receita, id_receita, usuario))
             conn.commit()
 
             return True
@@ -466,43 +466,58 @@ class GastoService:
 
     def get_total_receitas_mes(self, usuario, periodo):
 
+        #usuario = self.get_usuario_by_name(usuario)
+
         if periodo is None:
                 periodo='mesatual'
 
         hoje = datetime.now().date()
 
-        mes_ano = None
+        inicio = fim = None
 
-        if periodo == 'hoje' or periodo == 'mesatual':
-            mes_ano = hoje.strftime('%m-%Y')
+        if periodo == 'ontem':
+            inicio = fim = hoje - timedelta(days=1)
 
-        elif periodo == 'ontem':
-            mes_ano = (hoje - timedelta(days=1)).strftime('%m-%Y')
+        elif periodo == 'hoje':
+            inicio = fim = hoje
 
         elif periodo == 'semanaatual':
-            mes_ano = hoje.strftime('%m-%Y')
+            domingo_semana_atual = hoje - timedelta(days=hoje.weekday() + 1) if hoje.weekday() != 6 else hoje
+            inicio = domingo_semana_atual
+            fim = hoje
 
         elif periodo == 'semanapassada':
-            data_ref = hoje - timedelta(days=7)
-            mes_ano = data_ref.strftime('%m-%Y')
+            # Domingo da semana passada (domingo anterior ao domingo da semana atual)
+            domingo_semana_atual = hoje - timedelta(days=hoje.weekday() + 1) if hoje.weekday() != 6 else hoje
+            domingo_passado = domingo_semana_atual - timedelta(days=7)
+            sabado_passado = domingo_passado + timedelta(days=6)
+            inicio = domingo_passado
+            fim = sabado_passado
+
+        elif periodo == 'mesatual':
+            inicio = hoje.replace(day=1)
+            fim = hoje
 
         elif periodo == 'mesanterior':
             primeiro_dia_mes_atual = hoje.replace(day=1)
             ultimo_dia_mes_anterior = primeiro_dia_mes_atual - timedelta(days=1)
-            mes_ano = ultimo_dia_mes_anterior.strftime('%m-%Y')
+            inicio = ultimo_dia_mes_anterior.replace(day=1)
+            fim = ultimo_dia_mes_anterior
 
         conn = get_connection()
         cursor = conn.cursor()
+
+        print(inicio)
+        print(fim)
 
         query = """
             SELECT SUM(valor)
             FROM receitas
             WHERE id_usuario = (
                 SELECT id FROM usuarios WHERE nome = %s
-            ) and mes_referencia = %s
+            ) and data_receita >= %s and data_receita <= %s
         """
-        print(mes_ano)
-        cursor.execute(query, (usuario,mes_ano))
+        cursor.execute(query, (usuario,inicio,fim))
         total = cursor.fetchone()[0]
 
         conn.close()

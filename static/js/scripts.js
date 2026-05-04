@@ -58,7 +58,7 @@ function filtrarGastos(periodo,isCasal) {
                 
 
                 // 👉 buscar receitas do backend
-                fetch(`/total_saldo_mes`)
+                fetch(`/total_saldo_mes?periodo=${periodo}`)
                 .then(res => res.json())
                 .then(data => {
 

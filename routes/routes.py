@@ -886,11 +886,12 @@ def editar_receita():
 def total_receitas_mes():
     usuario = session['usuario']
 
-    #periodo = request.args.get('periodo', 'mesatual')
+    periodo = request.args.get('periodo', 'mesatual')
 
-    total_receitas = gasto_bp.gasto_service.get_total_receitas_mes(usuario,'mesatual')
-    total_gastos = gasto_bp.gasto_service.get_total_gastos_mes(usuario,'mesatual')
+    total_receitas = gasto_bp.gasto_service.get_total_receitas_mes(usuario,periodo)
+    total_gastos = gasto_bp.gasto_service.get_total_gastos_mes(usuario,periodo)
 
+    print(total_receitas)
     print(total_gastos)
 
     return jsonify({"total_receitas": total_receitas or 0, "total_gastos": total_gastos or 0})        
