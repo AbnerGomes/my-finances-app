@@ -225,12 +225,6 @@ class GastoService:
                 """
                 cursor.execute(query, (usuario, conjuge))
 
-            print(query)
-            print(usuario)
-            print(conjuge)
-            print(inicio)
-            print(fim)
-
             dados = cursor.fetchall()
             conn.close()
 
@@ -449,8 +443,6 @@ class GastoService:
             )
             """
 
-            print(id_receita)
-
             cursor.execute(query, (origem, valor, data_receita, id_receita, usuario))
             conn.commit()
 
@@ -507,9 +499,6 @@ class GastoService:
         conn = get_connection()
         cursor = conn.cursor()
 
-        print(inicio)
-        print(fim)
-
         query = """
             SELECT SUM(valor)
             FROM receitas
@@ -565,7 +554,7 @@ class GastoService:
 
         conn = get_connection()
         cursor = conn.cursor()
-        print(usuario)
+
         query = """
             SELECT SUM(valor_gasto)
             FROM gastos
@@ -576,3 +565,37 @@ class GastoService:
 
         conn.close()
         return total      
+
+    def buscar_acoes_rapidas(self, usuario):
+        usuario = self.get_usuario_by_name(usuario)
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT gasto,
+            valor,
+            categoria,
+            qtd
+        FROM (
+            SELECT g.gasto,
+                g.valor_gasto AS valor,
+                g.categoria,
+                COUNT(*) AS qtd,
+                ROW_NUMBER() OVER (
+                    PARTITION BY g.gasto
+                    ORDER BY COUNT(*) DESC
+                ) AS rn
+            FROM gastos g
+            WHERE usuario = %s
+            GROUP BY g.gasto, g.valor_gasto, g.categoria
+        ) t
+        WHERE rn = 1
+        ORDER BY qtd DESC
+        LIMIT 5;
+        """, (usuario,))
+
+        resultados = cursor.fetchall()
+        conn.close()
+
+        return resultados    

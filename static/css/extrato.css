@@ -840,3 +840,15 @@ body {
 .quick-container {
   position: relative;
 }
+
+
+.quick-tag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.quick-tag span:first-child {
+  font-size: 18px; /* emoji maior */
+}

@@ -36,7 +36,7 @@ mensagens_erro = [
 #####ROTAS#####
 
 def init_routes(app, gasto_service,despesa_service,admin_service):
-    print(app.url_map)
+
     app.register_blueprint(gasto_bp)
     app.register_blueprint(despesa_bp)
     app.register_blueprint(admin_bp)
@@ -57,12 +57,11 @@ def voltar_ao_login():
 
 @gasto_bp.route('/login', methods=['POST'])
 def login_post():
-    print('abner')
+
     if request.method == 'POST':
         usuario = request.form['email']
-        print(usuario)
+
         senha = request.form['senha']
-        print(senha)
 
         usuario_bd =  gasto_bp.gasto_service.validar_login(usuario, senha)
 
@@ -120,7 +119,7 @@ def index():
 @gasto_bp.route('/cadastrar_gasto', methods=['GET', 'POST'])
 def cadastrar_gasto():
     if request.method == 'POST':
-        print('cad entrou')
+
         if 'usuario' not in session:
             flash('Você precisa estar logado para adicionar um gasto.')
             return redirect(url_for('gasto.login')) 
@@ -164,7 +163,6 @@ def cadastrar_gasto_rapido():
         return jsonify({'sucesso': True})
 
     except Exception as e:
-        print(e)
         return jsonify({'erro': 'Falha ao salvar'}), 500
 
 @gasto_bp.route('/extrato', methods=['GET', 'POST'])
@@ -198,6 +196,9 @@ def extrato():
 
     total_gastos = len(gastos)
 
+    #acoes rapidas
+    acoes = gasto_bp.gasto_service.buscar_acoes_rapidas(usuario)
+
     #start = (page - 1) * per_page
     #end = start + per_page
 
@@ -226,9 +227,6 @@ def extrato():
     if isCasal is None:
         isCasal ='N'
 
-    print(categorias)
-    print(categoria)
-
     return render_template(
         'extrato.html',
         gastos_agrupados=gastos_agrupados,
@@ -243,7 +241,8 @@ def extrato():
         ,usuario =usuario,
         isCasal=isCasal,
         temConjuge=tem_conjuge,
-        categorias=categorias
+        categorias=categorias,
+        acoes=acoes
     )
 
 
@@ -326,8 +325,6 @@ def deletar_gasto():
         return redirect(url_for('gasto.login')) 
 
     id_gasto = request.form.get('id')
-
-    print('gasto' + id_gasto)
 
     if not id_gasto:
         # flash('ID do gasto não fornecido!', 'danger')
@@ -425,7 +422,7 @@ def atualizar_status():
 
 @despesa_bp.route('/cadastrar_despesa', methods=['POST','GET'])
 def cadastrar_despesa():
-    print('foi')
+
     #if request.method == 'POST':
     if 'usuario' not in session:
         flash('Você precisa estar logado para adicionar um gasto.')
@@ -436,8 +433,6 @@ def cadastrar_despesa():
 
     tipo_despesa = request.form['tipo_despesa']
     data = request.form['mes_ano']
-    print(data)
-
     
     categoria = request.form['categoria']
     
@@ -627,12 +622,7 @@ def valida_mensalista():
     # Formata como "MM/YYYY"
     mes_ano = data_atual.strftime("%m/%Y")
 
-    print(mes_ano)
-    print(usuario)
-
     status_usuario = admin_bp.admin_service.valida_mensalista(usuario,mes_ano);
-
-    print(status_usuario)
 
     if status_usuario:
         if status_usuario[0][0] == 'pago':
@@ -658,12 +648,12 @@ def configuracoes():
 
 @admin_bp.route('/deletar_usuario', methods=['GET','POST'], strict_slashes=False)
 def deletar_usuario():
-    print('dento')
+
     # if valida_mensalista():
     usuario = session['usuario']
     
     admin_bp.admin_service.deletar_usuario(usuario)
-    print('oquei')
+
     return render_template('configuracoes_exclusao.html')  
 
 @despesa_bp.route('/metas') 
@@ -842,8 +832,6 @@ def dados_receitas():
 
     mes_formatado = f"{numero_mes}-2025"
      
-    print(mes_formatado) 
-
     receitas = gasto_bp.gasto_service.get_receitas_mes(usuario,mes_formatado,'Todas')
 
     dados = {}
@@ -932,9 +920,6 @@ def total_receitas_mes():
 
     total_receitas = gasto_bp.gasto_service.get_total_receitas_mes(usuario,periodo)
     total_gastos = gasto_bp.gasto_service.get_total_gastos_mes(usuario,periodo)
-
-    print(total_receitas)
-    print(total_gastos)
 
     return jsonify({"total_receitas": total_receitas or 0, "total_gastos": total_gastos or 0})        
 

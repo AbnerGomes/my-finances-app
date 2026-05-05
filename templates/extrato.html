@@ -121,17 +121,26 @@
 
   <!-- acoes rapidas -->
   <div class="quick-actions">
-    <div class="quick-tag" onclick="quickAddGasto('Gasolina', 40, 'Mobilidade')">
-      ⛽ Gasolina R$40
-    </div>
+    {% for acao in acoes %}
+    <div class="quick-tag"
+      onclick="quickAddGasto('{{ acao[0] }}', {{ acao[1] }}, '{{ acao[2] }}')">
 
-    <div class="quick-tag" onclick="quickAddGasto('Almoço', 25, 'Alimentação')">
-      🍽️ Almoço R$25
-    </div>
+      {% if acao[2] == 'Mobilidade' %} 🚗
+      {% elif acao[2] == 'Alimentação' %} 🍽️
+      {% elif acao[2] == 'Saúde' %} 🏥
+      {% elif acao[2] == 'Moradia' %} 🏠
+      {% elif acao[2] == 'Entretenimento' %} 🎮
+      {% elif acao[2] == 'Educação' %} 📚
+      {% elif acao[2] == 'Dívidas' %} 💳
+      {% else %} 💸
+      {% endif %}
 
-    <div class="quick-tag" onclick="quickAddGasto('Uber', 15, 'Mobilidade')">
-      🚗 Uber R$15
+      {{ acao[0] }}
+      <br>
+      <span>R$ {{ acao[1] }}</span>
+
     </div>
+    {% endfor %}
   </div>
 </div>
 
