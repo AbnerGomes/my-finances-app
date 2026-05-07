@@ -25,11 +25,10 @@ admin_bp = Blueprint('admin', __name__)
 mensagens_erro = [
     "Senha ou usuario errado 🖕🏼 ",
     "Verifique suas credenciais ⚠️",
-    "Seu usuario pode estar inativo 😕",
     "Cara, olha o que tu ta digitando 🤦🏽‍♂️",
     "Acesso negado! você é gay 🏳️‍🌈",
-    "Tu é burro(a) ou tu é burro(a)? 🤦🏽‍♂️",
-    "Vai bloquear teu usuario 😅",
+    "Acesso negado! você é gay 🏳️‍🌈",
+    "Acesso negado! você é gay 🏳️‍🌈",
     "Mds, quem sabe clica em redefinir senha 🤦🏽‍♂️",
 ]
 
