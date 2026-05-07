@@ -244,3 +244,13 @@
   .dropdown-submenu .dropdown-item {
     padding-left: 20px;
   }
+
+
+  .ambiente {
+    color: #62f1de;
+    font-size: 22px;
+    font-weight: bold;
+    background-color: yellow;
+    border-radius: 10px;
+    padding: 3px;
+  }
