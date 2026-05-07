@@ -331,8 +331,8 @@ document.addEventListener('DOMContentLoaded', function () {
       const modal_mensagem = document.getElementById('modal-mensagem');
       modal_mensagem.style.display = 'none';  
 
-      const modal_mo = document.getElementById('modal-mo');
-      modal_mo.style.display = 'none'; 
+    //   const modal_mo = document.getElementById('modal-mo');
+    //   modal_mo.style.display = 'none'; 
     } 
 
 
