@@ -55,7 +55,11 @@ function filtrarGastos(periodo,isCasal) {
                     // Calcula e mostra o total
                 let totalGasto = valores.reduce((acc, val) => acc + parseFloat(val || 0), 0);
 
-                
+                console.log(periodo);
+
+                periodo = periodo == 'mesanterior'
+                ? 'mesanterior'
+                : 'mesatual';
 
                 // 👉 buscar receitas do backend
                 fetch(`/total_saldo_mes?periodo=${periodo}`)
@@ -77,6 +81,7 @@ function filtrarGastos(periodo,isCasal) {
                 let saldo = totalReceitas - totalGastos; //aqui usa o total do mes
                 console.log(totalReceitas);
                 console.log(totalGastos);    
+
                 let saldoEl = document.getElementById("saldo-total");
 
                 saldoEl.innerText =
@@ -84,14 +89,21 @@ function filtrarGastos(periodo,isCasal) {
                         maximumFractionDigits: 2});
 
                 saldoEl.style.color = saldo >= 0 ? "#16a34a" : "#dc2626";
-                });    
-
+                });                    
+                
                 let totalFormatado = totalGasto.toLocaleString('pt-BR', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 }); //aqui o q foi selecionado
                 document.getElementById("valor-total").innerText = totalFormatado;
                 document.getElementById("valor-total").style.color = '#003f5c';
+
+                let mesSelecionado =  document.getElementById("resumo-titulo");    
+
+                mesSelecionado.innerText =
+                    periodo == 'mesanterior'
+                    ? 'Resumo do mês anterior'
+                    : 'Resumo do mês atual';
             }    
             });
 }

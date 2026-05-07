@@ -247,10 +247,10 @@
 
 
   .ambiente {
-    color: #62f1de;
+    color: white;
     font-size: 22px;
     font-weight: bold;
-    background-color: yellow;
+    background-color: rgb(14, 107, 110);
     border-radius: 10px;
     padding: 3px;
   }
