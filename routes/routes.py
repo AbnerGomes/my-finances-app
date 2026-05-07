@@ -29,7 +29,7 @@ mensagens_erro = [
     "Acesso negado! você é gay 🏳️‍🌈",
     "Acesso negado! você é gay 🏳️‍🌈",
     "Acesso negado! você é gay 🏳️‍🌈",
-    "Mds, quem sabe clica em redefinir senha 🤦🏽‍♂️",
+    "Mds, quem sabe clica em esqueci a senha 🤦🏽‍♂️",
 ]
 
 #####ROTAS#####
@@ -58,7 +58,7 @@ def voltar_ao_login():
 def login_post():
 
     if request.method == 'POST':
-        usuario = request.form['email']
+        usuario = request.form['email'].lower()
 
         senha = request.form['senha']
 
