@@ -206,6 +206,15 @@ filtrarGastosMensais('N');
 
     var ctxBar = document.getElementById('barChart').getContext('2d');
 
+//cores atuais
+const primaryColor = getComputedStyle(document.body)
+  .getPropertyValue('--primary')
+  .trim();
+
+const primaryLight = getComputedStyle(document.body)
+  .getPropertyValue('--primary-light')
+  .trim();
+
 // Gráfico de Barras (Bar Chart)
 barChart = new Chart(ctxBar, {
   type: 'bar',
@@ -214,7 +223,8 @@ barChart = new Chart(ctxBar, {
       datasets: [{
           label: 'Gastos Mensais (R$)',
           data: [100, 5000, 1500, 10000, 1800, 600, 20],
-          backgroundColor: ['#0abfa7','#0abfa7','#0abfa7','#0abfa7','#0abfa7','#0abfa7','#0abfa7'], // Cores suaves
+        //   backgroundColor: ['#0abfa7','#0abfa7','#0abfa7','#0abfa7','#0abfa7','#0abfa7','#0abfa7'], // Cores suaves
+        backgroundColor: primaryColor,
           borderColor: '#F1F1F1', // Borda suave
           borderWidth: 1
       }]
@@ -286,6 +296,44 @@ barChart = new Chart(ctxBar, {
       }
   }
 });
+
+function atualizarTemaGraficos() {
+
+    const primaryColor = getComputedStyle(document.body)
+      .getPropertyValue('--primary')
+      .trim();
+
+    const primaryLight = getComputedStyle(document.body)
+      .getPropertyValue('--primary-light')
+      .trim();
+
+    // BAR CHART
+    if (barChart) {
+
+      barChart.data.datasets[0].backgroundColor = primaryColor;
+
+      barChart.data.datasets[0].borderColor = primaryLight;
+
+      barChart.update();
+    }
+
+    // DONUT CHART
+    if (donutChart) {
+
+      donutChart.data.datasets[0].backgroundColor = [
+        primaryColor,
+        primaryLight,
+        primaryColor,
+        primaryLight,
+        primaryColor,
+        primaryLight,
+        primaryColor,
+        primaryLight
+      ];
+
+      donutChart.update();
+    }
+}
 
  });
 

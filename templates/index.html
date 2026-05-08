@@ -18,7 +18,7 @@
 	<meta property="og:type" content="website">
   <script src="static/js/comum.js" defer></script>
 </head>
-<body>
+<body class="theme-green">
  
   <div class="header-bar center">
     <div class="logo-text">
@@ -79,6 +79,33 @@
             </div>
           </div>
     
+          <!-- seleção de tema -->
+          <div class="dropdown-item" onclick="toggleThemeDropdown()">
+            Tema
+            <span class="material-icons">expand_more</span>
+          </div>
+
+          <!-- submenu tema -->
+          <div id="theme-dropdown" class="dropdown-submenu">
+
+            <div class="dropdown-item" onclick="changeTheme('green')">
+              🟢 Green
+            </div>
+
+            <div class="dropdown-item" onclick="changeTheme('yellow')">
+              🟡 Yellow
+            </div>
+
+            <div class="dropdown-item" onclick="changeTheme('ocean')">
+              🔵 Ocean
+            </div>
+
+            <div class="dropdown-item" onclick="changeTheme('dark')">
+              ⚫ Dark
+            </div>
+
+          </div>
+
           <div class="dropdown-item" onclick="signOut()">Sign out</div>
         </div>
       </div>

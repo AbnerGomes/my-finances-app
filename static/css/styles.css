@@ -57,7 +57,8 @@ body {
   }
 
   .btn-right {
-      background: linear-gradient(135deg, #16a085, #1abc9c);
+      /* background: linear-gradient(135deg, #16a085, #1abc9c); */
+      background: var(--primary);;
       margin-right: 10px;
   }
 
@@ -332,7 +333,12 @@ body {
   
   /* estado ativo */
   .period-chip.active {
-    background: linear-gradient(135deg, #5be9d6, #0abfa7);
+    /* background: linear-gradient(135deg, #5be9d6, #0abfa7); */
+    background: linear-gradient(
+      135deg,
+      var(--primary-light),
+      var(--primary)
+    );
     color: white;
     box-shadow: 0 4px 10px rgba(0,0,0,0.15);
   }

@@ -120,3 +120,32 @@ function changeMode(isCasal) {
 function signOut(){
   window.location.href = `/`;
 }
+
+function changeTheme(theme) {
+
+  document.body.className = "";
+
+  document.body.classList.add(`theme-${theme}`);
+
+  localStorage.setItem("theme", theme);
+
+  // 🔥 atualiza gráficos
+  if (typeof atualizarTemaGraficos === "function") {
+    atualizarTemaGraficos();
+  }
+
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const temaSalvo = localStorage.getItem("theme") || "green";
+
+  document.body.classList.add(`theme-${temaSalvo}`);
+});
+
+function toggleThemeDropdown() {
+
+  const dropdown = document.getElementById("theme-dropdown");
+
+  dropdown.classList.toggle("show");
+}

@@ -1,3 +1,51 @@
+:root {
+
+  /* PRINCIPAL */
+  --primary: #0abfa7;
+  --primary-dark: #029682;
+  --primary-light: #dcfce7;
+
+  /* TEXTO */
+  --text: #111827;
+  --text-light: #6b7280;
+
+  /* FUNDO */
+  --bg: #f5f7fb;
+  --card-bg: #ffffff;
+
+  /* STATUS */
+  --danger: #dc2626;
+  --success: #16a34a;
+
+}
+
+body.theme-green {
+  --primary: #0abfa7;
+  --primary-dark: #029682;
+  --primary-light: #dcfce7;
+}
+
+body.theme-yellow {
+  --primary: #eab308;
+  --primary-dark: #ca8a04;
+  --primary-light: #fef9c3;
+}
+
+body.theme-ocean {
+  --primary: #02a9c7;
+  --primary-dark: #0a91c7;
+  --primary-light: #dbeafe;
+}
+
+body.theme-dark {
+  --primary: #3e3e3f;
+
+  --bg: #3a3a42;
+  --card-bg: #2b2e31;
+
+  --text: #f3f4f6;
+  --text-light: #9ca3af;
+}
 
  /* rodape */
  .footer-bar {
@@ -5,8 +53,8 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    /* background-color: #003f5c; Verde moderninho */
-    background-color: #0abfa7; /*#3ABF7F;*/
+    /* background-color: #0abfa7;  */
+    background: var(--primary);
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -51,7 +99,8 @@
     left: 0;
     width: 100%;
     /* background-color: #009688; */
-    background-color: #0abfa7;
+    /* background-color: #0abfa7; */
+    background: var(--primary);
     display: flex;
     justify-content: center; /* Centraliza o bloco logo + texto */
     align-items: center;
@@ -98,7 +147,8 @@
   
 
   .footer-btn.active {
-    background-color: #0abfa7; /* cor levemente mais escura para o botão ativo */
+    /* background-color: #0abfa7;  */
+    background: var(--primary);
     /* border-radius: 10px; */
     transform: translateY(-6px);
     /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); */
@@ -200,7 +250,8 @@
   }
   
   .profile-icon {
-    background-color: #d9d9d9;
+    /* background-color: #d9d9d9; */
+    background: var(--primary);
     border-radius: 50%;
     padding: 6px;
   }
@@ -214,7 +265,8 @@
   }
   
   .dropdown-item:hover {
-    background-color: #f0f0f0;
+    /* background-color: #f0f0f0; */
+    background: var(--primary);
   }
   
   .language-selector {
@@ -225,7 +277,8 @@
   
   .user-icon {
     color: white;
-    background-color: #2c3e50;
+    /* background-color: #2c3e50; */
+    background: var(--primary);
     padding: 8px;
     border-radius: 50%;
   }
@@ -253,4 +306,19 @@
     background-color: rgb(14, 107, 110);
     border-radius: 10px;
     padding: 3px;
+  }
+
+  .dropdown-submenu {
+
+    display: none;
+  
+    margin-top: 6px;
+  
+    padding-left: 12px;
+  
+    border-left: 2px solid rgba(255,255,255,0.1);
+  }
+  
+  .dropdown-submenu.show {
+    display: block;
   }
