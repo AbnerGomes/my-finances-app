@@ -3,76 +3,6 @@ body{
     margin:0%;
 }
 
-table {
-    margin-top: 10px;
-    width: 100%;
-    border-collapse: collapse;
-    border-spacing: 0;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    border-radius: 10px;
-    overflow: hidden;
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 12px;
-}
-
-thead, th {
-    background-color: #0abfa7;
-    color: white;
-    border: none !important;
-    border-color: #028675 !important;
-}
-
-th, td {
-    /* padding: 12px 16px; */
-    padding: 10px 4px 10px 2px;
-    margin-left: 2px;;
-}
-
-tbody tr:nth-child(even) {
-    background-color: #f0fafa;
-}
-
-tbody tr:hover {
-    background-color: #dff4f7;
-    cursor: pointer;
-}
-
-tfoot td {
-    background-color: #0abfa7;
-    font-weight: bold;
-    color: white
-}
-
-
-.pagination {
-    margin-top: 15px;
-    text-align: center;
-}
-
-/* Botões de filtro e paginação */
-/* .pagination .button {
-    display: inline-block;
-    padding: 10px 15px;
-    text-decoration: none;
-    background: linear-gradient(135deg, #3498db, #2980b9);
-    color: white;
-    border-radius: 5px;
-    margin: 5px;
-
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    color: #fff;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    font-weight: bold;
-    font-size: 10px;
-    text-align: center;
-} */
-
-.pagination .button:hover {
-    background-color: #0abfa7;
-}
-
-
 /* Estilo do select de categoria */
 select {
     /* padding: 8px 12px;
@@ -85,7 +15,7 @@ select {
     transition: border 0.3s ease; */
 
     padding: 5px 0px 5px 0px;
-  border: 1px solid #038a78;
+  border: 1px solid var(--primary);
   border-radius: 20px;
   background-color: white;
   font-size: 10px;
@@ -95,14 +25,14 @@ select {
 }
 
 select#categoria:focus {
-    border-color: #0abfa7;
+    border-color: var(--primary);
     outline: none;
 }
 
 /* Estilo do campo de data */
 input#periodo-picker {
     padding: 8px 12px;
-    border: 1px solid #038a78;
+    border: 1px solid var(--primary);
     border-radius: 6px;
     background-color: #f0fafa;
     font-size: 8px;
@@ -112,7 +42,7 @@ input#periodo-picker {
 }
 
 input#periodo-picker:focus {
-    border-color: #0abfa7;
+    border-color: var(--primary)7;
     outline: none;
 }
 
@@ -124,7 +54,12 @@ input#periodo-picker:focus {
     cursor: pointer;
     font-size: medium;
     text-decoration: none;
-    background: linear-gradient(135deg, #59ebd7, #0abfa7);
+    /* background: linear-gradient(135deg, #59ebd7, #0abfa7); */
+    background: linear-gradient(
+      135deg,
+      var(--primary-light),
+      var(--primary)
+    );
     color: white;
     border-radius: 5px;
     transition: background-color 0.3s ease, transform 0.2s ease;
@@ -137,7 +72,7 @@ input#periodo-picker:focus {
 }
 
 .edit-icon {
-    color: #0abfa7;
+    color: var(--primary);
     cursor: pointer;
     font-size: 16px;
     opacity: 0.6;
@@ -227,13 +162,14 @@ input#periodo-picker:focus {
   }
   
   form input:focus {
-    border-color: #0abfa7;
+    border-color: var(--primary);
     outline: none;
   }
   
   .botao-salvar , .btn-ok, .botao-deletar {
     width: 100%;
-    background-color: #0abfa7;
+    /* background-color: #0abfa7; */
+    background: var(--primary);
     color: white;
     border: none;
     padding: 8px;
@@ -243,7 +179,7 @@ input#periodo-picker:focus {
   }
   
   .botao-salvar:hover {
-    background-color: #0abfa7;
+    background-color: var(--primary);
   }
   
   /* Responsivo (mobile first) */
@@ -322,7 +258,12 @@ input#periodo-picker:focus {
 
 
 .btn-left {
-  background: linear-gradient(135deg, #42e7d1, #0abfa7);
+  /* background: linear-gradient(135deg, #42e7d1, #0abfa7); */
+  background: linear-gradient(
+    135deg,
+    var(--primary-light),
+    var(--primary)
+  );
   margin-right: 10px;
 }
 
@@ -377,7 +318,7 @@ h2 {
 }
 
 .btn-voltar:hover {
-    background-color: #0abfa7;  /* Um tom mais escuro de azul */
+    background-color: var(--primary);  /* Um tom mais escuro de azul */
     transform: translateY(-3px); /* Elevação no hover */
     outline: none;
     box-shadow: 0px 0px 10px rgba(52, 152, 219, 0.8);
@@ -497,7 +438,8 @@ h2 {
 
 .despesa-valor {
   font-weight: bold;
-  color: #0abfa7;
+  /* color: #0abfa7; */
+  color: var(--primary);
 }
 
 .despesa-info {
@@ -528,7 +470,8 @@ h2 {
 }
 
 .acoes i:hover {
-  color: #0abfa7;
+  /* color: #0abfa7; */
+  color: var(--primary);
 }
 
 /* TOPO */
@@ -553,7 +496,12 @@ h2 {
 }
 
 .filtro-mes button {
-  background: linear-gradient(135deg, #42e7d1, #0abfa7);
+  /* background: linear-gradient(135deg, #42e7d1, #0abfa7); */
+  background: linear-gradient(
+    135deg,
+    var(--primary-light),
+    var(--primary)
+  );
   border: none;
   border-radius: 10px;
   padding: 8px 10px;
@@ -619,7 +567,12 @@ h2 {
   height: 55px;
   border-radius: 50%;
   border: none;
-  background: linear-gradient(135deg, #42e7d1, #0abfa7);
+  /* background: linear-gradient(135deg, #42e7d1, #0abfa7); */
+  background: linear-gradient(
+      135deg,
+      var(--primary-light),
+      var(--primary)
+    );
   color: white;
   font-size: 26px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);

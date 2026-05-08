@@ -22,19 +22,19 @@
 body.theme-green {
   --primary: #0abfa7;
   --primary-dark: #029682;
-  --primary-light: #dcfce7;
+  --primary-light: #97f1b6;
 }
 
 body.theme-yellow {
-  --primary: #e9df54;
-  --primary-dark: #c7bb13;
-  --primary-light: #fef9c3;
+  --primary: #eab308;
+  --primary-light: #fde68a;
+  --primary-dark: #d3c503;
 }
 
 body.theme-ocean {
   --primary: #3bdfd6;
-  --primary-dark: rgb(6, 111, 153);
-  --primary-light: #dbeafe;
+  --primary-dark: rgb(13, 105, 148);
+  --primary-light: #a4f7f0;
 }
 
 body.theme-dark {

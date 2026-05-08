@@ -58,7 +58,7 @@ body {
 
   .btn-right {
       /* background: linear-gradient(135deg, #16a085, #1abc9c); */
-      background: var(--primary);;
+      background: var(--primary);
       margin-right: 10px;
   }
 

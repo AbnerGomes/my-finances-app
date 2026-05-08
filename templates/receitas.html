@@ -24,7 +24,7 @@
   <!-- HEADER -->
   <div class="header-bar center">
     <div class="logo-text">
-      <img src="{{ url_for('static', filename='images/fin.png') }}" alt="Logo" class="logo">
+      <img src="{{ url_for('static', filename='images/fin-dark.png') }}" alt="Logo" class="logo">
       <span class="company-name">My Finance Dashboard</span>
       <span class="ambiente">HOMOLOGAÇÃO</span>
     </div>
@@ -61,6 +61,48 @@
               <span>Português</span>
               <img src="https://flagcdn.com/w40/br.png" width="16" />
             </div>
+          </div>
+          <!-- submenu do modo -->
+          <div id="mode-dropdown" class="dropdown-submenu">
+            {% if temConjuge %}
+            <div class="dropdown-item" onclick="changeMode('S')">Casal</div>
+            {% endif %}
+            <div class="dropdown-item" onclick="changeMode('N')">Individual</div>
+          </div>
+    
+          <div class="dropdown-item">
+            Idioma
+            <div class="language-selector">
+              <span>Português</span>
+              <img src="https://flagcdn.com/w40/br.png" alt="BR" width="16" />
+            </div>
+          </div>
+    
+          <!-- seleção de tema -->
+          <div class="dropdown-item" onclick="toggleThemeDropdown()">
+            Tema
+            <span class="material-icons">expand_more</span>
+          </div>
+
+          <!-- submenu tema -->
+          <div id="theme-dropdown" class="dropdown-submenu">
+
+            <div class="dropdown-item" onclick="changeTheme('green')">
+              🟢 Green
+            </div>
+
+            <div class="dropdown-item" onclick="changeTheme('yellow')">
+              🟡 Yellow
+            </div>
+
+            <div class="dropdown-item" onclick="changeTheme('ocean')">
+              🔵 Ocean
+            </div>
+
+            <div class="dropdown-item" onclick="changeTheme('dark')">
+              ⚫ Dark
+            </div>
+
           </div>
 
           <div class="dropdown-item" onclick="signOut()">Sign out</div>
@@ -158,7 +200,6 @@
     <div class="acoes-final">
       <button id="addReceitaBtn" class="btn-adicionar-floating">
         <span class="material-icons">add</span>
-        <span>Adicionar</span>
       </button>
     </div>
 

@@ -132,15 +132,15 @@ function changeTheme(theme) {
    // troca logo
    const logo = document.getElementById("app-logo");
 
-   if (logo) {
+  //  if (logo) {
  
-     if (theme === "dark") {
-       logo.src = "/static/images/fin-dark.png";
-     } else {
-       logo.src = "/static/images/fin.png";
-     }
+  //    if (theme === "dark") {
+  //      logo.src = "/static/images/fin-dark.png";
+  //    } else {
+  //      logo.src = "/static/images/fin.png";
+  //    }
  
-   }
+  //  }
 
 
   // 🔥 atualiza gráficos

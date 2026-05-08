@@ -352,7 +352,12 @@ h1 {
 
   padding: 12px 18px;
 
-  background: linear-gradient(135deg, #65e2eb, #26c9d4); /* verde suave */
+  /* background: linear-gradient(135deg, #65e2eb, #26c9d4); verde suave */
+  background: linear-gradient(
+      135deg,
+      var(--primary-light),
+      var(--primary)
+    );
   color: white;
 
   border: none;

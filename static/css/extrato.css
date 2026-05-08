@@ -4,70 +4,18 @@ body{
   margin:0%;
 }
 
-table {
-  margin-top: 10px;
-  width: 100%;
-  border-collapse: collapse;
-  border-spacing: 0;
-  /* box-shadow: 0 4px 8px rgba(0,0,0,0.1); */
-  border-radius: 10px;
-  overflow: hidden;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  border:none !important;
-}
-
-thead {
-  background-color: #0abfa7;
-  color: white;
-}
-
-th, td {
-  padding: 12px 16px;
-  border: 0 !important;
-border-collapse: collapse !important;
-}
-
-tbody tr:nth-child(even) {
-  background-color: #f0fafa;
-}
-
-tbody tr:hover {
-  background-color: #dff4f7;
-  cursor: pointer;
-}
-
-tfoot td {
-  background-color: #0abfa7;
-  font-weight: bold;
-  color: white;
-}
-
-
-.pagination {
-  margin-top: 15px;
-  text-align: center;
-
-
-  text-align: center;
-  display: inline-block;
-  padding: 0px 10px 50px 0px;
-  text-decoration: none;
-  /* background: linear-gradient(135deg, #3498db, #2980b9); */
-  color: white;
-  border-radius: 5px;
-  margin: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  color: #021a25;
-}
 
 /* Botões de filtro e paginação */
 .button {
   display: inline-block;
   padding: 10px 15px;
   text-decoration: none;
-  background: linear-gradient(135deg, #4ee7d3, #0abfa7);
+  /* background: linear-gradient(135deg, #4ee7d3, #0abfa7); */
+  background: linear-gradient(
+    135deg,
+    var(--primary-light),
+    var(--primary)
+  );
   color: white;
   border-radius: 5px;
   margin: 5px;
@@ -144,7 +92,7 @@ input#periodo-picker {
   flex: 1;              /* ocupa espaço disponível */
   min-width: 120px;     /* mínimo antes de esmagar demais */
   max-width: 180px;     /* 👈 diminui largura (antes tava gigante) */
-  border: 1px solid #046e60;
+  border: 1px solid var(--primary);
   border-radius: 6px;
   background-color: #f0fafa;
   padding: 6px 10px;
@@ -292,7 +240,8 @@ form input:focus {
 
 .botao-salvar, .btn-ok {
   width: 100%;
-  background-color: #0abfa7;
+  /* background-color: #0abfa7; */
+  background: var(--primary);
   color: white;
   border: none;
   padding: 8px;
@@ -302,7 +251,8 @@ form input:focus {
 }
 
 .botao-salvar:hover {
-  background-color: #0abfa7;
+  /* background-color: #0abfa7; */
+  background: var(--primary);
 }
 
 /* Responsivo (mobile first) */
@@ -635,7 +585,8 @@ body {
 /* BOTÃO PRINCIPAL */
 .btn-acao.primary {
   background: rgba(10, 191, 167, 0.12);
-  color: #0abfa7;
+  /* color: #0abfa7; */
+  color: var(--primary);
   border: none;
 }
 
@@ -661,7 +612,7 @@ body {
 .total-gastos span {
   font-size: 18px;
   font-weight: bold;
-  color: #0abfa7;
+  color: #bf610a;
 }
 
 .btn-adicionar{
@@ -678,7 +629,12 @@ body {
 
   padding: 12px 18px;
 
-  background: linear-gradient(135deg, #65e2eb, #26c9d4); /* verde suave */
+  /* background: linear-gradient(135deg, #65e2eb, #26c9d4); verde suave */
+  background: linear-gradient(
+      135deg,
+      var(--primary-light),
+      var(--primary)
+    );
   color: white;
 
   border: none;
@@ -756,7 +712,12 @@ body {
 }
 
 .quick-tag {
-  background: linear-gradient(135deg, #b0f5ec, #62f1de);
+  /* background: linear-gradient(135deg, #b0f5ec, #62f1de); */
+  background: linear-gradient(
+      135deg,
+      var(--primary-light),
+      var(--primary)
+    );
   color: white;
   padding: 8px 12px;
   border-radius: 999px;
@@ -788,7 +749,12 @@ body {
 }
 
 .filtro-mes button {
-  background: linear-gradient(135deg, #42e7d1, #0abfa7);
+  /* background: linear-gradient(135deg, #42e7d1, #0abfa7); */
+  background: linear-gradient(
+      135deg,
+      var(--primary-light),
+      var(--primary)
+    );
   border: none;
   border-radius: 10px;
   padding: 8px 10px;
