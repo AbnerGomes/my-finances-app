@@ -26,21 +26,21 @@ body.theme-green {
 }
 
 body.theme-yellow {
-  --primary: #eab308;
-  --primary-dark: #ca8a04;
+  --primary: #e9df54;
+  --primary-dark: #c7bb13;
   --primary-light: #fef9c3;
 }
 
 body.theme-ocean {
-  --primary: #02a9c7;
-  --primary-dark: #0a91c7;
+  --primary: #3bdfd6;
+  --primary-dark: rgb(6, 111, 153);
   --primary-light: #dbeafe;
 }
 
 body.theme-dark {
-  --primary: #3e3e3f;
+  --primary: #525253;
 
-  --bg: #3a3a42;
+  --bg: rgb(42, 42, 48);
   --card-bg: #2b2e31;
 
   --text: #f3f4f6;

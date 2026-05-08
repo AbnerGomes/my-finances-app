@@ -129,6 +129,20 @@ function changeTheme(theme) {
 
   localStorage.setItem("theme", theme);
 
+   // troca logo
+   const logo = document.getElementById("app-logo");
+
+   if (logo) {
+ 
+     if (theme === "dark") {
+       logo.src = "/static/images/fin-dark.png";
+     } else {
+       logo.src = "/static/images/fin.png";
+     }
+ 
+   }
+
+
   // 🔥 atualiza gráficos
   if (typeof atualizarTemaGraficos === "function") {
     atualizarTemaGraficos();
@@ -140,7 +154,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const temaSalvo = localStorage.getItem("theme") || "green";
 
-  document.body.classList.add(`theme-${temaSalvo}`);
+  // document.body.classList.add(`theme-${temaSalvo}`);
+  changeTheme(temaSalvo);
 });
 
 function toggleThemeDropdown() {

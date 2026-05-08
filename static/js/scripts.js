@@ -146,6 +146,57 @@ function filtrarGastosMensais(isCasal) {
 
 
 
+function atualizarTemaGraficos() {
+
+    const primaryColor = getComputedStyle(document.body)
+      .getPropertyValue('--primary')
+      .trim();
+
+    const primaryLight = getComputedStyle(document.body)
+      .getPropertyValue('--primary-light')
+      .trim();
+
+    // BAR CHART
+    if (barChart) {
+
+      // cria gradiente
+      const ctx = barChart.ctx;
+
+      const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+
+      gradient.addColorStop(0, primaryLight);
+      gradient.addColorStop(1, primaryColor);
+
+      // aplica no gráfico
+      barChart.data.datasets[0].backgroundColor = gradient;
+
+      barChart.data.datasets[0].borderColor = primaryColor;
+
+      barChart.data.datasets[0].borderRadius = 12;
+      barChart.data.datasets[0].borderSkipped = false;
+
+      barChart.update();
+    }
+}
+
+    // DONUT CHART
+    //nao mudar as cores do donut
+    // if (donutChart) {
+
+    //   donutChart.data.datasets[0].backgroundColor = [
+    //     primaryColor,
+    //     primaryLight,
+    //     primaryColor,
+    //     primaryLight,
+    //     primaryColor,
+    //     primaryLight,
+    //     primaryColor,
+    //     primaryLight
+    //   ];
+
+    //   donutChart.update();
+    // }
+
 
  document.addEventListener("DOMContentLoaded", function () {
     //document.getElementById('total').style.display='none'
@@ -202,139 +253,161 @@ filtrarGastosMensais('N');
           }
     });
 
-    //grafico de barras
+ //grafico de barras
 
-    var ctxBar = document.getElementById('barChart').getContext('2d');
+ var ctxBar = document.getElementById('barChart').getContext('2d');
 
-//cores atuais
-const primaryColor = getComputedStyle(document.body)
-  .getPropertyValue('--primary')
-  .trim();
-
-const primaryLight = getComputedStyle(document.body)
-  .getPropertyValue('--primary-light')
-  .trim();
-
-// Gráfico de Barras (Bar Chart)
-barChart = new Chart(ctxBar, {
-  type: 'bar',
-  data: {
-      labels: ['Jan/2025', 'Fev/2025', 'Mar/2025', 'Abr/2025', 'Mai/2025', 'Jun/2025', 'Jul/2025'],
-      datasets: [{
-          label: 'Gastos Mensais (R$)',
-          data: [100, 5000, 1500, 10000, 1800, 600, 20],
-        //   backgroundColor: ['#0abfa7','#0abfa7','#0abfa7','#0abfa7','#0abfa7','#0abfa7','#0abfa7'], // Cores suaves
-        backgroundColor: primaryColor,
-          borderColor: '#F1F1F1', // Borda suave
-          borderWidth: 1
-      }]
-  },
-  options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      indexAxis: 'x', // Eixo X para o gráfico de barras
-      plugins: {
-          legend: {
-              position: 'top',
-              labels: {
-                  color: '#2E3B55', // Cor da legenda suave
-                  font: {
-                      size: 12,
-                      weight: 'normal'
-                  }
-              }
-          }
-      },
-      scales: {
-          x: {
-              beginAtZero: true,
-              title: {
-                  display: true,
-                  text: 'Mes/Ano',
-                  color: '#2E3B55',
-                  font: {
-                      size: 10,
-                      weight: 'bold'
-                  }
-              },
-              ticks: {
-                  color: '#2E3B55',
-                  font: {
-                      size: 10
-                  }
-              },
-              grid: {
-                display: false 
-              }
-          },
-          y: {
-              beginAtZero: true,
-              title: {
-                  display: false,
-                  text: 'Valor Gasto (R$)',
-                  color: '#2ECC71',
-                  font: {
-                      size: 12,
-                      weight: 'bold'
-                  }
-              },
-              ticks: {
-                  color: '#2E3B55',
-                  font: {
-                      size: 10
-                  }
-              },
-              grid: {
-                display: false 
-              }
-          }
-      },
-      layout: {
-          padding: {
-              top: 20,
-          }
-      }
-  }
-});
-
-function atualizarTemaGraficos() {
-
-    const primaryColor = getComputedStyle(document.body)
-      .getPropertyValue('--primary')
-      .trim();
-
-    const primaryLight = getComputedStyle(document.body)
-      .getPropertyValue('--primary-light')
-      .trim();
-
-    // BAR CHART
-    if (barChart) {
-
-      barChart.data.datasets[0].backgroundColor = primaryColor;
-
-      barChart.data.datasets[0].borderColor = primaryLight;
-
-      barChart.update();
-    }
-
-    // DONUT CHART
-    if (donutChart) {
-
-      donutChart.data.datasets[0].backgroundColor = [
-        primaryColor,
-        primaryLight,
-        primaryColor,
-        primaryLight,
-        primaryColor,
-        primaryLight,
-        primaryColor,
-        primaryLight
-      ];
-
-      donutChart.update();
-    }
-}
-
+ // cores atuais
+ const primaryColor = getComputedStyle(document.body)
+   .getPropertyValue('--primary')
+   .trim();
+ 
+ const primaryLight = getComputedStyle(document.body)
+   .getPropertyValue('--primary-light')
+   .trim();
+ 
+ // gradient
+ const gradient = ctxBar.createLinearGradient(0, 0, 0, 350);
+ 
+ gradient.addColorStop(0, primaryLight);
+ gradient.addColorStop(1, primaryColor);
+ 
+ // Gráfico de Barras (Bar Chart)
+ barChart = new Chart(ctxBar, {
+   type: 'bar',
+   data: {
+       labels: ['Jan/2025', 'Fev/2025', 'Mar/2025', 'Abr/2025', 'Mai/2025', 'Jun/2025', 'Jul/2025'],
+       datasets: [{
+           label: 'Gastos Mensais (R$)',
+           data: [100, 5000, 1500, 10000, 1800, 600, 20],
+ 
+           // gradient
+           backgroundColor: gradient,
+ 
+           // borda
+           borderColor: primaryColor,
+ 
+           borderWidth: 1,
+ 
+           // efeito moderno
+           borderRadius: 12,
+ 
+           // arredonda ambos lados
+           borderSkipped: false,
+ 
+           // largura máxima barra
+           maxBarThickness: 42,
+ 
+           // hover bonito
+           hoverBorderWidth: 2,
+ 
+           hoverBorderColor: primaryLight
+       }]
+   },
+ 
+   options: {
+ 
+       responsive: true,
+       maintainAspectRatio: false,
+ 
+       animation: {
+         duration: 1200,
+         easing: 'easeOutQuart'
+       },
+ 
+       indexAxis: 'x',
+ 
+       plugins: {
+ 
+           legend: {
+               position: 'top',
+ 
+               labels: {
+                   color: '#2E3B55',
+ 
+                   font: {
+                       size: 12,
+                       weight: 'normal'
+                   }
+               }
+           },
+ 
+           tooltip: {
+             backgroundColor: '#111827',
+             padding: 12,
+             cornerRadius: 10,
+             displayColors: false
+           }
+       },
+ 
+       scales: {
+ 
+           x: {
+ 
+               beginAtZero: true,
+ 
+               title: {
+                   display: true,
+                   text: 'Mes/Ano',
+ 
+                   color: '#2E3B55',
+ 
+                   font: {
+                       size: 10,
+                       weight: 'bold'
+                   }
+               },
+ 
+               ticks: {
+                   color: '#2E3B55',
+ 
+                   font: {
+                       size: 10
+                   }
+               },
+ 
+               grid: {
+                 display: false
+               }
+           },
+ 
+           y: {
+ 
+               beginAtZero: true,
+ 
+               title: {
+                   display: false,
+                   text: 'Valor Gasto (R$)',
+ 
+                   color: '#2ECC71',
+ 
+                   font: {
+                       size: 12,
+                       weight: 'bold'
+                   }
+               },
+ 
+               ticks: {
+                   color: '#2E3B55',
+ 
+                   font: {
+                       size: 10
+                   }
+               },
+ 
+               grid: {
+                 display: false
+               }
+           }
+       },
+ 
+       layout: {
+           padding: {
+               top: 20,
+           }
+       }
+   }
+ });
  });
 
 
