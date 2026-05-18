@@ -19,6 +19,7 @@
 
 }
 
+
 body.theme-green {
   --primary: #0abfa7;
   --primary-dark: #029682;
@@ -26,8 +27,8 @@ body.theme-green {
 }
 
 body.theme-yellow {
-  --primary: #eab308;
-  --primary-light: #fde68a;
+  --primary: #e6d966;
+  --primary-light: #f3dfb3;
   --primary-dark: #d3c503;
 }
 
@@ -45,6 +46,34 @@ body.theme-dark {
 
   --text: #f3f4f6;
   --text-light: #9ca3af;
+}
+
+:root[data-theme="green"] {
+  --primary: #0abfa7;
+  --primary-dark: #029682;
+  --primary-light: #97f1b6;
+}
+
+:root[data-theme="ocean"] {
+  --primary: #3bdfd6;
+  --primary-dark: rgb(13, 105, 148);
+  --primary-light: #a4f7f0;
+}
+
+:root[data-theme="dark"] {
+  --primary: #525253;
+
+  --bg: rgb(42, 42, 48);
+  --card-bg: #2b2e31;
+
+  --text: #f3f4f6;
+  --text-light: #9ca3af;
+}
+
+:root[data-theme="yellow"] {
+  --primary: #e6d966;
+  --primary-light: #f3dfb3;
+  --primary-dark: #d3c503;
 }
 
  /* rodape */

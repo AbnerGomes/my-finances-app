@@ -3,6 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script>
+    (function () {
+    
+      const tema = localStorage.getItem('theme') || 'green';
+    
+      document.documentElement.setAttribute('data-theme', tema);
+    
+    })();
+    </script>
+
   <link rel="stylesheet" href="{{ url_for('static', filename='css/despesas.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
@@ -38,23 +49,7 @@
             Modo
             <span class="material-icons">expand_more</span>
           </div>
-    
-          <!-- submenu do modo -->
-          <div id="mode-dropdown" class="dropdown-submenu">
-            {% if temConjuge %}
-            <div class="dropdown-item" onclick="changeMode('S')">Casal</div>
-            {% endif %}
-            <div class="dropdown-item" onclick="changeMode('N')">Individual</div>
-          </div>
-    
-          <div class="dropdown-item">
-            Idioma
-            <div class="language-selector">
-              <span>Português</span>
-              <img src="https://flagcdn.com/w40/br.png" alt="BR" width="16" />
-            </div>
-          </div>
-          
+              
           <!-- submenu do modo -->
           <div id="mode-dropdown" class="dropdown-submenu">
             {% if temConjuge %}
