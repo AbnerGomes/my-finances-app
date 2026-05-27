@@ -230,7 +230,7 @@ filtrarGastosMensais('N');
     donutChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['Alimentação', 'Entretenimento','Mobilidade','Saúde','Moradia','Outros','Dívidas','Educação'],
+            labels: ['Alimentação', 'Entretenimento','Mobilidade','Saúde','Moradia','Outros','Dívidas','Educação','Pets'],
             datasets: [{
                 data: [0, 0,0,0,0,0,0],
                 backgroundColor: ['#B0E0E6', '#bc89f0','#eb2d2d', '#E0FFFF','#8FBC8F','#f7f568','#f78b8b','#f0054b']

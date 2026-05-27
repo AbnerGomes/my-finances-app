@@ -74,7 +74,8 @@ class GastoService:
                 ('Moradia',0),
                 ('Outros',0),
                 ('Dívidas',0),
-                ('Educação',0)
+                ('Educação',0),
+                ('Pets')
             ]
 
         return dados
