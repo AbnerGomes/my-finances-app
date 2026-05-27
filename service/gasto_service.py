@@ -75,7 +75,8 @@ class GastoService:
                 ('Outros',0),
                 ('Dívidas',0),
                 ('Educação',0),
-                ('Pets')
+                ('Pets'),
+                ('Investimentos')
             ]
 
         return dados

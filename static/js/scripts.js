@@ -16,7 +16,18 @@ function filtrarGastosBtn(periodo){
 
 }
 
-
+const coresCategorias = {
+  'Alimentação': '#B0E0E6',
+  'Entretenimento': '#bc89f0',
+  'Mobilidade': '#eb2d2d',
+  'Saúde': '#E0FFFF',
+  'Moradia': '#8FBC8F',
+  'Outros': '#f7f568',
+  'Dívidas': '#f78b8b',
+  'Educação': '#f0054b',
+  'Pets': '#8B4513',
+  'Investimentos': '#16A34A'
+}; 
 
 // Função para buscar e atualizar os dados do gráfico
 function filtrarGastos(periodo,isCasal) {
@@ -46,9 +57,16 @@ function filtrarGastos(periodo,isCasal) {
                 mensagem.style.display = "none";
                 let categorias = dados.map(item => item.categoria);
                 let valores = dados.map(item => item.valor);
-                
+
+                let cores = categorias.map(cat =>
+                    coresCategorias[cat] || '#cccccc'
+                );
+
                 donutChart.data.labels = categorias;
                 donutChart.data.datasets[0].data = valores;
+
+                donutChart.data.datasets[0].backgroundColor = cores;
+
                 donutChart.update();
                 //drawDonutChart(dados);
 
@@ -225,15 +243,15 @@ filtrarGastosMensais('N');
      // Verifica se o gráfico já existe e destrói antes de recriar
      if (donutChart) {
         donutChart.destroy();
-        }
+        }   
 
     donutChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
             labels: ['Alimentação', 'Entretenimento','Mobilidade','Saúde','Moradia','Outros','Dívidas','Educação','Pets'],
             datasets: [{
-                data: [0, 0,0,0,0,0,0],
-                backgroundColor: ['#B0E0E6', '#bc89f0','#eb2d2d', '#E0FFFF','#8FBC8F','#f7f568','#f78b8b','#f0054b']
+                data: [0, 0,0,0,0,0,0,0,0],
+                backgroundColor: ['#B0E0E6', '#bc89f0','#eb2d2d', '#E0FFFF','#8FBC8F','#f7f568','#f78b8b','#f0054b','#8B4513']
             }]
         }, options: {
             plugins: {

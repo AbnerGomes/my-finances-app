@@ -99,7 +99,7 @@ def index():
     dados = gasto_bp.gasto_service.filtrarGastos('mesatual',usuario,'N') #verifica_dados_bd(usuario)
 
     if not dados:
-        dados = [('Alimentação', 0), ('Saúde', 0), ('Mobilidade', 0), ('Entretenimento', 0), ('Moradia', 0), ('Outros', 0), ('Dívidas', 0), ('Educação', 0),  ('Pets', 0)]
+        dados = [('Alimentação', 0), ('Saúde', 0), ('Mobilidade', 0), ('Entretenimento', 0), ('Moradia', 0), ('Outros', 0), ('Dívidas', 0), ('Educação', 0),  ('Pets', 0),  ('Investimentos', 0)]
 
     total_gasto = sum([
     float(item['valor']) if isinstance(item, dict) and 'valor' in item else float(item[0])

@@ -524,8 +524,14 @@ body {
 .categoria-Outros { background: rgba(86, 243, 243, 0.15); color: #55e4f7; }
 .categoria-Entretenimento { background: rgba(168,85,247,0.15); color: #a855f7; }
 .categoria-Educação { background: rgba(168,85,247,0.15); color: #e69e34; }
-.categoria-Pets { background: rgba(204, 71, 221, 0.959); color: #e69e34; }
-
+.categoria-Pets {
+  background: rgba(139, 69, 19, 0.15);
+  color: #8B4513;
+}
+.categoria-Investimentos {
+  background: rgba(22, 163, 74, 0.15);
+  color: #16A34A;
+}
 
 .filtro-card {
   display: flex;
