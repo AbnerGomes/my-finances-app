@@ -18,6 +18,7 @@ function filtrarGastosBtn(periodo){
 
 const coresCategorias = {
   'Alimentação': '#B0E0E6',
+  'Ifood': '#F59E0B',
   'Entretenimento': '#bc89f0',
   'Mobilidade': '#eb2d2d',
   'Saúde': '#E0FFFF',
@@ -248,10 +249,10 @@ filtrarGastosMensais('N');
     donutChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['Alimentação', 'Entretenimento','Mobilidade','Saúde','Moradia','Outros','Dívidas','Educação','Pets'],
+            labels: ['Alimentação', 'Ifood', 'Entretenimento','Mobilidade','Saúde','Moradia','Outros','Dívidas','Educação','Pets'],
             datasets: [{
-                data: [0, 0,0,0,0,0,0,0,0],
-                backgroundColor: ['#B0E0E6', '#bc89f0','#eb2d2d', '#E0FFFF','#8FBC8F','#f7f568','#f78b8b','#f0054b','#8B4513']
+                data: [0, 0,0,0,0,0,0,0,0,0],
+                backgroundColor: ['#B0E0E6', '#F59E0B', '#bc89f0','#eb2d2d', '#E0FFFF','#8FBC8F','#f7f568','#f78b8b','#f0054b','#8B4513']
             }]
         }, options: {
             plugins: {

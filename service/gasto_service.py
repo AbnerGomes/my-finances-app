@@ -68,15 +68,16 @@ class GastoService:
         if not dados:
             dados = [
                 ('Alimentação', 0),
+                ('Ifood', 0),
                 ('Saúde', 0),
                 ('Mobilidade', 0),
                 ('Entretenimento', 0),
-                ('Moradia',0),
-                ('Outros',0),
-                ('Dívidas',0),
-                ('Educação',0),
-                ('Pets'),
-                ('Investimentos')
+                ('Moradia', 0),
+                ('Outros', 0),
+                ('Dívidas', 0),
+                ('Educação', 0),
+                ('Pets', 0),
+                ('Investimentos', 0)
             ]
 
         return dados
