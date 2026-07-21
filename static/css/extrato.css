@@ -393,40 +393,45 @@ cursor: pointer;
 position: relative;
 }
 
+/* legenda Ele/Ela — segue no fluxo normal, logo abaixo do card de
+   filtro (antes ficava position:absolute e acabava atrás do card
+   quando o filtro cresceu para várias linhas) */
 .casal {
-position: absolute;
-top: 50%;
-right: 10px;
-transform: translateY(-50%);
 display: flex;
-flex-direction: column;
-gap: 6px;
-align-items: flex-start;
+flex-wrap: wrap;
+gap: 8px;
+margin-top: 10px;
 }
 
 .casal-item {
 display: flex;
 align-items: center;
+gap: 6px;
+background: var(--dna-card-soft);
+border: 1px solid var(--dna-border);
+color: var(--dna-text-dim);
+padding: 4px 10px;
+border-radius: 999px;
+font-size: 11px;
+}
+
+.casal-icon {
+width: 8px;
+height: 8px;
+border-radius: 50%;
+flex-shrink: 0;
 }
 
 .casal-icon.dele {
-width: 12px;
-height: 12px;
-background-color: rgba(222, 251, 255, 0.5); /* azul suave */
-border-radius: 2px;
-margin-right: 4px;
+background-color: #60a5fa; /* azul */
 }
 
 .casal-icon.dela {
-width: 12px;
-height: 12px;
-background-color: rgba(247, 236, 247, 0.7); /* rosa suave */
-border-radius: 2px;
-margin-right: 4px;
+background-color: #f472b6; /* rosa */
 }
 
 .casal-texto {
-font-size: 12px;
+font-size: 11px;
 }
 
 .container-detalhes{
