@@ -17,9 +17,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const startDate = parseDate(dataInicioStr) || primeiroDiaMes;
     const endDate = parseDate(dataFimStr) || hoje;
 
-    // Atualiza visualmente o texto no botão
+    // Atualiza visualmente o texto no botão (o botão em si vira o "anchor"
+    // do Litepicker, mas o texto fica num span filho pra não perder o ícone)
     const pickerInput = document.getElementById('periodo-picker');
-    pickerInput.textContent = `${startDate.toLocaleDateString()} até ${endDate.toLocaleDateString()}`;
+    const pickerTexto = document.getElementById('periodo-picker-texto');
+    pickerTexto.textContent = `${startDate.toLocaleDateString()} até ${endDate.toLocaleDateString()}`;
 
     // Inicializa o picker
     const picker = new Litepicker({
@@ -36,13 +38,42 @@ document.addEventListener('DOMContentLoaded', function () {
             picker.on('selected', (startDate, endDate) => {
                 document.querySelector('input[name="data_inicio"]').value = startDate.format('YYYY-MM-DD');
                 document.querySelector('input[name="data_fim"]').value = endDate.format('YYYY-MM-DD');
-                pickerInput.textContent = `${startDate.format('DD/MM/YYYY')} até ${endDate.format('DD/MM/YYYY')}`;
+                pickerTexto.textContent = `${startDate.format('DD/MM/YYYY')} até ${endDate.format('DD/MM/YYYY')}`;
             });
         }
     });
 
     //validacao icone de casal
 
+    // painel flutuante de "ações rápidas" — abre no clique do botão de
+    // raio, fecha no X, clicando fora dele, ou clicando no raio de novo
+    const btnAcoesRapidas = document.getElementById('btnAcoesRapidas');
+    const painelAcoesRapidas = document.getElementById('painelAcoesRapidas');
+    const fecharAcoesRapidas = document.getElementById('fecharAcoesRapidas');
+
+    if (btnAcoesRapidas && painelAcoesRapidas) {
+        btnAcoesRapidas.addEventListener('click', function (e) {
+            e.stopPropagation();
+            painelAcoesRapidas.classList.toggle('show');
+        });
+
+        if (fecharAcoesRapidas) {
+            fecharAcoesRapidas.addEventListener('click', function () {
+                painelAcoesRapidas.classList.remove('show');
+            });
+        }
+
+        document.addEventListener('click', function (e) {
+            if (
+                painelAcoesRapidas.classList.contains('show') &&
+                !painelAcoesRapidas.contains(e.target) &&
+                e.target !== btnAcoesRapidas &&
+                !btnAcoesRapidas.contains(e.target)
+            ) {
+                painelAcoesRapidas.classList.remove('show');
+            }
+        });
+    }
 });
 
 

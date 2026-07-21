@@ -17,6 +17,23 @@ app = Flask(__name__)
 # Defina uma chave secreta
 app.secret_key = 'gomes-abner-py-finn-flask-app-2025'
 
+# Evita que o navegador sirva uma versão em cache de css/js depois de uma
+# edição — sem isso, alterações em static/ podem não aparecer pro usuário
+# até ele limpar o cache manualmente. Sobrescreve o `url_for` usado dentro
+# dos templates (só nos templates — o resto do código Python continua
+# usando o url_for normal do Flask), então nenhum template precisa mudar.
+@app.context_processor
+def cache_busted_url_for():
+    def url_for_com_versao(endpoint, **values):
+        if endpoint == 'static' and 'filename' in values:
+            file_path = os.path.join(app.root_path, 'static', values['filename'])
+            try:
+                values['v'] = int(os.stat(file_path).st_mtime)
+            except OSError:
+                pass
+        return url_for(endpoint, **values)
+    return dict(url_for=url_for_com_versao)
+
 # Inicializa o service
 gasto_service = GastoService()
 despesa_service = DespesaService()

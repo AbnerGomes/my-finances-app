@@ -8,7 +8,7 @@
 body, html {
     height: 100%;
     font-family: Poppins-Regular, sans-serif;
-    background-color: #B0E0E6;
+    background-color: #0b1330;
 }
 
 /*---------------------------------------------*/
@@ -30,11 +30,7 @@ a:focus {
 
 a:hover {
     text-decoration: none;
-  color: #6a7dfe;
-  color: -webkit-linear-gradient(left, #21d4fd, #25fcfc);
-  color: -o-linear-gradient(left, #21d4fd, #25fcfc);
-  color: -moz-linear-gradient(left, #21d4fd, #25fcfc);
-  color: linear-gradient(left, #21d4fd, #25fcfc);
+  color: #93c5fd;
 }
 
 /*---------------------------------------------*/
@@ -81,15 +77,15 @@ textarea:focus:-moz-placeholder { color:transparent; }
 textarea:focus::-moz-placeholder { color:transparent; }
 textarea:focus:-ms-input-placeholder { color:transparent; }
 
-input::-webkit-input-placeholder { color: #adadad;}
-input:-moz-placeholder { color: #adadad;}
-input::-moz-placeholder { color: #adadad;}
-input:-ms-input-placeholder { color: #adadad;}
+input::-webkit-input-placeholder { color: #8a93b8;}
+input:-moz-placeholder { color: #8a93b8;}
+input::-moz-placeholder { color: #8a93b8;}
+input:-ms-input-placeholder { color: #8a93b8;}
 
-textarea::-webkit-input-placeholder { color: #adadad;}
-textarea:-moz-placeholder { color: #adadad;}
-textarea::-moz-placeholder { color: #adadad;}
-textarea:-ms-input-placeholder { color: #adadad;}
+textarea::-webkit-input-placeholder { color: #8a93b8;}
+textarea:-moz-placeholder { color: #8a93b8;}
+textarea::-moz-placeholder { color: #8a93b8;}
+textarea:-ms-input-placeholder { color: #8a93b8;}
 
 /*---------------------------------------------*/
 button {
@@ -112,14 +108,14 @@ iframe {
 .txt1 {
   font-family: Poppins-Regular;
   font-size: 13px;
-  color: #666666;
+  color: #8a93b8;
   line-height: 1.5;
 }
 
 .txt2 {
   font-family: Poppins-Regular;
   font-size: 13px;
-  color: #333333;
+  color: #93c5fd;
   line-height: 1.5;
 }
 
@@ -143,22 +139,22 @@ iframe {
   justify-content: center;
   align-items: center;
   padding: 15px;
-  /* background-color: #B0E0E6; */
-  background-color: #e9f2f3;
+  background: linear-gradient(180deg, #101a3d, #0b1330);
 }
 
 .wrap-login100 {
   width: 390px;
-  background: #fff;
+  background: #141c3f;
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 10px;
   overflow: hidden;
   padding: 77px 55px 33px 55px;
 
-  box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
-  -moz-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
-  -webkit-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
-  -o-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
-  -ms-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 15px 0px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 0 5px 15px 0px rgba(0, 0, 0, 0.35);
+  -webkit-box-shadow: 0 5px 15px 0px rgba(0, 0, 0, 0.35);
+  -o-box-shadow: 0 5px 15px 0px rgba(0, 0, 0, 0.35);
+  -ms-box-shadow: 0 5px 15px 0px rgba(0, 0, 0, 0.35);
 }
 
 
@@ -173,7 +169,7 @@ iframe {
   display: block;
   font-family: fantasy;
   font-size: 30px;
-  color: #333333;
+  color: #f5f7ff;
   line-height: 1.2;
   text-align: center;
 
@@ -189,20 +185,20 @@ iframe {
 .wrap-input100 {
   width: 100%;
   position: relative;
-  border-bottom: 2px solid #adadad;
+  border-bottom: 2px solid #1b2550;
   margin-bottom: 37px;
 }
 
 .input100 {
   font-family: Poppins-Regular;
   font-size: 15px;
-  color: #555555;
+  color: #f5f7ff;
   line-height: 1.2;
 
   display: block;
   width: 100%;
   height: 45px;
-  background: transparent;
+  background: #1b2550;
   padding: 0 5px;
 }
 
@@ -231,17 +227,13 @@ iframe {
   -moz-transition: all 0.4s;
   transition: all 0.4s;
 
-  background: #6a7dfe;
-  background: -webkit-linear-gradient(left, #21d4fd, #25fcfc);
-  background: -o-linear-gradient(left, #21d4fd, #25fcfc);
-  background: -moz-linear-gradient(left, #21d4fd, #25fcfc);
-  background: linear-gradient(left, #21d4fd, #25fcfc);
+  background: linear-gradient(135deg, #93c5fd, #3b82f6);
 }
 
 .focus-input100::after {
   font-family: Poppins-Regular;
   font-size: 15px;
-  color: #999999;
+  color: #8a93b8;
   line-height: 1.2;
 
   content: attr(data-placeholder);
@@ -277,7 +269,7 @@ iframe {
 /*---------------------------------------------*/
 .btn-show-pass {
   font-size: 15px;
-  color: #999999;
+  color: #8a93b8;
 
   display: -webkit-box;
   display: -webkit-flex;
@@ -298,19 +290,11 @@ iframe {
 }
 
 .btn-show-pass:hover {
-  color: #6a7dfe;
-  color: -webkit-linear-gradient(left, #21d4fd, #25fcfc);
-  color: -o-linear-gradient(left, #21d4fd, #25fcfc);
-  color: -moz-linear-gradient(left, #21d4fd, #25fcfc);
-  color: linear-gradient(left, #21d4fd, #25fcfc);
+  color: #93c5fd;
 }
 
 .btn-show-pass.active {
-  color: #6a7dfe;
-  color: -webkit-linear-gradient(left, #21d4fd, #25fcfc);
-  color: -o-linear-gradient(left, #21d4fd, #25fcfc);
-  color: -moz-linear-gradient(left, #21d4fd, #25fcfc);
-  color: linear-gradient(left, #21d4fd, #25fcfc);
+  color: #93c5fd;
 }
 
 
@@ -343,11 +327,7 @@ iframe {
   z-index: -1;
   width: 300%;
   height: 100%;
-  background: #53dfdf;
-  background: -webkit-linear-gradient(right, #21d4fd, #0c919b, #25fcfc, #227292);
-  background: -o-linear-gradient(right, #21d4fd, #55bfdf, #21d4fd, #589ebe);
-  background: -moz-linear-gradient(right, #21d4fd, #21e5ff, #21d4fd, #21aeff);
-  background: linear-gradient(right, #21d4fd, #41beae, #21d4fd, #087b9e);
+  background: linear-gradient(135deg, #93c5fd, #3b82f6);
   top: 0;
   left: -100%;
 

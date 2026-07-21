@@ -56,7 +56,8 @@ class DespesaService:
             query = "SELECT a.usuario AS conjuge FROM casal c JOIN autenticacao a ON a.usuario = CASE WHEN c.conjuge_1 = %s THEN c.conjuge_2 ELSE c.conjuge_1 END WHERE %s IN (c.conjuge_1, c.conjuge_2);"
             cursor.execute(query, (usuario,usuario))
             resultado = cursor.fetchone()
-            conjuge = resultado[0]
+            if resultado:
+                conjuge = resultado[0]
 
 
         cursor.execute("""

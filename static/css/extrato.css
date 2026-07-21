@@ -2,6 +2,8 @@
 body{
   font-size: 12px;
   margin:0%;
+  background: var(--dna-bg);
+  color: var(--dna-text);
 }
 
 
@@ -56,102 +58,122 @@ body{
   background-color: #ff4800;
 }
 
-/* Estilo do select de categoria */
-select, #categoria {
-  /* padding: 8px 12px; */
-  padding: 4px 120px 7px 11px;
-  border: 1px solid #038b79;
-  border-radius: 6px;
-  background-color: #f0fafa;
-  font-size: 10px;
-  color: #040505;
-  margin-right: 10px;
-  transition: border 0.3s ease;
-  margin-bottom: 5px;
+/* botão que abre o seletor de período (Litepicker) — estilo pílula
+   com ícone, igual ao padrão usado em despesas.html */
+.filtro-periodo-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--dna-card-soft);
+  border: 1px solid var(--dna-border);
+  border-radius: 999px;
+  padding: 10px 16px;
+  color: var(--dna-text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, filter 0.15s ease;
+  box-sizing: border-box;
 }
 
-select, #categoria:focus {
-  border-color: #0abfa7;
+.filtro-periodo-btn:hover,
+.filtro-periodo-btn:focus-visible {
+  border-color: var(--primary);
   outline: none;
 }
 
-/* Estilo do campo de data */
-/* input#periodo-picker {
-  padding: 8px 12px;
-  border: 1px solid #046e60;
-  border-radius: 6px;
-  background-color: #f0fafa;
-  font-size: 10px;
-  color: #0d0e0d;
-  width: 220px;
-  margin-right: 10px;
-} */
-
-
-input#periodo-picker {
-  flex: 1;              /* ocupa espaço disponível */
-  min-width: 120px;     /* mínimo antes de esmagar demais */
-  max-width: 180px;     /* 👈 diminui largura (antes tava gigante) */
-  border: 1px solid var(--primary);
-  border-radius: 6px;
-  background-color: #f0fafa;
-  padding: 6px 10px;
-  font-size: 12px;
-}
-
-input#periodo-picker:focus {
-  border-color: #7ec0c9;
-  outline: none;
-}
-
-
-.filtro-card button.botao-filtrar {
+.filtro-periodo-btn .material-icons {
+  font-size: 18px;
+  color: var(--primary-light);
   flex-shrink: 0;
-  white-space: nowrap;
+}
 
+#periodo-picker-texto {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* linha de baixo do filtro: categoria + botão de busca */
+.filtro-linha-inferior {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filtro-select {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 14px;
+  border: 1px solid var(--dna-border);
+  border-radius: 999px;
+  background-color: var(--dna-card-soft);
+  font-size: 13px;
+  color: var(--dna-text);
+  transition: border-color 0.15s ease;
+}
+
+.filtro-select:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+.filtro-btn-buscar {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-
-  padding: 8px 12px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 500;
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  color: #fff;
   cursor: pointer;
-
-  border: 1px solid rgba(10, 191, 167, 0.25);
-
-  background: rgba(10, 191, 167, 0.12);
-  color: #0abfa7;
-
-  backdrop-filter: blur(6px); /* 👈 glass effect */
-  transition: all 0.2s ease;
+  box-shadow: 0 8px 18px rgba(59, 130, 246, 0.35);
+  transition: transform 0.15s ease, filter 0.15s ease;
 }
 
-/* ÍCONE */
-.botao-filtrar .material-icons {
-  font-size: 16px;
-}
-
-/* HOVER */
-.filtro-card button.botao-filtrar:hover {
-  background: rgba(10, 191, 167, 0.2);
+.filtro-btn-buscar:hover {
+  filter: brightness(1.08);
   transform: translateY(-1px);
+}
+
+.filtro-btn-buscar:active {
+  transform: scale(0.92);
+}
+
+.filtro-btn-buscar .material-icons {
+  font-size: 18px;
 }
 
 
 .edit-icon {
-  color: #003f5c;
+  color: var(--dna-text-dim);
   cursor: pointer;
   font-size: 16px;
-  opacity: 0.6;
-  transition: opacity 0.2s ease;
+  opacity: 0.85;
+  transition: opacity 0.2s ease, color 0.2s ease;
   margin-left: 6px;
 }
 
 .edit-icon:hover {
   opacity: 1;
+  color: var(--primary-light);
+}
+
+.gasto-acoes .fa-trash {
+  color: var(--dna-text-dim);
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.85;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.gasto-acoes .fa-trash:hover {
+  opacity: 1;
+  color: var(--danger);
 }
 
 
@@ -172,12 +194,14 @@ input#periodo-picker:focus {
     
 
 .modal-content {
-  background-color: #fff;
+  background-color: var(--dna-card);
+  border: 1px solid var(--dna-border);
+  color: var(--dna-text);
   padding: 16px; /* Diminuí o padding */
-  border-radius: 8px;
+  border-radius: 16px;
   width: 100%;
   max-width: 240px; /* Diminui mais a largura */
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 45px rgba(3, 7, 18, 0.55);
   position: relative;
   animation: fadeIn 0.2s ease-in-out;
 }
@@ -198,19 +222,19 @@ input#periodo-picker:focus {
   top: 8px; /* Reduzi a posição do "x" */
   right: 10px;
   font-size: 20px;
-  color: #888;
+  color: var(--dna-text-dim);
   cursor: pointer;
 }
 
 .close:hover {
-  color: #000;
+  color: var(--dna-text);
 }
 
 .modal-content h3 {
   margin-bottom: 12px; /* Menor margem no título */
   font-size: 18px;
   text-align: center;
-  color: #333;
+  color: var(--dna-text);
 }
 
 form{
@@ -221,20 +245,22 @@ form label {
   display: block;
   font-size: 10px;
   margin-bottom: 2px;
-  color: #444;
+  color: var(--dna-text-dim);
 }
 
 form input {
   width: 100%;
   padding: 8px;
   margin-bottom: 8px; /* Menor margem entre os inputs */
-  border: 1px solid #ccc;
+  border: 1px solid var(--dna-border);
   border-radius: 4px;
   font-size: 10px;
+  background: var(--dna-card-soft);
+  color: var(--dna-text);
 }
 
 form input:focus {
-  border-color: #74C0FC;
+  border-color: var(--primary-light);
   outline: none;
 }
 
@@ -283,9 +309,11 @@ form input {
   box-sizing: border-box; /* Impede que padding/borda aumentem o tamanho */
   padding: 6px;
   margin-bottom: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--dna-border);
   border-radius: 4px;
   font-size: 10px;
+  background: var(--dna-card-soft);
+  color: var(--dna-text);
 }
 
 form input[type="date"],
@@ -402,7 +430,21 @@ font-size: 12px;
 }
 
 .container-detalhes{
-padding: 5px 0px 0px 0px;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: calc(112px + env(safe-area-inset-top)) 14px calc(140px + env(safe-area-inset-bottom));
+  background: var(--dna-bg);
+  color: var(--dna-text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--dna-text);
+  text-align: center;
+  margin: 0 0 16px;
 }
 
 
@@ -410,17 +452,17 @@ padding: 5px 0px 0px 0px;
 
 /* novo */
 body {
-  background: #f7f9fb;
+  background: var(--dna-bg);
   font-family: 'Inter', 'Segoe UI', sans-serif;
   font-size: 14px;
-  color: #1f2937;
+  color: var(--dna-text);
 }
 
 /* DATA */
 .data-grupo {
   font-weight: 600;
   margin: 20px 0 10px;
-  color: #6b7280;
+  color: var(--dna-text-dim);
 }
 
 /* CARD */
@@ -439,13 +481,21 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #fff;
+  background: var(--dna-card);
+  border: 1px solid var(--dna-border);
   padding: 12px 14px;
-  border-radius: 10px;
+  border-radius: 14px;
   margin-bottom: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 24px rgba(3, 7, 18, 0.3);
 
   position: relative; /* 👈 ESSENCIAL */
+}
+
+.gasto-card.genero-masculino {
+  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.22), 0 8px 20px rgba(96, 165, 250, 0.15);
+}
+.gasto-card.genero-feminino {
+  box-shadow: 0 0 0 1px rgba(244, 114, 182, 0.25), 0 8px 20px rgba(244, 114, 182, 0.18);
 }
 
 /* BLOCO ESQUERDA (cresce) */
@@ -465,7 +515,7 @@ body {
 .gasto-descricao {
   font-size: 14px;
   font-weight: 500;
-  color: #1f2937;
+  color: var(--dna-text);
 
   white-space: nowrap;
   overflow: hidden;
@@ -476,6 +526,7 @@ body {
   width: 90px;          /* largura fixa */
   text-align: right;    /* alinha à direita */
   font-weight: bold;
+  color: var(--dna-orange);
   flex-shrink: 0;       /* não deixa encolher */
 }
 
@@ -536,26 +587,45 @@ body {
 
 .filtro-card {
   display: flex;
-  gap: 10px;
-  background: #fff;
-  padding: 12px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  align-items: center;
-  flex-wrap: nowrap; /* 👈 impede quebrar linha */
+  flex-direction: column;
+  gap: 12px;
+  background: var(--dna-card);
+  border: 1px solid var(--dna-border);
+  padding: 16px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(3, 7, 18, 0.35);
 }
 
-.filtro-card input,
-.filtro-card select {
-  flex: 0 0 110px;   /* largura fixa menor */
-  max-width: 110px;
+/* Toggle Individual/Casal compacto */
+.modo-compacto-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
 
-  padding: 6px 8px;  /* 👈 remove aquele padding gigante */
+.modo-pill-compacta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 12px;
+  padding: 6px 12px;
+  background: var(--dna-card-soft);
+  color: var(--dna-text-dim);
+  border: 1px solid var(--dna-border);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
 
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.modo-pill-compacta .material-icons {
+  font-size: 14px;
+}
+
+.modo-pill-compacta.active {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  color: #fff;
+  border-color: transparent;
 }
 
 .acoes-final {
@@ -614,18 +684,20 @@ body {
   text-align: left;
   font-size: 14px;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--dna-text-dim);
 }
 
 .total-gastos span {
   font-size: 18px;
   font-weight: bold;
-  color: #bf610a;
+  color: var(--dna-orange);
 }
 
 .btn-adicionar{
   position: fixed;
-  bottom: 66px;
+  /* acima do footer-bar fixo (14px + ~65px de altura) para não ficar
+     tapado por ele — mesmo padrão usado em receitas.css */
+  bottom: calc(100px + env(safe-area-inset-bottom));
 
   left: 50%;
   transform: translateX(-50%); /* CENTRALIZA PERFEITO */
@@ -637,7 +709,6 @@ body {
 
   padding: 12px 18px;
 
-  /* background: linear-gradient(135deg, #65e2eb, #26c9d4); verde suave */
   background: linear-gradient(
       135deg,
       var(--primary-light),
@@ -655,7 +726,8 @@ body {
 
   box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 
-  z-index: 1000;
+  /* acima do header-bar/footer-bar (z-index: 1000) */
+  z-index: 1010;
 
   transition: all 0.25s ease;
 }
@@ -663,7 +735,7 @@ body {
 /* BASE DOS BOTÕES LATERAIS */
 .btn-float-acao {
   position: fixed;
-  bottom: 66px;
+  bottom: calc(100px + env(safe-area-inset-bottom));
 
   width: 50px;
   height: 50px;
@@ -677,7 +749,7 @@ body {
   text-decoration: none;
 
   box-shadow: 0 6px 14px rgba(0,0,0,0.2);
-  z-index: 1000;
+  z-index: 1010;
 
   transition: all 0.2s ease;
 }
@@ -691,6 +763,13 @@ body {
 .btn-float-acao.pdf {
   right: 20px;
   background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.btn-float-acao.rapido {
+  left: 20px;
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  border: none;
+  cursor: pointer;
 }
 
 /* EFEITOS */
@@ -714,31 +793,32 @@ body {
 
 .quick-actions {
   display: flex;
+  flex-direction: column;
   gap: 8px;
-  overflow-x: auto;
-  padding: 10px;
+  max-height: 45vh;
+  overflow-y: auto;
 }
 
 .quick-tag {
-  /* background: linear-gradient(135deg, #b0f5ec, #62f1de); */
-  background: linear-gradient(
-      135deg,
-      var(--primary-light),
-      var(--primary)
-    );
-  color: white;
-  padding: 8px 12px;
-  border-radius: 999px;
-  font-size: 11px;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  background: var(--dna-card-soft);
+  border: 1px solid var(--dna-border);
+  border-radius: 14px;
+  padding: 10px 12px;
+
   cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
-  font-weight: bold;
+  transition: transform 0.1s ease, background 0.15s ease;
+}
+
+.quick-tag:hover {
+  background: var(--dna-border);
 }
 
 .quick-tag:active {
-  transform: scale(0.9);
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+  transform: scale(0.98);
 }
 
 
@@ -788,41 +868,179 @@ body {
 
 
 .toast {
-  position: absolute;
-  top: -10px; /* fica acima das ações */
+  position: fixed;
   left: 50%;
-  transform: translate(-50%, -10px);
+  bottom: calc(160px + env(safe-area-inset-bottom));
+  transform: translateX(-50%) translateY(20px);
 
-  background: #111827;
-  color: white;
+  background: var(--dna-bg-alt);
+  border: 1px solid var(--dna-border);
+  color: var(--dna-text);
   padding: 10px 18px;
-  border-radius: 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 10px 24px rgba(3, 7, 18, 0.45);
 
   opacity: 0;
   pointer-events: none;
-  transition: 0.3s;
+  transition: opacity 0.25s ease, transform 0.25s ease;
 
-  z-index: 10;
+  z-index: 1200;
 }
 
 .toast.show {
   opacity: 1;
-  transform: translate(-50%, -20px);
+  transform: translateX(-50%) translateY(0);
 }
 
-
-.quick-container {
-  position: relative;
+.quick-tag-icone {
+  font-size: 20px;
+  flex-shrink: 0;
 }
 
-
-.quick-tag {
+.quick-tag-texto {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  gap: 2px;
 }
 
-.quick-tag span:first-child {
-  font-size: 18px; /* emoji maior */
+.quick-tag-nome {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dna-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quick-tag-valor {
+  font-size: 12px;
+  color: var(--dna-text-dim);
+}
+
+.quick-tag-add {
+  flex-shrink: 0;
+  color: var(--primary-light);
+  font-size: 22px;
+}
+
+/* painel de "ações rápidas" — some por padrão, abre ao clicar no botão
+   de raio flutuante (canto inferior esquerdo, junto dos outros botões
+   flutuantes) e fecha ao clicar no X, fora do painel, ou de novo no raio */
+.painel-acoes-rapidas {
+  display: none;
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: calc(160px + env(safe-area-inset-bottom));
+  z-index: 1050;
+
+  background: var(--dna-card);
+  border: 1px solid var(--dna-border);
+  border-radius: 20px;
+  padding: 14px;
+  box-shadow: 0 20px 45px rgba(3, 7, 18, 0.55);
+}
+
+.painel-acoes-rapidas.show {
+  display: block;
+  animation: modalApareceu 0.2s ease-in-out;
+}
+
+.painel-acoes-rapidas-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dna-text);
+  margin-bottom: 10px;
+}
+
+.painel-acoes-rapidas-header .material-icons {
+  font-size: 20px;
+  color: var(--dna-text-dim);
+  cursor: pointer;
+}
+
+.painel-acoes-rapidas-header .material-icons:hover {
+  color: var(--dna-text);
+}
+
+/* ===================================================================
+   LITEPICKER — overrides mínimos para não destoar do fundo escuro
+   (o CSS do CDN continua sendo a base; só reskinamos cores/superfícies)
+=================================================================== */
+.litepicker {
+  background: var(--dna-card) !important;
+  border: 1px solid var(--dna-border) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 45px rgba(3, 7, 18, 0.55) !important;
+  color: var(--dna-text) !important;
+}
+
+.litepicker .container__months {
+  background: var(--dna-card) !important;
+  border-radius: 16px !important;
+}
+
+.litepicker .month-item-name,
+.litepicker .month-item-year {
+  color: var(--dna-text) !important;
+}
+
+.litepicker .month-item-weekdays-row div {
+  color: var(--dna-text-dim) !important;
+}
+
+.litepicker .day-item {
+  color: var(--dna-text) !important;
+}
+
+.litepicker .day-item:hover {
+  box-shadow: none !important;
+  background-color: var(--dna-card-soft) !important;
+  color: var(--dna-text) !important;
+}
+
+.litepicker .day-item.is-locked {
+  color: var(--dna-text-faint) !important;
+}
+
+.litepicker .day-item.is-today {
+  color: var(--primary-light) !important;
+}
+
+.litepicker .day-item.is-in-range {
+  background-color: rgba(59, 130, 246, 0.18) !important;
+  color: var(--dna-text) !important;
+}
+
+.litepicker .day-item.is-start-date,
+.litepicker .day-item.is-end-date {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary)) !important;
+  color: #fff !important;
+}
+
+.litepicker .button-previous-month,
+.litepicker .button-next-month {
+  color: var(--dna-text) !important;
+}
+
+.litepicker .container__footer {
+  background: var(--dna-bg-alt) !important;
+  border-top: 1px solid var(--dna-border) !important;
+}
+
+.litepicker .button-apply {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary)) !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+}
+
+.litepicker .button-cancel {
+  color: var(--dna-text-dim) !important;
 }

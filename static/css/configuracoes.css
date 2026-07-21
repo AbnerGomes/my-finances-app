@@ -1,133 +1,218 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    background: #e0f7f9;
-    font-family: 'Arial', sans-serif;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  /* .settings-wrapper {
-    background: white;
-    border-radius: 30px;
-    width: 320px;
-    padding: 20px;
-    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 600px;
-   */
-  .settings-wrapper {
-    background: white;
-    border-radius: 30px;
-    width: 100%;
-    padding: 18px;
-    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
-    display: flex ;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 83%;
-    margin-top: -16px;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-  .settings-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 20px;
-  }
-  
-  .settings-header h1 {
-    font-size: 20px;
-  }
-  
-  .menu-icon {
-    font-size: 24px;
-  }
-  
-  .settings-options {
-    flex-grow: 1;
-  }
-  
-  .option {
-    background: #f9f9f9;
-    border-radius: 20px;
-    padding: 15px;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  .option .icon {
-    font-size: 24px;
-  }
-  
-  .switch {
-    position: relative;
-    display: inline-block;
-    width: 40px;
-    height: 24px;
-  }
-  
-  .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-  
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    border-radius: 24px;
-    transition: .4s;
-  }
-  
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 18px;
-    width: 18px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
-  }
-  
-  input:checked + .slider {
-    background-color: #00c7b1;
-  }
-  
-  input:checked + .slider:before {
-    transform: translateX(16px);
-  }
-  
-  .settings-footer {
-    display: inline-flex;
-    justify-content: space-around;
-    align-items: center;
-    padding-top: 20px;
+body {
+  background: var(--dna-bg);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  min-height: 100vh;
+}
 
-    
+/* ==================== WRAPPER PRINCIPAL ==================== */
+/* Reserva o mesmo respiro do header-bar/footer-bar fixos usado na home
+   (ver .dashboard-wrapper em styles.css) para o conteúdo não ficar
+   escondido atrás das barras fixas. */
+.settings-wrapper {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: calc(112px + env(safe-area-inset-top)) 14px calc(140px + env(safe-area-inset-bottom));
+  color: var(--dna-text);
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.settings-header h1,
+.settings-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--dna-text);
+  margin: 0;
+}
+
+/* hambúrguer decorativo, sem função associada — mantido no markup, oculto
+   visualmente para não poluir o novo layout */
+.menu-icon {
+  display: none;
+}
+
+/* ==================== TOGGLE COMPACTO INDIVIDUAL/CASAL ==================== */
+.modo-compacto-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.modo-pill-compacta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  background: var(--dna-card-soft);
+  color: var(--dna-text-dim);
+  border: 1px solid var(--dna-border);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.modo-pill-compacta .material-icons {
+  font-size: 15px;
+}
+
+.modo-pill-compacta.active {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  color: #fff;
+  border-color: transparent;
+}
+
+/* ==================== CARD DE OPÇÕES ==================== */
+.settings-card {
+  background: var(--dna-card);
+  border: 1px solid var(--dna-border);
+  border-radius: 20px;
+  padding: 8px;
+  margin-bottom: 14px;
+  box-shadow: 0 10px 30px rgba(3, 7, 18, 0.35);
+}
+
+.settings-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option {
+  background: var(--dna-card-soft);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.option-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.option-icon {
+  font-size: 20px;
+  color: var(--primary-light);
+  flex: none;
+}
+
+.option-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dna-text);
+}
+
+/* ==================== SWITCH (toggle) ==================== */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 24px;
+  flex: none;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--dna-bg-alt);
+  border: 1px solid var(--dna-border);
+  border-radius: 24px;
+  transition: 0.3s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  bottom: 2px;
+  background-color: #fff;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  border-color: transparent;
+}
+
+input:checked + .slider:before {
+  transform: translateX(18px);
+}
+
+/* ==================== CARD "EXCLUIR CONTA" (danger) ==================== */
+.danger-card {
+  background: var(--dna-card);
+  border: 1px solid rgba(251, 146, 60, 0.35);
+  border-radius: 20px;
+  padding: 8px;
+  box-shadow: 0 10px 30px rgba(3, 7, 18, 0.35);
+}
+
+.settings-footer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+}
+
+/* elemento clicável — mantém a classe "footer-icon" que o config.js
+   já usa (event.target.classList.contains('footer-icon')) para abrir
+   o modal de confirmação de exclusão */
+.footer-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--dna-orange), #ef4444);
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  flex: none;
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
+}
+
+.danger-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dna-orange);
+}
+
+@media (max-width: 380px) {
+  .settings-wrapper {
+    padding-left: 10px;
+    padding-right: 10px;
   }
-  
-  .footer-icon {
-    background: #f1f1f1;
-    padding: 10px;
-    border-radius: 50%;
-    font-size: 24px;
-  }
-  
+}

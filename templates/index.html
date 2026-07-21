@@ -2,10 +2,13 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>APP Finanças - Abner Gomes ©</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -18,59 +21,39 @@
 	<meta property="og:type" content="website">
   <script src="static/js/comum.js" defer></script>
 </head>
-<body class="theme-green">
- 
+<body class="theme-blue home-page dna-page">
+
   <div class="header-bar center">
     <div class="logo-text">
       <img id="app-logo" src="{{ url_for('static', filename='images/fin-dark.png') }}" alt="Logo" class="logo">
-      <span class="company-name">My Finance Dashboard</span>
-      <span class="ambiente">HOMOLOGAÇÃO</span>
+      <span class="company-name">Dois no Azul</span>
+      <!-- <span class="ambiente">HOMOLOGAÇÃO</span> -->
     </div>
-  
-    <!-- <div class="user-info">
-      <div class="dropdown">
-        <div class="dropdown-toggle" onclick="toggleDropdown()">
-          
-          <span id="user-icon" class="material-icons user-icon">person</span>
-          
-          <span id="current-username" class="user-name">{{ usuario.split('@')[0] }}</span>
-          <span class="material-icons dropdown-icon">expand_more</span>
-        </div>
-    
-        <div id="dropdown-menu" class="dropdown-menu">
-          {% if temConjuge  %}
-          <div class="dropdown-item" onclick="changeUser('Casal')">Casal</div>
-          {% endif %}
-          <div class="dropdown-item" onclick="changeUser('{{ usuario.split('@')[0] }}')">{{ usuario.split('@')[0] }}</div>
-        </div>
-      </div>
-    </div> -->
 
     <div class="user-info">
       <div class="dropdown">
         <div class="dropdown-toggle" onclick="toggleDropdown()">
           <span id="user-icon1" class="material-icons user-icon">person</span>
         </div>
-    
+
         <div id="main-dropdown" class="dropdown-menu">
           <div class="profile-header">
-            <span  id="user-icon" class="material-icons profile-icon">person</span>
-            <div  id="current-username"  class="profile-name">{{ usuario.split('@')[0] | upper }}</div>
+            <span id="user-icon" class="material-icons profile-icon">person</span>
+            <div id="current-username" class="profile-name">{{ usuario.split('@')[0] | upper }}</div>
           </div>
-    
+
           <div id="dropMode" class="dropdown-item" onclick="toggleModeDropdown()">
             Modo
             <span class="material-icons">expand_more</span>
           </div>
-    
-          <!-- submenu do modo -->
+
           <div id="mode-dropdown" class="dropdown-submenu">
             {% if temConjuge %}
             <div class="dropdown-item" onclick="changeMode('S')">Casal</div>
             {% endif %}
             <div class="dropdown-item" onclick="changeMode('N')">Individual</div>
           </div>
-    
+
           <div class="dropdown-item">
             Idioma
             <div class="language-selector">
@@ -78,183 +61,231 @@
               <img src="https://flagcdn.com/w40/br.png" alt="BR" width="16" />
             </div>
           </div>
-    
-          <!-- seleção de tema -->
+
           <div class="dropdown-item" onclick="toggleThemeDropdown()">
             Tema
             <span class="material-icons">expand_more</span>
           </div>
 
-          <!-- submenu tema -->
           <div id="theme-dropdown" class="dropdown-submenu">
-
-            <div class="dropdown-item" onclick="changeTheme('green')">
-              🟢 Green
-            </div>
-
-            <div class="dropdown-item" onclick="changeTheme('yellow')">
-              🟡 Yellow
-            </div>
-
-            <div class="dropdown-item" onclick="changeTheme('ocean')">
-              🔵 Ocean
-            </div>
-
-            <div class="dropdown-item" onclick="changeTheme('dark')">
-              ⚫ Dark
-            </div>
-
+            <div class="dropdown-item" onclick="changeTheme('blue')">🔵 Azul</div>
+            <div class="dropdown-item" onclick="changeTheme('yellow')">🟡 Yellow</div>
+            <div class="dropdown-item" onclick="changeTheme('ocean')">🌊 Ocean</div>
+            <div class="dropdown-item" onclick="changeTheme('dark')">⚫ Dark</div>
           </div>
 
           <div class="dropdown-item" onclick="signOut()">Sign out</div>
         </div>
       </div>
     </div>
-    
-    
   </div>
-  
 
   <div class="dashboard-wrapper">
 
-  <div class="chart-bar">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="flash-stack">
+        {% for category, message in messages %}
+        <div class="flash-banner flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- topo: título + sino (decorativo por enquanto, sem notificações reais ainda) -->
+    <div class="home-topbar">
+      <div>
+        <h1 class="home-title">Resumo</h1>
+        <p class="home-subtitle">{{ usuario.split('@')[0] }}</p>
+      </div>
+      <span class="material-icons home-bell" aria-hidden="true">notifications_none</span>
+    </div>
+
+    <!-- alternância Individual / Casal -->
+    <div class="mode-toggle-row">
+      <div class="mode-toggle" role="tablist" aria-label="Modo de visualização">
+        <button type="button" id="pill-individual" class="mode-pill active" onclick="changeMode('N')">Individual</button>
+        {% if temConjuge %}
+        <button type="button" id="pill-casal" class="mode-pill" onclick="changeMode('S')">Casal</button>
+        {% endif %}
+      </div>
+
+      {% if not temConjuge %}
+      <button type="button" class="btn-vincular-conjuge" onclick="abrirModalConjuge()">
+        <span class="material-icons">favorite</span>
+        Vincular cônjuge
+      </button>
+      {% endif %}
+    </div>
+
+    <!-- filtros de período (funcionalidade original preservada) -->
+    <div class="period-container-wrapper" id="period-buttons">
+      <button class="period-chip active" onclick="filtrarGastosBtn('mesatual')">Mês</button>
+      <button class="period-chip" onclick="filtrarGastosBtn('hoje')">Hoje</button>
+      <button class="period-chip" onclick="filtrarGastosBtn('ontem')">Ontem</button>
+      <button class="period-chip" onclick="filtrarGastosBtn('semanaatual')">Semana</button>
+      <button class="period-chip" onclick="filtrarGastosBtn('semanapassada')">Sem. Ant</button>
+      <button class="period-chip" onclick="filtrarGastosBtn('mesanterior')">Mês Ant</button>
+    </div>
+
+    <!-- card: saldo total -->
+    <div class="home-card card-saldo">
+      <div class="saldo-header">
+        <span class="label-muted">Saldo total</span>
+        <button type="button" id="toggle-saldo" class="icon-btn" aria-label="Ocultar saldo">
+          <span class="material-icons" id="toggle-saldo-icon">visibility</span>
+        </button>
+      </div>
+      <div class="saldo-valor" id="saldo-total">R$ 0,00</div>
+      <div id="total" class="saldo-periodo">
+        Total no período selecionado: R$ <span id="valor-total">0,00</span>
+      </div>
+    </div>
+
+    <!-- card: visão geral do mês (receitas x despesas + donut) -->
+    <div class="home-card card-visao">
+      <div class="home-card-header-row">
+        <span class="home-card-title" id="resumo-titulo">Visão geral do mês</span>
+      </div>
+
+      <div class="receitas-despesas-row">
+        <div class="rd-item">
+          <span class="label-muted">Receitas</span>
+          <div id="total-receitas" class="valor receita">0,00</div>
+        </div>
+        <div class="rd-item align-right">
+          <span class="label-muted">Despesas</span>
+          <div id="total-gastos" class="valor despesa">0,00</div>
+        </div>
+      </div>
+
+      <div id="mensagem" style="display: none;"></div>
+
+      <div class="donut-wrapper">
+        <canvas id="donutChart"></canvas>
+        <div class="donut-center">
+          <div class="donut-center-valor" id="donut-center-saldo">R$ 0,00</div>
+          <div class="donut-center-label">Saldo</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- card: categorias -->
+    <div class="home-card card-categorias">
+      <div class="home-card-header-row">
+        <span class="home-card-title">Categorias</span>
+        <a href="{{ url_for('gasto.extrato') }}" class="link-ver-todas">Ver todas</a>
+      </div>
+      <div id="categorias-list" class="categorias-list">
+        <!-- preenchido dinamicamente pelo scripts.js -->
+      </div>
+    </div>
+
+    <!-- card: histórico mensal (gráfico de barras, recurso extra que já existia) -->
+    <div class="home-card card-historico">
+      <div class="home-card-header-row">
+        <span class="home-card-title">Histórico mensal</span>
+      </div>
       <div class="chart-container-bar">
-        <canvas id="barChart" style="height: 240px;"></canvas>
-      </div>  
-  </div>  
-
-  <div class="chart-and-buttons">
-<div class="container-btn">
-  <div class="period-container-wrapper" id="period-buttons">
-
-    <button class="period-chip active" onclick="filtrarGastosBtn('mesatual')">Mês</button>
-    <button class="period-chip" onclick="filtrarGastosBtn('hoje')">Hoje</button>
-    <button class="period-chip" onclick="filtrarGastosBtn('ontem')">Ontem</button>
-    <button class="period-chip" onclick="filtrarGastosBtn('semanaatual')">Semana</button>
-    <button class="period-chip" onclick="filtrarGastosBtn('semanapassada')">Sem. Ant</button>
-    <button class="period-chip" onclick="filtrarGastosBtn('mesanterior')">Mês Ant</button>
-  
-  </div>
-</div>
-
-<!-- <br><br> -->
- 
-  
-  <div class="chart-container">
-    <div id="mensagem" style="display: none; color: red; font-weight: bold; text-align: center; margin-top: 10px;"></div>
-    <canvas id="donutChart"></canvas>
-</div>
-
-</div>
-
-<div id="total" class="total" style="text-align: center; margin-top: 12x; padding: 10px 10px 10px 10px; ">
-   <h3 class="txt1">Total Gasto no período selecionado: R$ <span id="valor-total">0,00</span></h3>
-</div>
-
-<!-- CARD RECEITAS X GASTOS -->
-<div class="card-resumo">
-
-  <div class="resumo-header">
-    <span class="resumo-titulo" id="resumo-titulo">Resumo do mês atual</span>
-  </div>
-
-  <div class="resumo-valores">
-
-    <div class="resumo-item receita">
-      <span class="material-icons">arrow_downward</span>
-      <div>
-        <div class="label">Receitas</div>
-        <div id="total-receitas" class="valor">R$ 0,00</div>
-      </div>
-    </div>
-
-    <div class="resumo-item gasto">
-      <span class="material-icons">arrow_upward</span>
-      <div>
-        <div class="label">Gastos</div>
-        <div id="total-gastos" class="valor">R$ 0,00</div>
+        <canvas id="barChart" style="height: 220px;"></canvas>
       </div>
     </div>
 
   </div>
 
-  <div class="saldo">
-    Saldo: <span id="saldo-total">R$ 0,00</span>
+  <div class="footer-bar">
+    <a>
+      <button class="footer-btn active">
+        <span class="material-icons">dashboard</span>
+        <span class="footer-text">Visão Geral</span>
+      </button>
+    </a>
+    <a href="{{ url_for('despesa.despesas') }}">
+      <button class="footer-btn">
+        <span class="material-icons">bar_chart</span>
+        <span class="footer-text">Despesas</span>
+      </button>
+    </a>
+    <a href="{{ url_for('gasto.extrato') }}">
+      <button class="footer-btn">
+        <span class="material-icons">account_balance_wallet</span>
+        <span class="footer-text">Transações</span>
+      </button>
+    </a>
+    <a href="{{ url_for('gasto.receitas') }}">
+      <button class="footer-btn">
+        <span class="material-icons">payment</span>
+        <span class="footer-text">Receitas</span>
+      </button>
+    </a>
+    <a href="{{ url_for('gasto.configuracoes') }}">
+      <button class="footer-btn">
+        <span class="material-icons">settings</span>
+        <span class="footer-text">Configurações</span>
+      </button>
+    </a>
   </div>
 
-</div>
-
-<br>
-
-
-
-</div>
-<div class="footer-bar">
-  <a>
-    <button class="footer-btn active">
-      <span class="material-icons">dashboard</span>
-      <span class="footer-text">Visão Geral</span>
-    </button>
-  </a>
-  <a href="{{ url_for('despesa.despesas') }}">
-    <button class="footer-btn">
-      <span class="material-icons">bar_chart</span>
-      <span class="footer-text">Despesas</span>
-    </button>
-  </a>
-  <a href="{{ url_for('gasto.extrato') }}">
-    <button class="footer-btn">
-      <span class="material-icons">account_balance_wallet</span>
-      <span class="footer-text">Transações</span>
-    </button>
-  </a>
-  <a href="{{ url_for('gasto.receitas') }}">
-    <button class="footer-btn">
-      <span class="material-icons">payment</span>
-      <span class="footer-text">Receitas</span>
-    </button>
-  </a>
-  <!-- <a href="{{ url_for('despesa.metas') }}">
-    <button class="footer-btn">
-      <span class="material-icons">payment</span>
-      <span class="footer-text">Limites</span>
-    </button>
-  </a> -->
-  <a href="{{ url_for('gasto.configuracoes') }}">
-    <button class="footer-btn">
-      <span class="material-icons">settings</span>
-      <span class="footer-text">Configurações</span>
-    </button>
-  </a>
-</div>
-
- <!-- Modal mensagem  -->
- <div id="modal-mensagem" class="modal" style="display: none;">
-  <div class="modal-content">
-    <span class="close" id="fechar-modal">&times;</span>
-    <h4>Sem gastos para o período informado</h4>
-    <form> 
-      <button type="reset" id="confirmar-ok" class="botao-salvar" style="margin-top: 12px;">OK</button>
-  </form>
-  
+  <!-- Modal mensagem -->
+  <div id="modal-mensagem" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close" id="fechar-modal">&times;</span>
+      <h4>Sem gastos para o período informado</h4>
+      <form>
+        <button type="reset" id="confirmar-ok" class="botao-salvar" style="margin-top: 12px;">OK</button>
+      </form>
+    </div>
   </div>
-</div>
 
-{% if usuario.split('@')[0] =='analidiacadribeiro28'  %} 
- <!-- Modal MO  -->
- <div id="modal-mo" class="modal" style="display: none;">
-  <div class="modal-mo">
-    <span class="close" id="fechar-modal">&times;</span>
-    <h4>Te amo meu mozinho❤️  </h4>
-    <form> 
-      <button type="reset" id="confirmar-ok" class="botao-salvar" style="margin-top: 12px;">Clica aqui se tbm me ama</button>
-  </form>
-  
+  {% if not temConjuge %}
+  <!-- Modal cadastrar cônjuge -->
+  <div id="modal-conjuge" class="modal" style="display: none;">
+    <div class="modal-content modal-conjuge-content">
+      <span class="close" id="fechar-modal-conjuge">&times;</span>
+      <h4>Vincular cônjuge</h4>
+      <p class="modal-conjuge-subtitulo">Cadastre os dados do seu cônjuge para ativar o modo Casal.</p>
+
+      <form method="POST" action="{{ url_for('gasto.cadastrar_conjuge') }}" id="form-conjuge">
+        <label for="conjuge-nome">Nome</label>
+        <input type="text" id="conjuge-nome" name="nome" placeholder="Nome completo" required>
+
+        <label for="conjuge-email">Email</label>
+        <input type="email" id="conjuge-email" name="email" placeholder="email@exemplo.com" required>
+
+        <label for="conjuge-telefone">Telefone</label>
+        <input type="text" id="conjuge-telefone" name="telefone" placeholder="(11) 91234-5678" maxlength="15">
+
+        <label for="conjuge-senha">Senha</label>
+        <input type="password" id="conjuge-senha" name="senha" placeholder="Senha de acesso" required>
+
+        <label>Gênero</label>
+        <div class="genero-toggle" role="radiogroup" aria-label="Gênero do cônjuge">
+          <input type="radio" id="genero-ele" name="pronome" value="Ele/Dele" checked>
+          <label for="genero-ele" class="genero-pill">Masculino</label>
+
+          <input type="radio" id="genero-ela" name="pronome" value="Ela/Dela">
+          <label for="genero-ela" class="genero-pill">Feminino</label>
+        </div>
+
+        <button type="submit" class="botao-salvar" style="margin-top: 12px;">Cadastrar cônjuge</button>
+      </form>
+    </div>
   </div>
-</div>
-{% endif %}
+  {% endif %}
+
+  {% if usuario.split('@')[0] =='analidiacadribeiro28' %}
+  <!-- Modal MO -->
+  <div id="modal-mo" class="modal" style="display: none;">
+    <div class="modal-mo">
+      <span class="close" id="fechar-modal">&times;</span>
+      <h4>Te amo meu mozinho❤️ </h4>
+      <form>
+        <button type="reset" id="confirmar-ok" class="botao-salvar" style="margin-top: 12px;">Clica aqui se tbm me ama</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
 
   <script src="static/js/scripts.js" defer></script>
-  <!-- <script src="static/js/comum.js" defer></script> -->
 </body>
 </html>

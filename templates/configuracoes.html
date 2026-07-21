@@ -2,22 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/configuracoes.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
   <title>Configurações</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  
+
   <script src="static/js/comum.js" defer></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/config.css') }}">
 </head>
-<body>
+<body class="dna-page">
 
   <div class="header-bar center">
     <div class="logo-text">
       <img src="{{ url_for('static', filename='images/fin-dark.png') }}" alt="Logo" class="logo">
-      <span class="company-name">My Finance Dashboard</span>
-      <span class="ambiente">HOMOLOGAÇÃO</span>
+      <span class="company-name">Dois no Azul</span>
+      <!-- <span class="ambiente">HOMOLOGAÇÃO</span> -->
     </div>
 
     <div class="user-info">
@@ -25,18 +25,18 @@
         <div class="dropdown-toggle" onclick="toggleDropdown()">
           <span class="material-icons user-icon">person</span>
         </div>
-    
+
         <div id="main-dropdown" class="dropdown-menu">
           <div class="profile-header">
             <span  id="user-icon" class="material-icons profile-icon">person</span>
             <div  id="current-username"  class="profile-name">{{ usuario.split('@')[0] | upper }}</div>
           </div>
-    
+
           <div class="dropdown-item" onclick="toggleModeDropdown()">
             Modo
             <span class="material-icons">expand_more</span>
           </div>
-    
+
           <!-- submenu do modo -->
           <div id="mode-dropdown" class="dropdown-submenu">
             {% if temConjuge %}
@@ -44,7 +44,7 @@
             {% endif %}
             <div class="dropdown-item" onclick="changeMode('N')">Individual</div>
           </div>
-    
+
           <div class="dropdown-item">
             Idioma
             <div class="language-selector">
@@ -52,7 +52,7 @@
               <img src="https://flagcdn.com/w40/br.png" alt="BR" width="16" />
             </div>
           </div>
-    
+
           <div class="dropdown-item" onclick="signOut()">Sign out</div>
         </div>
       </div>
@@ -63,69 +63,87 @@
 
   <div class="settings-wrapper">
     <div class="settings-header">
-      <h1>Configurações</h1>
+      <h1 class="settings-title">Configurações</h1>
       <div class="menu-icon">☰</div>
     </div>
 
-    <div class="settings-options">
-      <div class="option">
-        <div class="icon">🔊</div>
-        <span>Som</span>
-        <label class="switch">
-          <input type="checkbox" checked>
-          <span class="slider"></span>
-        </label>
-      </div>
+    <div class="modo-compacto-wrapper" role="tablist" aria-label="Modo de visualização">
+      <button type="button" class="modo-pill-compacta active" data-modo="N" onclick="changeMode('N')">
+        <span class="material-icons">person</span> Individual
+      </button>
+      {% if temConjuge %}
+      <button type="button" class="modo-pill-compacta" data-modo="S" onclick="changeMode('S')">
+        <span class="material-icons">people</span> Casal
+      </button>
+      {% endif %}
+    </div>
 
-      <div class="option">
-        <div class="icon">🔔</div>
-        <span>Notificações</span>
-        <label class="switch">
-          <input type="checkbox">
-          <span class="slider"></span>
-        </label>
-      </div>
+    <div class="settings-card">
+      <div class="settings-options">
+        <div class="option">
+          <div class="option-left">
+            <span class="material-icons option-icon">volume_up</span>
+            <span class="option-label">Som</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
 
-      <!-- <div class="option">
-        <div class="icon">🖼️</div>
-        <span>Galeria</span>
-        <label class="switch">
-          <input type="checkbox">
-          <span class="slider"></span>
-        </label>
-      </div>
+        <div class="option">
+          <div class="option-left">
+            <span class="material-icons option-icon">notifications</span>
+            <span class="option-label">Notificações</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
 
-      <div class="option">
-        <div class="icon">🌐</div>
-        <span>Navegador</span>
-        <label class="switch">
-          <input type="checkbox" checked>
-          <span class="slider"></span>
-        </label>
-      </div>
-    </div> -->
+        <!-- <div class="option">
+          <div class="icon">🖼️</div>
+          <span>Galeria</span>
+          <label class="switch">
+            <input type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
 
-    <div class="settings-footer">
-      <!-- <div class="footer-icon">👤</div>
-      <div class="footer-icon">☁️</div> -->
-      <div class="footer-icon">⚙️</div>
-      <span>Excluir Conta</span>
+        <div class="option">
+          <div class="icon">🌐</div>
+          <span>Navegador</span>
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div> -->
+      </div>
+    </div>
+
+    <div class="danger-card">
+      <div class="settings-footer">
+        <!-- <div class="footer-icon">👤</div>
+        <div class="footer-icon">☁️</div> -->
+        <div class="footer-icon material-icons" aria-hidden="true">delete_forever</div>
+        <span class="danger-label">Excluir Conta</span>
+      </div>
     </div>
   </div>
 
 
-</div>
-
  <!-- Modal confirmação  -->
  <div id="modal-confirmar-exclusao" class="modal" style="display: none;">
-  <div class="modal-content">
+  <div class="modal-content modal-content-danger">
     <span class="close" id="fechar-modal-excluir">&times;</span>
     <h3>Tem certeza que deseja excluir sua conta?</h3>
-    <form method="POST" action="{{ url_for('admin.deletar_usuario') }}"> 
+    <form method="POST" action="{{ url_for('admin.deletar_usuario') }}">
       <input type="hidden" id="id-usuario-excluir" name="id">
       <button type="submit" id="confirmar-exclusao" class="btn-ok" style="margin-top: 12px;">OK</button>
   </form>
-  
+
   </div>
 </div>
 

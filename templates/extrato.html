@@ -2,7 +2,7 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Extrato</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/extrato.css') }}">
     <script src="static/js/extrato.js" defer></script>
@@ -13,13 +13,13 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
 </head>
-<body>
+<body data-is-casal="{{ isCasal }}" data-tem-conjuge="{{ 'true' if temConjuge else 'false' }}">
 
     <div class="header-bar center">
         <div class="logo-text">
           <img src="{{ url_for('static', filename='images/fin-dark.png') }}" alt="Logo" class="logo">
-          <span class="company-name">My Finance Dashboard</span>
-          <span class="ambiente">HOMOLOGAÇÃO</span>
+          <span class="company-name">Dois no Azul</span>
+          <!-- <span class="ambiente">HOMOLOGAÇÃO</span> -->
         </div>
     
         <div class="user-info">
@@ -64,8 +64,8 @@
             <!-- submenu tema -->
             <div id="theme-dropdown" class="dropdown-submenu">
 
-              <div class="dropdown-item" onclick="changeTheme('green')">
-                🟢 Green
+              <div class="dropdown-item" onclick="changeTheme('blue')">
+                🔵 Azul
               </div>
 
               <div class="dropdown-item" onclick="changeTheme('yellow')">
@@ -73,7 +73,7 @@
               </div>
 
               <div class="dropdown-item" onclick="changeTheme('ocean')">
-                🔵 Ocean
+                🌊 Ocean
               </div>
 
               <div class="dropdown-item" onclick="changeTheme('dark')">
@@ -92,34 +92,44 @@
 
     <div class="container-detalhes" >
 
-        <h2 style="text-align: center;">Extrato</h2>
+        <h2 class="page-title">Extrato</h2>
 
         <div class="filtro-container">
+
+<!-- Toggle Individual/Casal (compacto) -->
+<div class="modo-compacto-wrapper" role="tablist" aria-label="Modo de visualização">
+  <button type="button" class="modo-pill-compacta {{ 'active' if isCasal != 'S' else '' }}" data-modo="N" onclick="changeMode('N')">
+    <span class="material-icons">person</span> Individual
+  </button>
+  {% if temConjuge %}
+  <button type="button" class="modo-pill-compacta {{ 'active' if isCasal == 'S' else '' }}" data-modo="S" onclick="changeMode('S')">
+    <span class="material-icons">people</span> Casal
+  </button>
+  {% endif %}
+</div>
 
 <!-- Filtro -->
 <form method="GET" action="{{ url_for('gasto.extrato') }}" class="filtro-card" id="filtro-form">
 
-  <input type="text" id="periodo-picker" readonly />
+  <button type="button" id="periodo-picker" class="filtro-periodo-btn">
+    <span class="material-icons">calendar_month</span>
+    <span id="periodo-picker-texto">Selecionar período</span>
+  </button>
 
   <input type="hidden" id="data_inicio" name="data_inicio" value="{{ data_inicio }}">
   <input type="hidden" id="data_fim" name="data_fim" value="{{ data_fim }}">
 
-  <select name="categoria">
-      <option value="Todas">Todas</option>
-      {% for cat in categorias %}
-          <option value="{{ cat }}" {% if request.args.get('categoria') == cat %}selected{% endif %}>
-              {{ cat }}
-          </option>
-      {% endfor %}
-  </select>
+  <div class="filtro-linha-inferior">
+    <select name="categoria" class="filtro-select">
+        <option value="Todas">Todas</option>
+        {% for cat in categorias %}
+            <option value="{{ cat }}" {% if request.args.get('categoria') == cat %}selected{% endif %}>
+                {{ cat }}
+            </option>
+        {% endfor %}
+    </select>
 
-  <!-- <button type="submit" class="botao-filtrar">
-    <span class="material-icons">search</span>
-    Filtrar
-  </button> -->
-   <!-- filtro mês --> 
-    <div class="filtro-mes">
-    <button type="submit">
+    <button type="submit" class="filtro-btn-buscar" aria-label="Filtrar">
       <span class="material-icons">search</span>
     </button>
   </div>
@@ -143,37 +153,7 @@
 </div>
 <br>
 
-<div class="quick-container">
-
-  <div id="toast" class="toast"></div>
-
-  <!-- acoes rapidas -->
-  <div class="quick-actions">
-    {% for acao in acoes %}
-    <div class="quick-tag"
-      onclick="quickAddGasto('{{ acao[0] }}', {{ acao[1] }}, '{{ acao[2] }}')">
-
-      {% if acao[2] == 'Mobilidade' %} 🚗
-      {% elif acao[2] == 'Alimentação' %} 🍽️
-      {% elif acao[2] == 'Ifood' %} 🍕
-      {% elif acao[2] == 'Saúde' %} 🏥
-      {% elif acao[2] == 'Moradia' %} 🏠
-      {% elif acao[2] == 'Entretenimento' %} 🎮
-      {% elif acao[2] == 'Educação' %} 📚
-      {% elif acao[2] == 'Dívidas' %} 💳
-      {% elif acao[2] == 'Pets' %} 🐶
-      {% elif acao[2] == 'Investimentos' %} 💰
-      {% else %} 💸
-      {% endif %}
-
-      {{ acao[0] }}
-      <br>
-      <span>R$ {{ acao[1] }}</span>
-
-    </div>
-    {% endfor %}
-  </div>
-</div>
+<div id="toast" class="toast"></div>
 
 <div class="lista-gastos">
 
@@ -181,7 +161,7 @@
     <div class="data-grupo">📅 {{ data }}</div>
   
     {% for gasto in lista %}
-      <div class="gasto-card" data-id="{{ gasto[4] }}">
+      <div class="gasto-card {{ 'genero-masculino' if gasto[5] == 'H' else 'genero-feminino' }}" data-id="{{ gasto[4] }}">
         
         <div class="gasto-info">
   
@@ -224,22 +204,65 @@
 
        <div class="acoes-final">
 
+        <button type="button" id="btnAcoesRapidas" class="btn-float-acao rapido" aria-label="Ações rápidas">
+          <span class="material-icons">bolt</span>
+        </button>
+
         <button class="btn-adicionar">
           <span class="material-icons">add</span>
         </button>
-        
 
-          <a href="{{ url_for('gasto.exportar_excel', data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria')) }}" 
+
+          <a href="{{ url_for('gasto.exportar_excel', data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria')) }}"
             class="btn-float-acao excel">
             <span class="material-icons">table_view</span>
           </a>
 
           <a id="enviapdf"
-            href="{{ url_for('gasto.exportar_pdf', data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria')) }}" 
+            href="{{ url_for('gasto.exportar_pdf', data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria')) }}"
             class="btn-float-acao pdf">
             <span class="material-icons">picture_as_pdf</span>
           </a>
 
+       </div>
+
+       <!-- Painel de ações rápidas — some por padrão, só aparece ao clicar
+            no botão de raio acima. Some de novo ao clicar no X ou fora dele. -->
+       <div id="painelAcoesRapidas" class="painel-acoes-rapidas">
+         <div class="painel-acoes-rapidas-header">
+           <span>Ações rápidas</span>
+           <span class="material-icons" id="fecharAcoesRapidas">close</span>
+         </div>
+         <div class="quick-actions">
+           {% for acao in acoes %}
+           <div class="quick-tag"
+             onclick="quickAddGasto('{{ acao[0] }}', {{ acao[1] }}, '{{ acao[2] }}')">
+
+             <span class="quick-tag-icone">
+               {% if acao[2] == 'Mobilidade' %} 🚗
+               {% elif acao[2] == 'Alimentação' %} 🍽️
+               {% elif acao[2] == 'Ifood' %} 🍕
+               {% elif acao[2] == 'Saúde' %} 🏥
+               {% elif acao[2] == 'Moradia' %} 🏠
+               {% elif acao[2] == 'Entretenimento' %} 🎮
+               {% elif acao[2] == 'Educação' %} 📚
+               {% elif acao[2] == 'Dívidas' %} 💳
+               {% elif acao[2] == 'Pets' %} 🐶
+               {% elif acao[2] == 'Investimentos' %} 💰
+               {% else %} 💸
+               {% endif %}
+             </span>
+
+             <span class="quick-tag-texto">
+               <span class="quick-tag-nome">{{ acao[0] }}</span>
+               <span class="quick-tag-valor">R$ {{ acao[1] }}</span>
+             </span>
+
+             <span class="material-icons quick-tag-add">add_circle</span>
+
+           </div>
+           {% endfor %}
+         </div>
        </div>
 
 

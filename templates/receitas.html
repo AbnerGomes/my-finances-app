@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Receitas</title>
 
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -19,14 +19,14 @@
   <script src="{{ url_for('static', filename='js/receitas.js') }}" defer></script>
 </head>
 
-<body>
+<body data-is-casal="{{ isCasal }}" data-tem-conjuge="{{ 'true' if temConjuge else 'false' }}">
 
   <!-- HEADER -->
   <div class="header-bar center">
     <div class="logo-text">
       <img src="{{ url_for('static', filename='images/fin-dark.png') }}" alt="Logo" class="logo">
-      <span class="company-name">My Finance Dashboard</span>
-      <span class="ambiente">HOMOLOGAÇÃO</span>
+      <span class="company-name">Dois no Azul</span>
+      <!-- <span class="ambiente">HOMOLOGAÇÃO</span> -->
     </div>
 
     <div class="user-info">
@@ -73,8 +73,8 @@
           <!-- submenu tema -->
           <div id="theme-dropdown" class="dropdown-submenu">
 
-            <div class="dropdown-item" onclick="changeTheme('green')">
-              🟢 Green
+            <div class="dropdown-item" onclick="changeTheme('blue')">
+              🔵 Azul
             </div>
 
             <div class="dropdown-item" onclick="changeTheme('yellow')">
@@ -82,7 +82,7 @@
             </div>
 
             <div class="dropdown-item" onclick="changeTheme('ocean')">
-              🔵 Ocean
+              🌊 Ocean
             </div>
 
             <div class="dropdown-item" onclick="changeTheme('dark')">
@@ -105,17 +105,32 @@
       <span class="sub">Controle mensal de entradas</span>
     </div>
 
+    <!-- MODO INDIVIDUAL/CASAL (compacto) -->
+    <div class="modo-compacto-wrapper" role="tablist" aria-label="Modo de visualização">
+      <button type="button" class="modo-pill-compacta {{ 'active' if isCasal != 'S' else '' }}" data-modo="N" onclick="changeMode('N')">
+        <span class="material-icons">person</span> Individual
+      </button>
+      {% if temConjuge %}
+      <button type="button" class="modo-pill-compacta {{ 'active' if isCasal == 'S' else '' }}" data-modo="S" onclick="changeMode('S')">
+        <span class="material-icons">people</span> Casal
+      </button>
+      {% endif %}
+    </div>
+
     <!-- FILTRO -->
     <div class="topo-card">
 
       <form method="get" class="filters">
-        <select name="mes" onchange="this.form.submit()">
-          {% for m in meses %}
-            <option value="{{ m }}" {% if m == mes_atual %}selected{% endif %}>
-              {{ m|capitalize }}
-            </option>
-          {% endfor %}
-        </select>
+        <div class="filtro-mes-pill">
+          <span class="material-icons">calendar_month</span>
+          <select name="mes" onchange="this.form.submit()">
+            {% for m in meses %}
+              <option value="{{ m }}" {% if m == mes_atual %}selected{% endif %}>
+                {{ m|capitalize }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
       </form>
     
       <div class="card-total-receita">
@@ -271,7 +286,7 @@
       <span class="close-btn" onclick="fecharModalConfirm()">&times;</span>
   
       <h3>Excluir Receita</h3>
-      <p style="text-align:center; font-size:13px; color:#6b7280;">
+      <p style="text-align:center; font-size:13px; color:var(--dna-text-dim);">
         Tem certeza que deseja excluir?
       </p>
   

@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Controle de Despesas</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/metas.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
@@ -11,34 +11,44 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="static/js/metas.js" defer></script>
 </head>
-<body>
-  <main class="container">
+<body class="metas-page">
 
-    <div class="header-bar center">
-        <div class="logo-text">
-          <img src="{{ url_for('static', filename='images/fin-dark.png') }}" alt="Logo" class="logo">
-          <span class="company-name">A&A - Finance Dashboard</span>
-        </div>
-      
-        <div class="user-info">
-          <div class="dropdown">
-            <div class="dropdown-toggle" onclick="toggleDropdown()">
-              <span id="user-icon" class="material-icons user-icon">person</span>
-              <span id="current-username" class="user-name">{{ usuario.split('@')[0] }}</span>
-              <span class="material-icons dropdown-icon">expand_more</span>
-            </div>
-        
-            <div id="dropdown-menu" class="dropdown-menu">
-              <div class="dropdown-item" onclick="changeUser('Casal')">Casal</div>
-              <div class="dropdown-item" onclick="changeUser('{{ usuario.split('@')[0] }}')">{{ usuario.split('@')[0] }}</div>
-            </div>
-          </div>
-        </div>
-        
+  <div class="header-bar center">
+      <div class="logo-text">
+        <img src="{{ url_for('static', filename='images/fin-dark.png') }}" alt="Logo" class="logo">
+        <span class="company-name">A&A - Finance Dashboard</span>
       </div>
 
-    <main class="container">
-        <h3 class="titulo-pagina">Meus Limites</h3> <!-- TÍTULO ADICIONADO AQUI -->
+      <div class="user-info">
+        <div class="dropdown">
+          <div class="dropdown-toggle" onclick="toggleDropdown()">
+            <span id="user-icon" class="material-icons user-icon">person</span>
+            <span id="current-username" class="user-name">{{ usuario.split('@')[0] }}</span>
+            <span class="material-icons dropdown-icon">expand_more</span>
+          </div>
+
+          <div id="dropdown-menu" class="dropdown-menu">
+            <div class="dropdown-item" onclick="changeUser('Casal')">Casal</div>
+            <div class="dropdown-item" onclick="changeUser('{{ usuario.split('@')[0] }}')">{{ usuario.split('@')[0] }}</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  <div class="metas-wrapper">
+    <h3 class="titulo-pagina">Meus Limites</h3> <!-- TÍTULO ADICIONADO AQUI -->
+
+    <div class="modo-compacto-wrapper" role="tablist" aria-label="Modo de visualização">
+      <button type="button" class="modo-pill-compacta active" data-modo="N" onclick="changeMode('N')">
+        <span class="material-icons">person</span> Individual
+      </button>
+      {% if temConjuge %}
+      <button type="button" class="modo-pill-compacta" data-modo="S" onclick="changeMode('S')">
+        <span class="material-icons">people</span> Casal
+      </button>
+      {% endif %}
+    </div>
 
     <!-- Cards de exemplo -->
     <div class="cards-container">
@@ -52,46 +62,46 @@
         </div>
         <div class="card-info">
             <h3>{{ card.nome }}</h3>
-          
+
             <div class="progresso-info">
                 <span>R$ {{ card.gasto }} / R$ {{ card.limite }}</span>
                 <div class="barra-progresso">
-                  <div class="preenchido 
+                  <div class="preenchido
                               {% if card.percentual >= 100 %}
                                 vermelho
                               {% elif card.percentual >= 80 %}
                                 amarelo
                               {% else %}
                                 verde
-                              {% endif %}" 
+                              {% endif %}"
                        style="width: {{ card.percentual if card.percentual <= 100 else 100 }}%;">
                   </div>
                 </div>
               </div>
 
           </div>
-        </div>  
+        </div>
       {% endfor %}
     </div>
 
     <!-- Botão para abrir o Modal -->
     <button id="openModalBtn" class="btn-adicionar">Adicionar Card</button>
+  </div>
 
-    <!-- Modal -->
-    <div id="modal" class="modal">
-      <div class="modal-content">
-        <span id="closeModalBtn" class="close">&times;</span>
-        <h2>Adicionar Novo Card</h2>
-        <form class="novo-card-form" method="POST" action="/adicionar_card">
-          <input type="text" name="nome" placeholder="Nome da despesa" required />
-          <input type="number" name="limite" placeholder="Limite (R$)" required />
-          <button type="submit">Adicionar</button>
-        </form>
-      </div>
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span id="closeModalBtn" class="close">&times;</span>
+      <h2>Adicionar Novo Card</h2>
+      <form class="novo-card-form" method="POST" action="/adicionar_card">
+        <input type="text" name="nome" placeholder="Nome da despesa" required />
+        <input type="number" name="limite" placeholder="Limite (R$)" required />
+        <button type="submit">Adicionar</button>
+      </form>
     </div>
-  </main>
-<br>
-<div class="footer-bar">
+  </div>
+
+  <div class="footer-bar">
     <a href="{{ url_for('gasto.index') }}">
       <button class="footer-btn">
         <span class="material-icons">dashboard</span>
@@ -123,6 +133,5 @@
       </button>
     </a>
   </div>
-  </main>
 </body>
 </html>

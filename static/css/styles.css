@@ -271,39 +271,6 @@ body {
       text-align: center;
   }
 
-/* .period-container-wrapper {
-
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;                
-    justify-items: center;
-  }
-
-  .period-button {
-    background: linear-gradient(135deg, #5be9d6, #0abfa7);
-    color: white;
-    font-size: 9px;
-    font-weight: 800;
-    /* padding: 0.5rem 0.75rem; 
-    padding: 6px 10px 10px 6px;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.2s ease;
-    width: 50px;
-  }
-
-  .period-button:hover {
-    background: linear-gradient(135deg, #5be9d6, #0abfa7);
-    transform: translateY(-3px)
-  }
-
-   .period-button.active {
-    background: linear-gradient(135deg, #5be9d6, #0abfa7);
-    color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  }  */
-
-
   .period-container-wrapper {
     display: flex;
     flex-wrap: wrap;
@@ -333,7 +300,6 @@ body {
   
   /* estado ativo */
   .period-chip.active {
-    /* background: linear-gradient(135deg, #5be9d6, #0abfa7); */
     background: linear-gradient(
       135deg,
       var(--primary-light),
@@ -349,13 +315,9 @@ body {
   }
 
   .container-btn {
-    /* background-color: #efefef;  */
-    /* border-radius: 1rem;         */
-    /* padding: 1.5rem;          */  
     padding: 10px 0px 10px 30px; 
-    /* box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);  */
     width: 100%;
-    max-width: 320px;           /* max-w-sm */
+    max-width: 320px;
     text-align: center;
   }
 
@@ -375,7 +337,6 @@ body {
     border-radius: 1rem;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     width: 100%;
-    /* max-width: 320px; */
     text-align: center;
     padding: 40px 20px 10px 0px;
     margin: 10px auto;
@@ -391,19 +352,15 @@ body {
   .chart-bar{
     background-color: #fffefe;
     border-radius: 1rem;
-    /* padding: 1.5rem; */
-    /* padding: 10px 0px 10px 10px;  */
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     width: 100%;
-    /* max-width: 320px; */
     text-align: center;
     margin: auto;
   }
 
   .chart-container-bar {
     width: 100%;
-    max-width: 320px; /* aumenta o espaço */
-    /* max-height: 220px; (pode remover isso) */
+    max-width: 320px;
     margin: 10px auto;
   }
 
@@ -417,7 +374,6 @@ body {
     border-radius: 1rem;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     width: 100%;
-    /* max-width: 320px; */
     text-align: center;
     padding: 40px 25px 11px 10px;
     margin: auto;
@@ -427,7 +383,7 @@ body {
 
   .dashboard-wrapper {
     width: 100%;
-    max-width: 480px; /* ou 100% se quiser ocupar tudo */
+    max-width: 480px;
     margin: 0 auto;
     padding: 0px 10px 10px 10px;
 }
@@ -437,7 +393,9 @@ body {
 /* MODAL MENSGEM */
 .modal {
     position: fixed;
-    z-index: 999;
+    /* acima do header-bar/footer-bar (z-index: 1000), senão o rodapé
+       fixo fica visualmente por cima do modal */
+    z-index: 1100;
     left: 0;
     top: 0;
     width: 100%;
@@ -452,10 +410,10 @@ body {
 
 .modal-content {
 background-color: #fff;
-padding: 16px; /* Diminuí o padding */
+padding: 16px;
 border-radius: 8px;
 width: 100%;
-max-width: 240px; /* Diminui mais a largura */
+max-width: 240px;
 box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 position: relative;
 animation: fadeIn 0.2s ease-in-out;
@@ -474,7 +432,7 @@ to {
 
 .close {
 position: absolute;
-top: 8px; /* Reduzi a posição do "x" */
+top: 8px;
 right: 10px;
 font-size: 20px;
 color: #888;
@@ -486,7 +444,7 @@ color: #000;
 }
 
 .modal-content h3 {
-margin-bottom: 12px; /* Menor margem no título */
+margin-bottom: 12px;
 font-size: 18px;
 text-align: center;
 color: #333;
@@ -502,7 +460,7 @@ color: #444;
 form input {
 width: 100%;
 padding: 8px;
-margin-bottom: 8px; /* Menor margem entre os inputs */
+margin-bottom: 8px;
 border: 1px solid #ccc;
 border-radius: 4px;
 font-size: 10px;
@@ -531,7 +489,7 @@ background-color: #003f5c;
 /* Responsivo (mobile first) */
 @media (max-width: 400px) {
 .modal-content {
-  padding: 14px; /* Menos padding para telas pequenas */
+  padding: 14px;
   max-width: 90%;
 }
 
@@ -551,10 +509,10 @@ background-color: #003f5c;
 
 .modal-mo {  
     background-color: rgba(206, 15, 15, 0.904) !important;
-    padding: 16px; /* Diminuí o padding */
+    padding: 16px;
     border-radius: 8px;
     width: 100%;
-    max-width: 240px; /* Diminui mais a largura */
+    max-width: 240px;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
     position: relative;
     animation: fadeIn 0.2s ease-in-out;
@@ -630,15 +588,6 @@ background-color: #003f5c;
   font-size: 15px;
 }
 
-/* .dashboard-wrapper {
-  width: 100%;
-  max-width: 480px;
-  margin: 0 auto;
-
-  padding-top: 80px;   
-  padding-bottom: 90px; /* espaço pro footer 
-} */
-
 .dashboard-wrapper {
   width: 100%;
   max-width: 480px;
@@ -658,4 +607,548 @@ body {
 
 .grupo-receitas {
   margin-bottom: 12px;
+}
+
+
+/* ===================================================================
+   HOME REDESIGN — "Dois no Azul" (tela inicial / index.html)
+   -------------------------------------------------------------------
+   Tudo abaixo é NOVO. Nada acima foi removido, então login, cadastro,
+   modais e outras páginas que usam este mesmo styles.css continuam
+   funcionando exatamente como antes.
+
+   A ativação é escopada pela classe "home-page" no <body> do index.html,
+   então essas regras só valem para a home.
+=================================================================== */
+
+body.home-page,
+ body.dna-page {
+  display: block;
+  height: auto;
+  min-height: 100vh;
+  background: var(--dna-bg);
+}
+
+body.home-page .dashboard-wrapper,
+body.dna-page .dashboard-wrapper {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: calc(112px + env(safe-area-inset-top)) 14px calc(140px + env(safe-area-inset-bottom));
+  background: var(--dna-bg);
+  color: var(--dna-text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* topo: título "Resumo" + sino */
+.home-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.home-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--dna-text);
+}
+
+.home-subtitle {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--dna-text-dim);
+  text-transform: capitalize;
+}
+
+.home-bell {
+  color: var(--dna-text-dim);
+  font-size: 22px;
+  margin-top: 4px;
+}
+
+/* toggle individual / casal */
+.mode-toggle {
+  display: flex;
+  gap: 6px;
+  background: var(--dna-card-soft);
+  border: 1px solid var(--dna-border);
+  border-radius: 999px;
+  padding: 4px;
+  margin-bottom: 14px;
+  width: max-content;
+}
+
+.mode-pill {
+  border: none;
+  background: transparent;
+  color: var(--dna-text-dim);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-pill.active {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+/* chips de período — reaproveita .period-chip, só re-estiliza dentro da home */
+body.home-page .period-container-wrapper,
+body.dna-page .period-container-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 8px;
+  justify-content: flex-start;
+  padding: 2px 2px 16px;
+  scrollbar-width: none;
+}
+
+body.home-page .period-container-wrapper::-webkit-scrollbar,
+body.dna-page .period-container-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+body.home-page .period-chip,
+body.dna-page .period-chip {
+  flex: none;
+  background: var(--dna-card-soft);
+  color: var(--dna-text-dim);
+  border: 1px solid var(--dna-border);
+  font-size: 11px;
+}
+
+body.home-page .period-chip:hover,
+body.dna-page .period-chip:hover {
+  background: var(--dna-border);
+}
+
+body.home-page .period-chip.active,
+body.dna-page .period-chip.active {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* cartões genéricos da home */
+.home-card {
+  background: var(--dna-card);
+  border: 1px solid var(--dna-border);
+  border-radius: 20px;
+  padding: 18px;
+  margin-bottom: 14px;
+  box-shadow: 0 10px 30px rgba(3, 7, 18, 0.35);
+}
+
+.label-muted {
+  font-size: 12px;
+  color: var(--dna-text-dim);
+  font-weight: 500;
+}
+
+.home-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dna-text);
+}
+
+.home-card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.link-ver-todas {
+  font-size: 12px;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.link-ver-todas:hover {
+  text-decoration: underline;
+}
+
+/* card "Saldo total" */
+.saldo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--dna-text-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.icon-btn:hover {
+  color: var(--dna-text);
+}
+
+.icon-btn .material-icons {
+  font-size: 20px;
+}
+
+.saldo-valor {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--dna-text);
+}
+
+.saldo-periodo {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--dna-text-dim);
+}
+
+.saldo-periodo span {
+  color: var(--dna-text);
+  font-weight: 700;
+}
+
+/* receitas x despesas */
+.receitas-despesas-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.rd-item.align-right {
+  text-align: right;
+}
+
+.rd-item .valor {
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.rd-item .valor.receita {
+  color: var(--dna-green);
+}
+
+.rd-item .valor.receita::before {
+  content: "R$ ";
+}
+
+.rd-item .valor.despesa {
+  color: var(--dna-orange);
+}
+
+.rd-item .valor.despesa::before {
+  content: "R$ ";
+}
+
+/* donut com valor central */
+.donut-wrapper {
+  position: relative;
+  max-width: 230px;
+  margin: 4px auto 0;
+}
+
+.donut-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.donut-center-valor {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--dna-text);
+}
+
+.donut-center-label {
+  font-size: 11px;
+  color: var(--dna-text-dim);
+  margin-top: 2px;
+}
+
+/* categorias */
+.categorias-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.categoria-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.categoria-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.categoria-icone {
+  font-size: 18px;
+}
+
+.categoria-nome {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dna-text);
+}
+
+.categoria-valor {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dna-text);
+}
+
+.categoria-bar-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--dna-card-soft);
+  overflow: hidden;
+}
+
+.categoria-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.categoria-pct {
+  align-self: flex-end;
+  font-size: 11px;
+  color: var(--dna-text-dim);
+}
+
+.categorias-vazio {
+  font-size: 13px;
+  color: var(--dna-text-dim);
+  text-align: center;
+  padding: 10px 0;
+}
+
+/* histórico mensal (gráfico de barras) */
+body.home-page .chart-container-bar,
+body.dna-page .chart-container-bar {
+  width: 100%;
+  max-width: 100%;
+  margin: 6px auto 0;
+}
+
+/* modais desta tela — escopados por #id, não afetam modais de outras páginas */
+#modal-mensagem .modal-content,
+#modal-mo .modal-mo,
+#modal-conjuge .modal-content {
+  background: var(--dna-card);
+  color: var(--dna-text);
+  border: 1px solid var(--dna-border);
+}
+
+/* modal de cadastro do cônjuge tem mais campos que os outros modais —
+   precisa de mais espaço e rolagem interna para não estourar a tela */
+#modal-conjuge {
+  padding: 24px 16px;
+}
+
+#modal-conjuge .modal-content {
+  max-width: 320px;
+  max-height: 82vh;
+  overflow-y: auto;
+}
+
+#modal-mensagem .modal-content h4,
+#modal-mo .modal-mo h4,
+#modal-conjuge .modal-content h4 {
+  color: var(--dna-text);
+}
+
+#modal-mensagem .close,
+#modal-mo .close,
+#modal-conjuge .close {
+  color: var(--dna-text-dim);
+}
+
+#modal-mensagem .botao-salvar,
+#modal-mo .botao-salvar,
+#modal-conjuge .botao-salvar {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+}
+
+#modal-conjuge form label {
+  color: var(--dna-text-dim);
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+#modal-conjuge form input {
+  background: var(--dna-card-soft);
+  border: 1px solid var(--dna-border);
+  color: var(--dna-text);
+  font-size: 13px;
+  padding: 10px;
+}
+
+#modal-conjuge form input::placeholder {
+  color: var(--dna-text-faint);
+}
+
+#modal-conjuge form input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.modal-conjuge-subtitulo {
+  font-size: 12.5px;
+  color: var(--dna-text-dim);
+  margin: -4px 0 10px;
+}
+
+/* linha do toggle Individual/Casal + gatilho de vincular cônjuge */
+.mode-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.mode-toggle-row .mode-toggle {
+  margin-bottom: 0;
+}
+
+.btn-vincular-conjuge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--dna-border);
+  background: var(--dna-card-soft);
+  color: var(--dna-text-dim);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-vincular-conjuge .material-icons {
+  font-size: 15px;
+  color: var(--primary-light);
+}
+
+.btn-vincular-conjuge:hover {
+  color: var(--dna-text);
+  border-color: var(--primary);
+}
+
+/* seletor de gênero no modal de cadastro do cônjuge */
+.genero-toggle {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.genero-toggle input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+}
+
+.genero-pill {
+  flex: 1;
+  text-align: center;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--dna-border);
+  background: var(--dna-card-soft);
+  color: var(--dna-text-dim);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 0;
+}
+
+.genero-toggle input[type="radio"]:checked + .genero-pill {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  color: #fff;
+  border-color: transparent;
+}
+
+.genero-toggle input[type="radio"]:focus-visible + .genero-pill {
+  outline: 2px solid var(--primary-light);
+  outline-offset: 2px;
+}
+
+/* mensagens flash na home */
+.flash-stack {
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.flash-banner {
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid var(--dna-border);
+  overflow: hidden;
+  max-height: 60px;
+  opacity: 1;
+  transition: opacity 0.4s ease, max-height 0.4s ease, padding 0.4s ease, margin 0.4s ease;
+}
+
+.flash-banner.flash-saindo {
+  opacity: 0;
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-width: 0;
+  margin: 0;
+}
+
+.flash-banner.flash-success {
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--dna-green);
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.flash-banner.flash-danger,
+.flash-banner.flash-error {
+  background: rgba(251, 146, 60, 0.12);
+  color: var(--dna-orange);
+  border-color: rgba(251, 146, 60, 0.35);
+}
+
+@media (max-width: 380px) {
+  .saldo-valor {
+    font-size: 26px;
+  }
+
+  body.home-page .dashboard-wrapper,
+  body.dna-page .dashboard-wrapper {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 }

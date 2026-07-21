@@ -118,7 +118,8 @@ class GastoService:
             query = "SELECT a.usuario AS conjuge FROM casal c JOIN autenticacao a ON a.usuario = CASE WHEN c.conjuge_1 = %s THEN c.conjuge_2 ELSE c.conjuge_1 END WHERE %s IN (c.conjuge_1, c.conjuge_2);"
             cursor.execute(query, (usuario,usuario))
             resultado = cursor.fetchone()
-            conjuge = resultado[0]
+            if resultado:
+                conjuge = resultado[0]
 
         query = """
             WITH meses AS (
@@ -207,7 +208,8 @@ class GastoService:
                 query = "SELECT a.usuario AS conjuge FROM casal c JOIN autenticacao a ON a.usuario = CASE WHEN c.conjuge_1 = %s THEN c.conjuge_2 ELSE c.conjuge_1 END WHERE %s IN (c.conjuge_1, c.conjuge_2);"
                 cursor.execute(query, (usuario,usuario))
                 resultado = cursor.fetchone()
-                conjuge = resultado[0]
+                if resultado:
+                    conjuge = resultado[0]
 
             if inicio and fim:
                 query = """
@@ -250,7 +252,8 @@ class GastoService:
             query = "SELECT a.usuario AS conjuge FROM casal c JOIN autenticacao a ON a.usuario = CASE WHEN c.conjuge_1 = %s THEN c.conjuge_2 ELSE c.conjuge_1 END WHERE %s IN (c.conjuge_1, c.conjuge_2);"
             cursor.execute(query, (usuario,usuario))
             resultado = cursor.fetchone()
-            conjuge = resultado[0]
+            if resultado:
+                conjuge = resultado[0]
 
         cursor.execute("""
         SELECT categoria, gasto, valor_gasto, TO_CHAR(data, 'DD/MM/YYYY') AS data_formatada , g.id, case when u.pronome = 'Ele/Dele' then 'H' else 'S' end pronome
@@ -296,8 +299,45 @@ class GastoService:
             c.execute("INSERT INTO AUTENTICACAO (usuario, senha, ativo, nome, telefone) VALUES (%s, %s, 1, %s, %s)", (usuario, senha,nome,telefone))
             conn.commit()
             conn.close()
-        return dados   is not None  
+        return dados   is not None
 
+    def cadastrar_conjuge(self, usuario_atual, nome, email, telefone, senha, pronome):
+        # session['usuario'] guarda o NOME (não o email/usuario de login — ver
+        # validar_login), então precisamos converter antes de usar como
+        # conjuge_1, já que casal.conjuge_1 referencia autenticacao.usuario (email).
+        usuario_atual = self.get_usuario_by_name(usuario_atual)
+        email = email.strip().lower()
+
+        conn = get_connection()
+        c = conn.cursor()
+
+        try:
+            # Verifica se já existe conta com esse email
+            c.execute("SELECT 1 FROM AUTENTICACAO WHERE usuario = %s", (email,))
+            if c.fetchone():
+                conn.close()
+                return False
+
+            c.execute(
+                "INSERT INTO AUTENTICACAO (usuario, senha, ativo, nome, telefone) VALUES (%s, %s, 1, %s, %s)",
+                (email, senha, nome, telefone)
+            )
+            c.execute(
+                "INSERT INTO usuarios (email, nome, pronome) VALUES (%s, %s, %s)",
+                (email, nome, pronome)
+            )
+            c.execute(
+                "INSERT INTO casal (conjuge_1, conjuge_2) VALUES (%s, %s)",
+                (usuario_atual, email)
+            )
+
+            conn.commit()
+            return True
+        except Exception:
+            conn.rollback()
+            raise
+        finally:
+            conn.close()
 
     def get_categorias_disponiveis(self,usuario):
 
@@ -368,24 +408,36 @@ class GastoService:
 
         return  resultado
 
-    def listar_receitas(self, usuario, mes_ano):
+    def listar_receitas(self, usuario, mes_ano, isCasal='N'):
+        usuario = self.get_usuario_by_name(usuario)
+
         conn = get_connection()
         cursor = conn.cursor()
+
+        conjuge = ''
+
+        #verifica se é casal e busca o conjuge
+        if isCasal == 'S':
+            query_conjuge = "SELECT a.usuario AS conjuge FROM casal c JOIN autenticacao a ON a.usuario = CASE WHEN c.conjuge_1 = %s THEN c.conjuge_2 ELSE c.conjuge_1 END WHERE %s IN (c.conjuge_1, c.conjuge_2);"
+            cursor.execute(query_conjuge, (usuario, usuario))
+            resultado_conjuge = cursor.fetchone()
+            if resultado_conjuge:
+                conjuge = resultado_conjuge[0]
 
         query = """
         SELECT r.id, origem, valor, data_receita
         FROM receitas r
         INNER JOIN usuarios u ON r.id_usuario = u.id
-        WHERE u.nome = %s
+        WHERE u.email IN (%s, %s)
         AND DATE_TRUNC('month', data_receita) = DATE_TRUNC('month', %s::date)
         ORDER BY id DESC
         """
 
-        cursor.execute(query, (usuario, mes_ano))
+        cursor.execute(query, (usuario, conjuge, mes_ano))
         resultado = cursor.fetchall()
         conn.close()
 
-        return resultado    
+        return resultado
         
     def salvar_receita(self, usuario, mes,origem,valor):
 
@@ -459,63 +511,7 @@ class GastoService:
         finally:
             conn.close()
 
-    def get_total_receitas_mes(self, usuario, periodo):
-
-        #usuario = self.get_usuario_by_name(usuario)
-
-        if periodo is None:
-                periodo='mesatual'
-
-        hoje = datetime.now().date()
-
-        inicio = fim = None
-
-        if periodo == 'ontem':
-            inicio = fim = hoje - timedelta(days=1)
-
-        elif periodo == 'hoje':
-            inicio = fim = hoje
-
-        elif periodo == 'semanaatual':
-            domingo_semana_atual = hoje - timedelta(days=hoje.weekday() + 1) if hoje.weekday() != 6 else hoje
-            inicio = domingo_semana_atual
-            fim = hoje
-
-        elif periodo == 'semanapassada':
-            # Domingo da semana passada (domingo anterior ao domingo da semana atual)
-            domingo_semana_atual = hoje - timedelta(days=hoje.weekday() + 1) if hoje.weekday() != 6 else hoje
-            domingo_passado = domingo_semana_atual - timedelta(days=7)
-            sabado_passado = domingo_passado + timedelta(days=6)
-            inicio = domingo_passado
-            fim = sabado_passado
-
-        elif periodo == 'mesatual':
-            inicio = hoje.replace(day=1)
-            fim = hoje
-
-        elif periodo == 'mesanterior':
-            primeiro_dia_mes_atual = hoje.replace(day=1)
-            ultimo_dia_mes_anterior = primeiro_dia_mes_atual - timedelta(days=1)
-            inicio = ultimo_dia_mes_anterior.replace(day=1)
-            fim = ultimo_dia_mes_anterior
-
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        query = """
-            SELECT SUM(valor)
-            FROM receitas
-            WHERE id_usuario = (
-                SELECT id FROM usuarios WHERE nome = %s
-            ) and data_receita >= %s and data_receita <= %s
-        """
-        cursor.execute(query, (usuario,inicio,fim))
-        total = cursor.fetchone()[0]
-
-        conn.close()
-        return total    
-
-    def get_total_gastos_mes(self, usuario, periodo):
+    def get_total_receitas_mes(self, usuario, periodo, isCasal='N'):
 
         usuario = self.get_usuario_by_name(usuario)
 
@@ -558,16 +554,91 @@ class GastoService:
         conn = get_connection()
         cursor = conn.cursor()
 
+        conjuge = ''
+
+        #verifica se é casal e busca o conjuge
+        if isCasal == 'S':
+            query_conjuge = "SELECT a.usuario AS conjuge FROM casal c JOIN autenticacao a ON a.usuario = CASE WHEN c.conjuge_1 = %s THEN c.conjuge_2 ELSE c.conjuge_1 END WHERE %s IN (c.conjuge_1, c.conjuge_2);"
+            cursor.execute(query_conjuge, (usuario, usuario))
+            resultado_conjuge = cursor.fetchone()
+            if resultado_conjuge:
+                conjuge = resultado_conjuge[0]
+
         query = """
-            SELECT SUM(valor_gasto)
-            FROM gastos
-            WHERE usuario IN (%s) AND data BETWEEN %s AND %s
+            SELECT SUM(r.valor)
+            FROM receitas r
+            INNER JOIN usuarios u ON r.id_usuario = u.id
+            WHERE u.email IN (%s, %s) and r.data_receita >= %s and r.data_receita <= %s
         """
-        cursor.execute(query, (usuario,inicio,fim))
+        cursor.execute(query, (usuario, conjuge, inicio, fim))
         total = cursor.fetchone()[0]
 
         conn.close()
-        return total      
+        return total
+
+    def get_total_gastos_mes(self, usuario, periodo, isCasal='N'):
+
+        usuario = self.get_usuario_by_name(usuario)
+
+        if periodo is None:
+                periodo='mesatual'
+
+        hoje = datetime.now().date()
+
+        inicio = fim = None
+
+        if periodo == 'ontem':
+            inicio = fim = hoje - timedelta(days=1)
+
+        elif periodo == 'hoje':
+            inicio = fim = hoje
+
+        elif periodo == 'semanaatual':
+            domingo_semana_atual = hoje - timedelta(days=hoje.weekday() + 1) if hoje.weekday() != 6 else hoje
+            inicio = domingo_semana_atual
+            fim = hoje
+
+        elif periodo == 'semanapassada':
+            # Domingo da semana passada (domingo anterior ao domingo da semana atual)
+            domingo_semana_atual = hoje - timedelta(days=hoje.weekday() + 1) if hoje.weekday() != 6 else hoje
+            domingo_passado = domingo_semana_atual - timedelta(days=7)
+            sabado_passado = domingo_passado + timedelta(days=6)
+            inicio = domingo_passado
+            fim = sabado_passado
+
+        elif periodo == 'mesatual':
+            inicio = hoje.replace(day=1)
+            fim = hoje
+
+        elif periodo == 'mesanterior':
+            primeiro_dia_mes_atual = hoje.replace(day=1)
+            ultimo_dia_mes_anterior = primeiro_dia_mes_atual - timedelta(days=1)
+            inicio = ultimo_dia_mes_anterior.replace(day=1)
+            fim = ultimo_dia_mes_anterior
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        conjuge = ''
+
+        #verifica se é casal e busca o conjuge
+        if isCasal == 'S':
+            query_conjuge = "SELECT a.usuario AS conjuge FROM casal c JOIN autenticacao a ON a.usuario = CASE WHEN c.conjuge_1 = %s THEN c.conjuge_2 ELSE c.conjuge_1 END WHERE %s IN (c.conjuge_1, c.conjuge_2);"
+            cursor.execute(query_conjuge, (usuario, usuario))
+            resultado_conjuge = cursor.fetchone()
+            if resultado_conjuge:
+                conjuge = resultado_conjuge[0]
+
+        query = """
+            SELECT SUM(valor_gasto)
+            FROM gastos
+            WHERE usuario IN (%s, %s) AND data BETWEEN %s AND %s
+        """
+        cursor.execute(query, (usuario, conjuge, inicio, fim))
+        total = cursor.fetchone()[0]
+
+        conn.close()
+        return total
 
     def buscar_acoes_rapidas(self, usuario):
         usuario = self.get_usuario_by_name(usuario)

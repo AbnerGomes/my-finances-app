@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
   <script>
     (function () {
@@ -24,13 +24,13 @@
     <script src="static/js/comum.js" defer></script>
     <title>Quadro de Despesas Mensais </title>
 </head>
-<body>
+<body class="dna-page" data-is-casal="{{ isCasal }}" data-tem-conjuge="{{ 'true' if temConjuge else 'false' }}">
 
   <div class="header-bar center">
     <div class="logo-text">
       <img src="{{ url_for('static', filename='images/fin-dark.png') }}" alt="Logo" class="logo">
-      <span class="company-name">My Finance Dashboard</span>
-      <span class="ambiente">HOMOLOGAÇÃO</span>
+      <span class="company-name">Dois no Azul</span>
+      <!-- <span class="ambiente">HOMOLOGAÇÃO</span> -->
     </div>
 
     <div class="user-info">
@@ -75,8 +75,8 @@
           <!-- submenu tema -->
           <div id="theme-dropdown" class="dropdown-submenu">
 
-            <div class="dropdown-item" onclick="changeTheme('green')">
-              🟢 Green
+            <div class="dropdown-item" onclick="changeTheme('blue')">
+              🔵 Azul
             </div>
 
             <div class="dropdown-item" onclick="changeTheme('yellow')">
@@ -84,7 +84,7 @@
             </div>
 
             <div class="dropdown-item" onclick="changeTheme('ocean')">
-              🔵 Ocean
+              🌊 Ocean
             </div>
 
             <div class="dropdown-item" onclick="changeTheme('dark')">
@@ -100,6 +100,8 @@
 
   </div>
 
+  <div class="despesas-wrapper">
+
   <h2>Despesas Mensais</h2>
   {% if temPendencias %}
   <div class="alerta-pendencias"  onclick="filtrarPendentesAntigos(this)">
@@ -107,15 +109,29 @@
     Você possui {{ temPendencias }} despesas pendentes do mês anterior
   </div>
   {% endif %}
-<br>
 <div class="topo-filtro">
 
   <!-- filtro mês -->
   <div class="filtro-mes">
-    <input type="month" id="filtroMes" value="{{ mes_ano }}">
-    <button onclick="filtrarPorMes()">
+    <div class="filtro-mes-pill">
+      <span class="material-icons">calendar_month</span>
+      <input type="month" id="filtroMes" value="{{ mes_ano }}">
+    </div>
+    <button type="button" onclick="filtrarPorMes()" aria-label="Filtrar">
       <span class="material-icons">search</span>
     </button>
+  </div>
+
+  <!-- toggle compacto Individual/Casal -->
+  <div class="modo-compacto-wrapper" role="tablist" aria-label="Modo de visualização">
+    <button type="button" class="modo-pill-compacta {{ 'active' if isCasal != 'S' else '' }}" data-modo="N" onclick="changeMode('N')">
+      <span class="material-icons">person</span> Individual
+    </button>
+    {% if temConjuge %}
+    <button type="button" class="modo-pill-compacta {{ 'active' if isCasal == 'S' else '' }}" data-modo="S" onclick="changeMode('S')">
+      <span class="material-icons">people</span> Casal
+    </button>
+    {% endif %}
   </div>
 
   <!-- legendas -->
@@ -154,10 +170,11 @@
 <div class="lista-despesas">
 
   {% for despesa in despesas %}
-  <div class="despesa-card 
+  <div class="despesa-card
   {% if despesa[4] == 'Pago' %}status-pago
   {% elif despesa[4] == 'Parcial' %}status-parcial
-  {% else %}status-pendente{% endif %}"
+  {% else %}status-pendente{% endif %}
+  {% if despesa[7] == 'H' %}genero-masculino{% else %}genero-feminino{% endif %}"
   data-id="{{ despesa[6] }}"
   data-status="{{ despesa[4] }}"
   data-data_pagamento="{{ despesa[8] }}">
@@ -225,6 +242,7 @@
     <span class="material-icons">add</span>
   </button>
 
+  </div>
 
 <!-- Modal de Edição -->
 <div id="modal-editar" class="modal" style="display: none;">
@@ -286,7 +304,7 @@
       <input type="date" name="data" id="cadastrar-data"> -->
 
      <label for="cadastrar-data" style="font-weight: bold;">Selecione o mês:</label>
-    <input type="month"  name="mes_ano" id="cadastrar-data" style="padding: 10px; border-radius: 8px; border: 1px solid #B0E0E6; font-size: 10px;"  value="{{ mes_ano }}">  
+    <input type="month"  name="mes_ano" id="cadastrar-data" value="{{ mes_ano }}">
 
 
       <label for="cadastrar-categoria">Categoria:</label>
@@ -410,6 +428,8 @@
     </button>
 </a>
 </div>
+
+<div id="toast" class="toast"></div>
 
 </body>
 </html>

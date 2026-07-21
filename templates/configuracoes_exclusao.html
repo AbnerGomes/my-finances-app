@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/configuracoes.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
   <title>Configurações</title>
@@ -10,7 +10,7 @@
   <script src="static/js/config.js" defer></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/config.css') }}">
 </head>
-<body>
+<body class="dna-page">
 
   <div class="header-bar center">
     <div class="logo-text">
@@ -28,71 +28,78 @@
 
   <div class="settings-wrapper">
     <div class="settings-header">
-      <h1>Configurações</h1>
+      <h1 class="settings-title">Configurações</h1>
       <div class="menu-icon">☰</div>
     </div>
 
-    <div class="settings-options">
-      <div class="option">
-        <div class="icon">🔊</div>
-        <span>Som</span>
-        <label class="switch">
-          <input type="checkbox" checked>
-          <span class="slider"></span>
-        </label>
-      </div>
+    <div class="settings-card">
+      <div class="settings-options">
+        <div class="option">
+          <div class="option-left">
+            <span class="material-icons option-icon">volume_up</span>
+            <span class="option-label">Som</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
 
-      <div class="option">
-        <div class="icon">🔔</div>
-        <span>Notificações</span>
-        <label class="switch">
-          <input type="checkbox">
-          <span class="slider"></span>
-        </label>
-      </div>
+        <div class="option">
+          <div class="option-left">
+            <span class="material-icons option-icon">notifications</span>
+            <span class="option-label">Notificações</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
 
-      <!-- <div class="option">
-        <div class="icon">🖼️</div>
-        <span>Galeria</span>
-        <label class="switch">
-          <input type="checkbox">
-          <span class="slider"></span>
-        </label>
-      </div>
+        <!-- <div class="option">
+          <div class="icon">🖼️</div>
+          <span>Galeria</span>
+          <label class="switch">
+            <input type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
 
-      <div class="option">
-        <div class="icon">🌐</div>
-        <span>Navegador</span>
-        <label class="switch">
-          <input type="checkbox" checked>
-          <span class="slider"></span>
-        </label>
+        <div class="option">
+          <div class="icon">🌐</div>
+          <span>Navegador</span>
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div> -->
       </div>
-    </div> -->
+    </div>
 
-    <div class="settings-footer">
-      <!-- <div class="footer-icon">👤</div>
-      <div class="footer-icon">☁️</div> -->
-      <div class="footer-icon">⚙️</div>
-      <span>Excluir Conta</span>
+    <div class="danger-card">
+      <div class="settings-footer">
+        <!-- <div class="footer-icon">👤</div>
+        <div class="footer-icon">☁️</div> -->
+        <div class="footer-icon material-icons" aria-hidden="true">delete_forever</div>
+        <span class="danger-label">Excluir Conta</span>
+      </div>
     </div>
   </div>
 
 
-</div>
-
 <!-- Modal ok  -->
 <div id="modal-delecao-ok" class="modal" style="display: none;">
-  <div class="modal-content" style="color:white; text-align:center; background-color: #e96960;">
+  <div class="modal-content modal-content-success">
     <span class="close" id="fechar-modal-ok">&times;</span>
     <h4>Conta encerrada com sucesso. </h4>
     <br>
     <h4>Até Logo !</h4>
-    <form method="GET" action="/"> 
+    <form method="GET" action="/">
       <input type="hidden" id="id-gasto" name="id">
       <button type="submit" id="confirmar-ok" class="botao-salvar" style="margin-top: 12px;">OK</button>
   </form>
-  
+
   </div>
 </div>
 

@@ -47,9 +47,10 @@ function atualizarStatus(selectElement) {
 // ================= FILTRO =================
 function filtrarPorMes() {
   const filtroMes = document.getElementById("filtroMes").value;
+  const modoAtual = (typeof getModoSalvo === 'function') ? getModoSalvo() : 'N';
 
   if (filtroMes) {
-    window.location.href = `/despesas?mes_ano=${filtroMes}`;
+    window.location.href = `/despesas?mes_ano=${filtroMes}&isCasal=${modoAtual}`;
   } else {
     showToast("Selecione um mês", false);
   }

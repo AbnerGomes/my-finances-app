@@ -1,166 +1,143 @@
+// ============================================================
+// comum.js — usado em todas as telas (cabeçalho, rodapé, tema)
+// ============================================================
 
-
-// Função para buscar e atualizar os dados do gráfico
 function filtrarGastos(isCasal) {
-  // $.getJSON(`/filtrarGastos/${periodo}/${isCasal}`, function(dados) {  
-              window.location.href = `/extrato?isCasal=${isCasal}`;
+  const url = new URL(window.location.href);
+  url.searchParams.set("isCasal", isCasal);
+  window.location.href = url.toString();
 }
-
 
 function filtrarDespesas(isCasal) {
-  // $.getJSON(`/filtrarGastos/${periodo}/${isCasal}`, function(dados) {  
-              window.location.href = `/despesas?isCasal=${isCasal}`;
+  const url = new URL(window.location.href);
+  url.searchParams.set("isCasal", isCasal);
+
+  // se o mês selecionado no filtro ainda não estiver na URL (ex.: acabou
+  // de carregar a página sem escolher nada), usa o valor atual do input
+  const filtroMes = document.getElementById("filtroMes");
+  if (filtroMes && filtroMes.value && !url.searchParams.get("mes_ano")) {
+    url.searchParams.set("mes_ano", filtroMes.value);
+  }
+
+  window.location.href = url.toString();
 }
 
+function filtrarReceitas(isCasal) {
+  const url = new URL(window.location.href);
+  url.searchParams.set("isCasal", isCasal);
+  window.location.href = url.toString();
+}
+
+// ============================================================
+// Persistência do modo Individual/Casal entre as telas
+// ============================================================
+const MODO_STORAGE_KEY = "isCasalModo";
+
+function getModoSalvo() {
+  return localStorage.getItem(MODO_STORAGE_KEY) || "N";
+}
+
+function salvarModo(isCasal) {
+  localStorage.setItem(MODO_STORAGE_KEY, isCasal);
+}
+
+// Se a tela atual já indica (via atributos no <body>) qual isCasal foi
+// renderizado pelo servidor e se o usuário tem cônjuge vinculado, garante
+// que essa tela reflita o último modo escolhido em qualquer outra tela —
+// recarregando com o parâmetro correto quando necessário.
+function sincronizarModoNaCarga() {
+  const body = document.body;
+  const temConjuge = body.dataset.temConjuge === "true";
+  const modoRenderizado = body.dataset.isCasal;
+
+  if (modoRenderizado === undefined || !temConjuge) return;
+
+  const modoSalvo = getModoSalvo();
+  if (modoSalvo !== modoRenderizado) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("isCasal", modoSalvo);
+    window.location.replace(url.toString());
+  }
+}
+
+document.addEventListener("DOMContentLoaded", sincronizarModoNaCarga);
 
 function toggleDropdown() {
-    const menu = document.getElementById('dropdown-menu');
-    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-  }
-
-//   function changeUser(name) {
-//     document.getElementById('current-username').textContent = name;
-//     document.getElementById('dropdown-menu').style.display = 'none';
-
-//     let isCasal = name == 'Casal' ? 'S' : 'N'
-
-    
-
-//     // if (isCasal == 'S') {
-//     //     document.getElementById('user-icon').textContent = 'people';
-//     //     document.getElementById('current-username').textContent = 'Casal';
-//     // }
-//     // else{
-//     //     document.getElementById('user-icon').textContent = 'person';
-//     //     document.getElementById('current-username').textContent = name;
-//     // }
-
-
-
-//   // Fecha dropdown se clicar fora
-//   document.addEventListener('click', function (event) {
-//     const dropdown = document.querySelector('.dropdown');
-//     if (!dropdown.contains(event.target)) {
-//       document.getElementById('dropdown-menu').style.display = 'none';
-//     }
-//   });
-
-
-// };
-
-
-//   //tentando mudar no DOMCONTENTLOAD
-//   document.addEventListener('DOMContentLoaded', function () {
-
-//     //tentatuva de mudar o icone
-//     let name = document.getElementById('current-username').textContent;
-
-//     let isCasal = name == 'Casal' ? 'S' : 'N'
-
-//     if (isCasal == 'S') {
-//         document.getElementById('user-icon').textContent = 'people';
-//         document.getElementById('current-username').textContent = 'Casal';
-//     }
-//     else{
-//         document.getElementById('user-icon').textContent = 'person';
-//         document.getElementById('current-username').textContent = name;
-//     }
-
-//   });
-
-
-function changeMode(isCasal) {
-  //document.getElementById('current-username').textContent = name;
-  //document.getElementById('dropdown-menu').style.display = 'none';
-
-  //let isCasal = name == 'Casal' ? 'S' : 'N'
-
-  
-    const nomePagina = window.location.pathname.split("/").pop();
-    const nomeSemExtensao = nomePagina.split(".")[0];   
-    if(nomeSemExtensao == 'extrato'){
-      filtrarGastos(isCasal)
-    }
-    if(nomeSemExtensao == 'despesas'){
-      filtrarDespesas(isCasal)
-    }
-
-
-  //carrega os dados do casal
-
-  //filtrarGastos('mesatual',isCasal)
-  //filtrarGastosMensais(isCasal)
-
-  if (isCasal == 'S') {
-      document.getElementById('user-icon').textContent = 'people';
-  }
-  else{
-      document.getElementById('user-icon').textContent = 'person';
-  }
-
+  const menu = document.getElementById("main-dropdown");
+  if (menu) menu.classList.toggle("show");
 }
 
-  function toggleDropdown() {
-    const menu = document.getElementById("main-dropdown");
-    menu.style.display = menu.style.display === "block" ? "none" : "block";
+function toggleModeDropdown() {
+  const submenu = document.getElementById("mode-dropdown");
+  if (submenu) submenu.classList.toggle("show");
+}
+
+function toggleThemeDropdown() {
+  const dropdown = document.getElementById("theme-dropdown");
+  if (dropdown) dropdown.classList.toggle("show");
+}
+
+function changeMode(isCasal) {
+  salvarModo(isCasal);
+
+  const nomePagina = window.location.pathname.split("/").pop();
+  const nomeSemExtensao = nomePagina.split(".")[0];
+
+  if (nomeSemExtensao === "extrato") {
+    filtrarGastos(isCasal);
+  }
+  if (nomeSemExtensao === "despesas") {
+    filtrarDespesas(isCasal);
+  }
+  if (nomeSemExtensao === "receitas") {
+    filtrarReceitas(isCasal);
   }
 
-  function toggleModeDropdown() {
-    const submenu = document.getElementById("mode-dropdown");
-    submenu.style.display = submenu.style.display === "block" ? "none" : "block";
+  const userIcon = document.getElementById("user-icon");
+  if (userIcon) {
+    userIcon.textContent = isCasal === "S" ? "people" : "person";
   }
 
-  window.onclick = function(event) {
-    if (!event.target.closest(".dropdown")) {
-      document.getElementById("main-dropdown").style.display = "none";
-      document.getElementById("mode-dropdown").style.display = "none";
-    }
-  };
+  const userIcon1 = document.getElementById("user-icon1");
+  if (userIcon1) {
+    userIcon1.textContent = isCasal === "S" ? "people" : "person";
+  }
 
-function signOut(){
+  document.querySelectorAll(".modo-pill-compacta").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.modo === isCasal);
+  });
+}
+
+// Fecha os dropdowns ao clicar fora deles
+window.onclick = function (event) {
+  if (!event.target.closest(".dropdown")) {
+    document.getElementById("main-dropdown")?.classList.remove("show");
+    document.getElementById("mode-dropdown")?.classList.remove("show");
+    document.getElementById("theme-dropdown")?.classList.remove("show");
+  }
+};
+
+function signOut() {
   window.location.href = `/`;
 }
 
 function changeTheme(theme) {
-
-  document.body.className = "";
+  // Antes isso zerava TODAS as classes do body (document.body.className = "").
+  // Agora removemos só as classes "theme-*", preservando qualquer outra
+  // classe que a página tenha (ex.: "home-page", usada na nova tela inicial).
+  Array.from(document.body.classList)
+    .filter((c) => c.startsWith("theme-"))
+    .forEach((c) => document.body.classList.remove(c));
 
   document.body.classList.add(`theme-${theme}`);
-
   localStorage.setItem("theme", theme);
 
-   // troca logo
-   const logo = document.getElementById("app-logo");
-
-  //  if (logo) {
- 
-  //    if (theme === "dark") {
-  //      logo.src = "/static/images/fin-dark.png";
-  //    } else {
-  //      logo.src = "/static/images/fin.png";
-  //    }
- 
-  //  }
-
-
-  // 🔥 atualiza gráficos
   if (typeof atualizarTemaGraficos === "function") {
     atualizarTemaGraficos();
   }
-
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-
-  const temaSalvo = localStorage.getItem("theme") || "green";
-
-  // document.body.classList.add(`theme-${temaSalvo}`);
+  const temaSalvo = localStorage.getItem("theme") || "blue";
   changeTheme(temaSalvo);
 });
-
-function toggleThemeDropdown() {
-
-  const dropdown = document.getElementById("theme-dropdown");
-
-  dropdown.classList.toggle("show");
-}

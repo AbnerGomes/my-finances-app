@@ -294,7 +294,38 @@ def cadastro():
 
 @gasto_bp.route('/esqueci', methods=['GET', 'POST'])
 def esqueci():
-    return render_template("esqueci.html")    
+    return render_template("esqueci.html")
+
+
+@gasto_bp.route('/cadastrar_conjuge', methods=['POST'])
+def cadastrar_conjuge():
+    if 'usuario' not in session:
+        return redirect(url_for('gasto.login'))
+
+    usuario = session['usuario']
+
+    nome = request.form.get('nome', '').strip()
+    email = request.form.get('email', '').strip()
+    telefone = request.form.get('telefone', '').strip()
+    senha = request.form.get('senha', '')
+    pronome = request.form.get('pronome', '')
+
+    if not nome or not email or not senha or pronome not in ('Ele/Dele', 'Ela/Dela'):
+        flash("Preencha todos os campos corretamente.", "danger")
+        return redirect(url_for('gasto.index'))
+
+    try:
+        sucesso = gasto_bp.gasto_service.cadastrar_conjuge(usuario, nome, email, telefone, senha, pronome)
+    except Exception:
+        flash("Não foi possível cadastrar o cônjuge. Tente novamente.", "danger")
+        return redirect(url_for('gasto.index'))
+
+    if sucesso:
+        flash("Cônjuge cadastrado com sucesso! 😄", "success")
+    else:
+        flash("Esse email já está cadastrado! 🤦🏽‍♂️", "danger")
+
+    return redirect(url_for('gasto.index'))
 
 @gasto_bp.route('/editar_gasto', methods=[ 'POST'])
 def editar_gasto():
@@ -642,7 +673,9 @@ def configuracoes():
 
     #dados = gasto_bp.gasto_service.busca_config(usuario) #verifica_dados_bd(usuario)
 
-    return render_template('configuracoes.html',usuario=usuario)    
+    tem_conjuge = gasto_bp.gasto_service.tem_conjuge(usuario)
+
+    return render_template('configuracoes.html',usuario=usuario,temConjuge=tem_conjuge)
 
 
 @admin_bp.route('/deletar_usuario', methods=['GET','POST'], strict_slashes=False)
@@ -684,7 +717,11 @@ def metas():
             "imagem_url": "/static/images/carro.png"
         }
     ]
-    return render_template("metas.html", cards=cards,usuario='Abner Gomes',isCasal='N')
+
+    usuario = session.get('usuario', 'Abner Gomes')
+    tem_conjuge = despesa_bp.despesa_service.tem_conjuge(usuario) if session.get('usuario') else False
+
+    return render_template("metas.html", cards=cards, usuario=usuario, isCasal='N', temConjuge=tem_conjuge)
 
 
 @gasto_bp.route('/receitas', methods=['GET', 'POST'], strict_slashes=False)
@@ -707,6 +744,8 @@ def receitas():
     mes = request.args.get('mes') or mes_por_extenso.lower()
     #categorias = request.args.getlist('categorias')  # ❌ NÃO PRECISA MAIS (não usa filtro por categoria)
     usuario = session['usuario']
+
+    isCasal = request.args.get('isCasal') or request.form.get('isCasal') or 'N'
 
     # Se não há categorias, define como 'Todas'
     #if not categorias:
@@ -740,7 +779,7 @@ def receitas():
     tem_conjuge = gasto_bp.gasto_service.tem_conjuge(usuario)
 
     #  ISSO É O PRINCIPAL AGORA
-    receitas_lista = gasto_bp.gasto_service.listar_receitas(usuario, mes_formatado)
+    receitas_lista = gasto_bp.gasto_service.listar_receitas(usuario, mes_formatado, isCasal)
 
     receitas_agrupadas = agrupar_receitas(receitas_lista)
 
@@ -754,6 +793,7 @@ def receitas():
     return render_template('receitas.html',
                            usuario=usuario,
                            temConjuge=tem_conjuge,
+                           isCasal=isCasal,
                            meses=meses,
                            mes_atual=mes,
                            receitas_lista=receitas_lista,
@@ -916,11 +956,12 @@ def total_receitas_mes():
     usuario = session['usuario']
 
     periodo = request.args.get('periodo', 'mesatual')
+    isCasal = request.args.get('isCasal', 'N')
 
-    total_receitas = gasto_bp.gasto_service.get_total_receitas_mes(usuario,periodo)
-    total_gastos = gasto_bp.gasto_service.get_total_gastos_mes(usuario,periodo)
+    total_receitas = gasto_bp.gasto_service.get_total_receitas_mes(usuario,periodo,isCasal)
+    total_gastos = gasto_bp.gasto_service.get_total_gastos_mes(usuario,periodo,isCasal)
 
-    return jsonify({"total_receitas": total_receitas or 0, "total_gastos": total_gastos or 0})        
+    return jsonify({"total_receitas": total_receitas or 0, "total_gastos": total_gastos or 0})
 
 
 def agrupar_receitas(receitas):

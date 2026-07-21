@@ -1,9 +1,25 @@
+/* Reset universal de box-sizing — index.html e metas.html ganham isso "de
+   graça" via reset do Tailwind (CDN), mas despesas/extrato/receitas/
+   configurações não carregam Tailwind, então os wrappers dessas telas
+   (width:100% + padding em px) somavam o padding por cima da largura e
+   estouravam a viewport pela direita (e de quebra bagunçava o footer
+   fixo em mobile, já que a página passava a ter scroll horizontal).
+   Aplicado uma vez aqui, cobre o app inteiro. */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* rede de segurança: nenhuma página deveria ter scroll horizontal */
+body {
+  overflow-x: hidden;
+}
+
 :root {
 
-  /* PRINCIPAL */
-  --primary: #0abfa7;
-  --primary-dark: #029682;
-  --primary-light: #dcfce7;
+  /* PRINCIPAL (tema selecionável pelo usuário) */
+  --primary: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --primary-light: #93c5fd;
 
   /* TEXTO */
   --text: #111827;
@@ -17,170 +33,202 @@
   --danger: #dc2626;
   --success: #16a34a;
 
+  /* ============================================================
+     NOVOS TOKENS — identidade "Dois no Azul"
+     Usados na home redesenhada (styles.css) e nas barras
+     fixas de topo/rodapé abaixo. Independem do seletor de
+     "Tema" (que continua controlando --primary/--primary-light
+     para os detalhes de destaque, como antes).
+  ============================================================ */
+  --dna-bg: #0b1330;
+  --dna-bg-alt: #101a3d;
+  --dna-card: #141c3f;
+  --dna-card-soft: #1b2550;
+  --dna-border: rgba(255, 255, 255, 0.07);
+  --dna-text: #f5f7ff;
+  --dna-text-dim: #8a93b8;
+  --dna-text-faint: #5c6690;
+  --dna-green: #22c55e;
+  --dna-orange: #fb923c;
 }
 
 
+/* ============================================================
+   TEMAS — cada tema troca o "clima" do fundo do app inteiro
+   (--dna-bg/--dna-bg-alt/--dna-card/--dna-card-soft), não só a
+   cor de destaque (--primary). Todos ficam na mesma família de
+   escuro-com-cards-flutuantes da identidade "Dois no Azul", só
+   muda o matiz — assim o texto claro (--dna-text) e os componentes
+   compartilhados continuam funcionando em qualquer tema.
+============================================================ */
+
+body.theme-blue {
+  --primary: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --primary-light: #93c5fd;
+
+  --dna-bg: #0b1330;
+  --dna-bg-alt: #101a3d;
+  --dna-card: #141c3f;
+  --dna-card-soft: #1b2550;
+}
+
+/* Alias legado: quem ainda tiver "theme-green" salvo no localStorage
+   (versões antigas do app) cai automaticamente no novo azul padrão. */
 body.theme-green {
-  --primary: #0abfa7;
-  --primary-dark: #029682;
-  --primary-light: #97f1b6;
+  --primary: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --primary-light: #93c5fd;
+
+  --dna-bg: #0b1330;
+  --dna-bg-alt: #101a3d;
+  --dna-card: #141c3f;
+  --dna-card-soft: #1b2550;
 }
 
+/* "Yellow" → âmbar suave, fundo escuro com matiz quente */
 body.theme-yellow {
-  --primary: #e6d966;
-  --primary-light: #f3dfb3;
-  --primary-dark: #d3c503;
+  --primary: #f2b84b;
+  --primary-dark: #c8860d;
+  --primary-light: #ffd98a;
+
+  --dna-bg: #1c1508;
+  --dna-bg-alt: #241c0d;
+  --dna-card: #2b2211;
+  --dna-card-soft: #372c16;
 }
 
+/* "Ocean" → teal suave, fundo escuro com matiz esverdeado-azulado */
 body.theme-ocean {
-  --primary: #3bdfd6;
-  --primary-dark: rgb(13, 105, 148);
-  --primary-light: #a4f7f0;
+  --primary: #22c1c3;
+  --primary-dark: #0e7490;
+  --primary-light: #7fe9e5;
+
+  --dna-bg: #071a1c;
+  --dna-bg-alt: #0c2427;
+  --dna-card: #103034;
+  --dna-card-soft: #163c41;
 }
 
+/* "Dark" → neutro, cinza-ardósia sem matiz de cor forte */
 body.theme-dark {
-  --primary: #525253;
+  --primary: #94a3b8;
+  --primary-dark: #64748b;
+  --primary-light: #cbd5e1;
+
+  --dna-bg: #17181c;
+  --dna-bg-alt: #1e1f24;
+  --dna-card: #212227;
+  --dna-card-soft: #2a2c32;
 
   --bg: rgb(42, 42, 48);
   --card-bg: #2b2e31;
-
   --text: #f3f4f6;
   --text-light: #9ca3af;
 }
 
+:root[data-theme="blue"],
 :root[data-theme="green"] {
-  --primary: #0abfa7;
-  --primary-dark: #029682;
-  --primary-light: #97f1b6;
+  --primary: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --primary-light: #93c5fd;
+
+  --dna-bg: #0b1330;
+  --dna-bg-alt: #101a3d;
+  --dna-card: #141c3f;
+  --dna-card-soft: #1b2550;
 }
 
 :root[data-theme="ocean"] {
-  --primary: #3bdfd6;
-  --primary-dark: rgb(13, 105, 148);
-  --primary-light: #a4f7f0;
+  --primary: #22c1c3;
+  --primary-dark: #0e7490;
+  --primary-light: #7fe9e5;
+
+  --dna-bg: #071a1c;
+  --dna-bg-alt: #0c2427;
+  --dna-card: #103034;
+  --dna-card-soft: #163c41;
 }
 
 :root[data-theme="dark"] {
-  --primary: #525253;
+  --primary: #94a3b8;
+  --primary-dark: #64748b;
+  --primary-light: #cbd5e1;
+
+  --dna-bg: #17181c;
+  --dna-bg-alt: #1e1f24;
+  --dna-card: #212227;
+  --dna-card-soft: #2a2c32;
 
   --bg: rgb(42, 42, 48);
   --card-bg: #2b2e31;
-
   --text: #f3f4f6;
   --text-light: #9ca3af;
 }
 
 :root[data-theme="yellow"] {
-  --primary: #e6d966;
-  --primary-light: #f3dfb3;
-  --primary-dark: #d3c503;
+  --primary: #f2b84b;
+  --primary-dark: #c8860d;
+  --primary-light: #ffd98a;
+
+  --dna-bg: #1c1508;
+  --dna-bg-alt: #241c0d;
+  --dna-card: #2b2211;
+  --dna-card-soft: #372c16;
 }
 
- /* rodape */
+ /* ==================== RODAPÉ ==================== */
  .footer-bar {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    /* background-color: #0abfa7;  */
-    background: var(--primary);
+    bottom: calc(14px + env(safe-area-inset-bottom));
+    left: 14px;
+    right: 14px;
+    width: auto;
+    background: linear-gradient(180deg, var(--dna-bg-alt), var(--dna-card));
+    border: 1px solid var(--dna-border);
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: 3px 0;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+    padding: 10px 4px 6px;
+    border-radius: 22px;
+    box-shadow: 0 14px 34px rgba(3, 7, 18, 0.55);
     z-index: 1000;
   }
-  
+
   .footer-btn {
     background: none;
     border: none;
-    color: white;
+    color: var(--dna-text-dim);
     font-size: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 8px 12px;
-    border-radius: 10px;
-    transition: all 0.3s ease;
+    border-radius: 14px;
+    transition: all 0.25s ease;
     cursor: pointer;
   }
-  
+
   .footer-btn .material-icons {
-    font-size: 24px;
+    font-size: 22px;
     margin-bottom: 2px;
   }
-  
+
   .footer-btn:hover {
-    opacity: 0.8;
+    color: var(--dna-text);
   }
-  
+
   .footer-text {
-    font-size: 11px;
-  }
-  
-
- /* cabeçalho */
- .header-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    /* background-color: #009688; */
-    /* background-color: #0abfa7; */
-    background: var(--primary);
-    display: flex;
-    justify-content: center; /* Centraliza o bloco logo + texto */
-    align-items: center;
-    /* padding: 3px 15px; */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-  }
-  
-  .header-bar {
-    justify-content: space-between; /* separa logo à esquerda e usuário à direita */
-    align-items: center; /* alinha verticalmente */
-  }
-  
-  /* .user-info {
-    display: flex;
-    align-items: center;
-    color: white;
-    gap: 8px;
-    font-size: 12px;
+    font-size: 10.5px;
     font-weight: 500;
-  } */
-  
-  .user-icon {
-    font-size: 20px;
-    color: white;
   }
-
-
-  .logo-text {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Espaço entre a imagem e o texto */
-  }
-  
-  .logo {
-    height: 52px;
-  }
-  
-  .company-name {
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-  }
-  
 
   .footer-btn.active {
-    /* background-color: #0abfa7;  */
-    background: var(--primary);
-    /* border-radius: 10px; */
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    color: #fff;
     transform: translateY(-6px);
-    /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); */
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
     transition: all 0.3s ease;
   }
 
@@ -188,166 +236,291 @@ body.theme-dark {
     text-decoration: none;
   }
 
-  /* .user-info {
-    position: relative;
+ /* ==================== CABEÇALHO ==================== */
+ .header-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(180deg, var(--dna-bg-alt), var(--dna-bg));
+    border-bottom: 1px solid var(--dna-border);
     display: flex;
+    justify-content: space-between;
     align-items: center;
-  }
-  
-  .dropdown {
-    position: relative;
-    cursor: pointer;
-  }
-  
-  .dropdown-toggle {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  .dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 999;
-    min-width: 120px;
-  }
-  
-  .dropdown-item {
-    padding: 8px 12px;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-  
-  .dropdown-item:hover {
-    background-color: #f0f0f0;
-  }
-  
-  .current-username{
-    background-color: #f0f0f0;
+    flex-wrap: wrap;
+    row-gap: 6px;
+    padding: calc(14px + env(safe-area-inset-top)) 18px 14px;
+    box-shadow: 0 4px 20px rgba(3, 7, 18, 0.4);
+    z-index: 1000;
   }
 
-  .user-name{
-    color:white;
+  .user-icon {
+    font-size: 20px;
+    color: #fff;
   }
 
-  .dropdown-icon{
-    color: white;
-  } */
+  .logo-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo {
+    height: 40px;
+  }
+
+  .company-name {
+    color: var(--dna-text);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
 
   .user-info {
     position: relative;
     display: flex;
     align-items: center;
   }
-  
+
   .dropdown {
     position: relative;
     cursor: pointer;
   }
-  
+
   .dropdown-toggle {
     display: flex;
     align-items: center;
   }
-  
+
   .dropdown-menu {
     display: none;
     position: absolute;
-    top: 100%;
+    top: calc(100% + 10px);
     right: 0;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    background: var(--dna-card);
+    border: 1px solid var(--dna-border);
+    border-radius: 16px;
+    box-shadow: 0 20px 45px rgba(3, 7, 18, 0.55);
     z-index: 999;
-    min-width: 200px;
+    min-width: 210px;
     padding: 10px 0;
+    color: var(--dna-text);
   }
-  
+
+  .dropdown-menu.show {
+    display: block;
+  }
+
   .profile-header {
     display: flex;
     align-items: center;
     gap: 10px;
     padding: 10px 16px;
-    font-weight: bold;
-    border-bottom: 1px solid #eee;
+    font-weight: 700;
+    color: var(--dna-text);
+    border-bottom: 1px solid var(--dna-border);
   }
-  
+
   .profile-icon {
-    /* background-color: #d9d9d9; */
     background: var(--primary);
     border-radius: 50%;
     padding: 6px;
   }
-  
+
   .dropdown-item {
     padding: 10px 16px;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    color: var(--dna-text-dim);
   }
-  
+
   .dropdown-item:hover {
-    /* background-color: #f0f0f0; */
-    background: var(--primary);
+    background: var(--dna-card-soft);
+    color: var(--dna-text);
   }
-  
+
   .language-selector {
     display: flex;
     align-items: center;
     gap: 5px;
   }
-  
+
   .user-icon {
-    color: white;
-    /* background-color: #2c3e50; */
-    background: var(--primary);
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
     padding: 8px;
     border-radius: 50%;
   }
-  
+
   .mode-icon {
     font-size: 18px;
   }
-  
 
   .dropdown-submenu {
     display: none;
-    background-color: #f9f9f9;
-    padding-left: 10px;
+    margin-top: 6px;
+    padding-left: 12px;
+    border-left: 2px solid var(--dna-border);
   }
-  
+
   .dropdown-submenu .dropdown-item {
     padding-left: 20px;
+    font-size: 13px;
   }
 
-
-  .ambiente {
-    color: white;
-    font-size: 22px;
-    font-weight: bold;
-    background-color: rgb(14, 107, 110);
-    border-radius: 10px;
-    padding: 3px;
-  }
-
-  .dropdown-submenu {
-
-    display: none;
-  
-    margin-top: 6px;
-  
-    padding-left: 12px;
-  
-    border-left: 2px solid rgba(255,255,255,0.1);
-  }
-  
   .dropdown-submenu.show {
     display: block;
   }
+
+  .ambiente {
+    color: var(--dna-green);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    background: rgba(34, 197, 94, 0.14);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    border-radius: 999px;
+    padding: 3px 9px;
+  }
+
+/* ============================================================
+   MODAIS DE CADASTRO (despesas.html e extrato.html) — mesma
+   aparência do modal de "Vincular cônjuge" da home, escopada por
+   #id (não um `.modal`/`.modal-content` genérico) para não afetar
+   modais de outras telas com estrutura própria (ex.: metas.html,
+   que usa `.modal{display:none}` + `margin:15% auto` num padrão
+   totalmente diferente). #modal-confirmar-exclusao também existe
+   em configuracoes.html — ganha a mesma aparência de propósito.
+============================================================ */
+#modal-editar,
+#modal-confirmar-exclusao,
+#modal-cadastrar,
+#modal-cadastro-ok,
+#modal-mensalista,
+#modal-detalhe {
+  z-index: 1100;
+  background-color: rgba(3, 7, 18, 0.72);
+  padding: 24px;
+}
+
+#modal-editar .modal-content,
+#modal-confirmar-exclusao .modal-content,
+#modal-cadastrar .modal-content,
+#modal-cadastro-ok .modal-content,
+#modal-mensalista .modal-content,
+#modal-detalhe .modal-content {
+  background: var(--dna-card);
+  color: var(--dna-text);
+  border: 1px solid var(--dna-border);
+  border-radius: 18px;
+  padding: 20px;
+  width: 100%;
+  max-width: 320px;
+  max-height: 82vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 45px rgba(3, 7, 18, 0.55);
+}
+
+#modal-editar .modal-content h3,
+#modal-editar .modal-content h4,
+#modal-confirmar-exclusao .modal-content h3,
+#modal-confirmar-exclusao .modal-content h4,
+#modal-cadastrar .modal-content h3,
+#modal-cadastrar .modal-content h4,
+#modal-cadastro-ok .modal-content h3,
+#modal-cadastro-ok .modal-content h4,
+#modal-detalhe .modal-content h3,
+#modal-detalhe .modal-content h4 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  text-align: center;
+  color: var(--dna-text);
+}
+
+#modal-editar .close,
+#modal-confirmar-exclusao .close,
+#modal-cadastrar .close,
+#modal-cadastro-ok .close,
+#modal-mensalista .close,
+#modal-detalhe .close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 20px;
+  color: var(--dna-text-dim);
+  cursor: pointer;
+}
+
+#modal-editar .close:hover,
+#modal-confirmar-exclusao .close:hover,
+#modal-cadastrar .close:hover,
+#modal-cadastro-ok .close:hover,
+#modal-mensalista .close:hover,
+#modal-detalhe .close:hover {
+  color: var(--dna-text);
+}
+
+#modal-editar form label,
+#modal-cadastrar form label {
+  display: block;
+  font-size: 12px;
+  color: var(--dna-text-dim);
+  margin: 10px 0 4px;
+}
+
+#modal-editar form input,
+#modal-editar form select,
+#modal-cadastrar form input,
+#modal-cadastrar form select {
+  width: 100%;
+  background: var(--dna-card-soft);
+  border: 1px solid var(--dna-border);
+  color: var(--dna-text);
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+#modal-editar form input::placeholder,
+#modal-cadastrar form input::placeholder {
+  color: var(--dna-text-faint);
+}
+
+#modal-editar form input:focus,
+#modal-editar form select:focus,
+#modal-cadastrar form input:focus,
+#modal-cadastrar form select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+#modal-editar .botao-salvar,
+#modal-confirmar-exclusao .botao-salvar,
+#modal-cadastrar .botao-salvar,
+#modal-cadastro-ok .botao-salvar,
+#modal-cadastro-ok .btn-ok,
+#modal-detalhe .botao-salvar {
+  width: 100%;
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  color: #fff;
+  border: none;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+#modal-editar .botao-salvar:hover,
+#modal-confirmar-exclusao .botao-salvar:hover,
+#modal-cadastrar .botao-salvar:hover,
+#modal-cadastro-ok .botao-salvar:hover,
+#modal-cadastro-ok .btn-ok:hover,
+#modal-detalhe .botao-salvar:hover {
+  filter: brightness(1.05);
+}
