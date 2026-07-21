@@ -6,21 +6,22 @@
 
   <script>
     (function () {
-    
-      const tema = localStorage.getItem('theme') || 'green';
-    
+
+      const tema = localStorage.getItem('theme') || 'blue';
+
       document.documentElement.setAttribute('data-theme', tema);
-    
+
     })();
     </script>
 
   <link rel="stylesheet" href="{{ url_for('static', filename='css/despesas.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
     <script src="static/js/despesas.js" defer></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
     <script src="static/js/comum.js" defer></script>
     <title>Quadro de Despesas Mensais </title>
 </head>
@@ -203,7 +204,8 @@
     <!-- MANTIDO (status + ações) -->
     <div class="despesa-bottom">
 
-      <select onchange="atualizarStatus(this)">
+      <select onchange="atualizarStatus(this)"
+        {% if not despesa[9] %}disabled title="Você só pode alterar o status das suas próprias despesas"{% endif %}>
         <option value="Pago" {% if despesa[4] == 'Pago' %}selected{% endif %}>Pago</option>
         <option value="Parcial" {% if despesa[4] == 'Parcial' %}selected{% endif %}>Parcial</option>
         <option value="Pendente" {% if despesa[4] == 'Pendente' %}selected{% endif %}>Pendente</option>
@@ -214,11 +216,15 @@
           data-id="{{ despesa[6] }}"
           data-categoria="{{ despesa[0] }}"
           data-descricao="{{ despesa[1] }}"
-          data-valor="{{ despesa[2] }}">
+          data-valor="{{ despesa[2] }}"
+          data-proprio="{{ 'true' if despesa[9] else 'false' }}"
+          data-tipo-bloqueado="despesas">
         </i>
 
         <i class="fa-solid fa-trash delete-despesa"
-          data-id="{{ despesa[6] }}">
+          data-id="{{ despesa[6] }}"
+          data-proprio="{{ 'true' if despesa[9] else 'false' }}"
+          data-tipo-bloqueado="despesas">
         </i>
       </div>
 
@@ -303,8 +309,12 @@
       <!-- <label for="cadastrar-data">Data:</label>
       <input type="date" name="data" id="cadastrar-data"> -->
 
-     <label for="cadastrar-data" style="font-weight: bold;">Selecione o mês:</label>
-    <input type="month"  name="mes_ano" id="cadastrar-data" value="{{ mes_ano }}">
+     <label for="cadastrar-data-btn" style="font-weight: bold;">Selecione o mês:</label>
+    <button type="button" id="cadastrar-data-btn" class="filtro-mes-pill filtro-mes-pill-btn">
+      <span class="material-icons">calendar_month</span>
+      <span id="cadastrar-data-texto">Selecionar mês</span>
+    </button>
+    <input type="hidden" name="mes_ano" id="cadastrar-data" value="{{ mes_ano }}">
 
 
       <label for="cadastrar-categoria">Categoria:</label>

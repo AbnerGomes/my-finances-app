@@ -45,6 +45,48 @@ document.addEventListener('DOMContentLoaded', function () {
 
     //validacao icone de casal
 
+    // Seletor de data único (calendário bonitinho, mesmo padrão do filtro
+    // de período) usado nos modais de cadastrar/editar gasto. Recebe o
+    // botão que abre o calendário, o span onde o texto aparece, o input
+    // hidden que guarda o valor (formato YYYY-MM-DD, o que o backend
+    // espera) e uma data inicial opcional.
+    function criarSeletorDeDataUnica(botaoId, textoId, hiddenId, dataInicial) {
+        const botao = document.getElementById(botaoId);
+        const texto = document.getElementById(textoId);
+        const hidden = document.getElementById(hiddenId);
+        if (!botao || !texto || !hidden) return null;
+
+        const atualizar = (data) => {
+            hidden.value = data.format('YYYY-MM-DD');
+            texto.textContent = data.format('DD/MM/YYYY');
+        };
+
+        const picker = new Litepicker({
+            element: botao,
+            singleMode: true,
+            numberOfMonths: 1,
+            numberOfColumns: 1,
+            format: 'DD/MM/YYYY',
+            lang: 'pt-BR',
+            startDate: dataInicial || hoje,
+            autoApply: true,
+            setup: (picker) => {
+                picker.on('selected', (data) => atualizar(data));
+            }
+        });
+
+        if (dataInicial) atualizar(picker.getStartDate());
+
+        return picker;
+    }
+
+    const pickerCadastrar = criarSeletorDeDataUnica('cadastrar-data-btn', 'cadastrar-data-texto', 'cadastrar-data', hoje);
+    const pickerEditar = criarSeletorDeDataUnica('editar-data-btn', 'editar-data-texto', 'editar-data');
+
+    // deixa os dois pickers acessíveis fora deste bloco (usados ao abrir o
+    // modal de edição, pra sincronizar com a data do gasto clicado)
+    window._pickerEditarGasto = pickerEditar;
+
     // painel flutuante de "ações rápidas" — abre no clique do botão de
     // raio, fecha no X, clicando fora dele, ou clicando no raio de novo
     const btnAcoesRapidas = document.getElementById('btnAcoesRapidas');
@@ -122,9 +164,17 @@ document.addEventListener('click', function (event) {
       
       const id = event.target.getAttribute('data-id');
 
-    const dataFormatada = formatarDataManual(data);
+    const dataFormatada = formatarDataManual(data); // YYYY-MM-DD
     document.getElementById('editar-data').value = dataFormatada;
-    
+
+    const editarDataTexto = document.getElementById('editar-data-texto');
+    if (editarDataTexto) editarDataTexto.textContent = data; // já vem DD/MM/YYYY
+
+    if (window._pickerEditarGasto && dataFormatada) {
+      const [ano, mes, dia] = dataFormatada.split('-');
+      window._pickerEditarGasto.setDate(new Date(ano, mes - 1, dia));
+    }
+
 
       document.getElementById('editar-categoria').value = categoria;
       document.getElementById('editar-descricao').value = descricao;

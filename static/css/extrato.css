@@ -496,11 +496,16 @@ body {
   position: relative; /* 👈 ESSENCIAL */
 }
 
+/* indicação de quem é o gasto (casal): borda de destaque + leve
+   gradiente de fundo — mais evidente que só sombra, sem virar um
+   bloco colorido inteiro */
 .gasto-card.genero-masculino {
-  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.22), 0 8px 20px rgba(96, 165, 250, 0.15);
+  border-left: 4px solid #60a5fa;
+  background: linear-gradient(to right, rgba(96, 165, 250, 0.12), transparent 55%), var(--dna-card);
 }
 .gasto-card.genero-feminino {
-  box-shadow: 0 0 0 1px rgba(244, 114, 182, 0.25), 0 8px 20px rgba(244, 114, 182, 0.18);
+  border-left: 4px solid #f472b6;
+  background: linear-gradient(to right, rgba(244, 114, 182, 0.12), transparent 55%), var(--dna-card);
 }
 
 /* BLOCO ESQUERDA (cresce) */

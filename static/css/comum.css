@@ -524,3 +524,10 @@ body.theme-dark {
 #modal-detalhe .botao-salvar:hover {
   filter: brightness(1.05);
 }
+
+/* cadeado que aparece por um instante ao passar o mouse/clicar num
+   ícone de editar/excluir que não é seu (gasto/despesa/receita do
+   cônjuge, visível no modo Casal) */
+.fa-lock {
+  color: var(--dna-orange) !important;
+}

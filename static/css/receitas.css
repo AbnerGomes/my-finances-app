@@ -219,6 +219,53 @@ body {
   border-color: var(--dna-text-faint);
 }
 
+/* indicação de quem é a receita (casal): borda de destaque + leve
+   gradiente de fundo — mesmo padrão de despesas.html/extrato.html */
+.receita-card.genero-masculino {
+  border-left: 4px solid #60a5fa;
+  background: linear-gradient(to right, rgba(96, 165, 250, 0.12), transparent 55%), var(--dna-card);
+}
+
+.receita-card.genero-feminino {
+  border-left: 4px solid #f472b6;
+  background: linear-gradient(to right, rgba(244, 114, 182, 0.12), transparent 55%), var(--dna-card);
+}
+
+/* legenda Ele/Ela */
+.casal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.casal-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--dna-card-soft);
+  border: 1px solid var(--dna-border);
+  color: var(--dna-text-dim);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+}
+
+.casal-icon {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.casal-icon.dele {
+  background-color: #60a5fa;
+}
+
+.casal-icon.dela {
+  background-color: #f472b6;
+}
+
 /* lado esquerdo */
 .receita-card .left {
   display: flex;

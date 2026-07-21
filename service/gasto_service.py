@@ -257,14 +257,15 @@ class GastoService:
 
         cursor.execute("""
         SELECT categoria, gasto, valor_gasto, TO_CHAR(data, 'DD/MM/YYYY') AS data_formatada , g.id, case when u.pronome = 'Ele/Dele' then 'H' else 'S' end pronome
+        , case when g.usuario = %s then true else false end eh_proprio
         FROM gastos g
-        inner join usuarios u on g.usuario = u.email 
+        inner join usuarios u on g.usuario = u.email
         WHERE g.usuario in( %s ,%s)
         and ( categoria = %s or %s ='Todas' )
         and ( data >= %s )
         and ( data <= %s )
         ORDER BY data DESC
-         """, (usuario,conjuge,categoria,categoria,data_inicial,data_fim))
+         """, (usuario,usuario,conjuge,categoria,categoria,data_inicial,data_fim))
 
         resultados = cursor.fetchall()
         
@@ -356,21 +357,34 @@ class GastoService:
         return [row[0] for row in dados]     
 
 
-    def editar_gasto(self,gasto,categoria,valor,data,id):
-        
+    def editar_gasto(self,gasto,categoria,valor,data,id,usuario):
+        # só permite editar um gasto que pertença ao próprio usuário logado
+        # (senão, no modo casal, dava pra editar o gasto do cônjuge)
+        usuario = self.get_usuario_by_name(usuario)
+
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("update gastos set gasto= %s , categoria = %s, valor_gasto = %s, data = %s WHERE id = %s", (gasto,categoria,valor,data,id,) )
+        cursor.execute(
+            "update gastos set gasto= %s , categoria = %s, valor_gasto = %s, data = %s WHERE id = %s AND usuario = %s",
+            (gasto,categoria,valor,data,id,usuario)
+        )
         conn.commit()
+        sucesso = cursor.rowcount > 0
         conn.close()
+        return sucesso
 
 
-    def deletar_gasto(self, id_gasto):
+    def deletar_gasto(self, id_gasto, usuario):
+        # mesma proteção: só deleta se o gasto for do próprio usuário
+        usuario = self.get_usuario_by_name(usuario)
+
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM gastos WHERE id = %s", (id_gasto,))
+        cursor.execute("DELETE FROM gastos WHERE id = %s AND usuario = %s", (id_gasto, usuario))
         conn.commit()
+        sucesso = cursor.rowcount > 0
         conn.close()
+        return sucesso
 
     def tem_conjuge(self,usuario):
 
@@ -426,6 +440,8 @@ class GastoService:
 
         query = """
         SELECT r.id, origem, valor, data_receita
+        , case when u.pronome = 'Ele/Dele' then 'H' else 'S' end pronome
+        , case when u.email = %s then true else false end eh_proprio
         FROM receitas r
         INNER JOIN usuarios u ON r.id_usuario = u.id
         WHERE u.email IN (%s, %s)
@@ -433,7 +449,7 @@ class GastoService:
         ORDER BY id DESC
         """
 
-        cursor.execute(query, (usuario, conjuge, mes_ano))
+        cursor.execute(query, (usuario, usuario, conjuge, mes_ano))
         resultado = cursor.fetchall()
         conn.close()
 

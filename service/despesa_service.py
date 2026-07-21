@@ -35,14 +35,6 @@ class DespesaService:
         conn.close()
 
 
-    def deletar_despesa(self, id_gasto):
-        conn = get_connection
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM gastos WHERE id = ?", (id_gasto,))
-        conn.commit()
-        conn.close()
-
-
     def busca_despesas(self,usuario,mes_ano,categoria,isCasal):
         usuario = self.get_usuario_by_name(usuario)
 
@@ -64,13 +56,14 @@ class DespesaService:
         SELECT categoria, despesa, valor, mes_ano , status, case when tipo_despesa = 'F' then 'FIXA' when tipo_despesa ='V' then 'Variavel' else 'Exceção' end, d.id
         , case when u.pronome = 'Ele/Dele' then 'H' else 'S' end pronome
         ,data_pagamento
+        , case when d.usuario = %s then true else false end eh_proprio
         FROM despesas d
-        inner join usuarios u on d.usuario = u.email 
+        inner join usuarios u on d.usuario = u.email
         WHERE usuario in( %s, %s)
         and ( categoria = %s or %s ='Todas' )
         and ( mes_ano = %s )
         ORDER BY d.id DESC
-         """, (usuario,conjuge,categoria,categoria,mes_ano))
+         """, (usuario,usuario,conjuge,categoria,categoria,mes_ano))
 
         resultados = cursor.fetchall()
         
@@ -78,42 +71,63 @@ class DespesaService:
         return resultados    
 
 
-    def atualizar_status(self, id_despesa, novo_status):
+    def atualizar_status(self, id_despesa, novo_status, usuario):
+        # só permite alterar o status de uma despesa que pertença ao
+        # próprio usuário logado (senão, no modo casal, dava pra alterar
+        # a do cônjuge)
+        usuario = self.get_usuario_by_name(usuario)
+
         try:
             conn = get_connection()
             cursor = conn.cursor()
 
             if novo_status == "Pago":
                 cursor.execute(
-                    "UPDATE despesas SET status = %s, data_pagamento = CURRENT_DATE WHERE id = %s",
-                    (novo_status, id_despesa)
+                    "UPDATE despesas SET status = %s, data_pagamento = CURRENT_DATE WHERE id = %s AND usuario = %s",
+                    (novo_status, id_despesa, usuario)
                 )
             else:
                 cursor.execute(
-                    "UPDATE despesas SET status = %s, data_pagamento = NULL WHERE id = %s",
-                    (novo_status, id_despesa)
+                    "UPDATE despesas SET status = %s, data_pagamento = NULL WHERE id = %s AND usuario = %s",
+                    (novo_status, id_despesa, usuario)
                 )
 
+            sucesso = cursor.rowcount > 0
             conn.commit()
-            return True
+            return sucesso
         except Exception as e:
             print(f"Erro ao atualizar status: {e}")
             return False
 
 
-    def editar_despesa(self,despesa,categoria,valor,id):
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute("update despesas set despesa= %s , categoria = %s, valor = %s WHERE id = %s", (despesa,categoria,valor,id,) )
-        conn.commit()
-        conn.close()
+    def editar_despesa(self,despesa,categoria,valor,id,usuario):
+        # só permite editar uma despesa que pertença ao próprio usuário
+        # logado (senão, no modo casal, dava pra editar a do cônjuge)
+        usuario = self.get_usuario_by_name(usuario)
 
-    def deletar_despesa(self, id_despesa):
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM despesas WHERE id = %s", (id_despesa,))
+        cursor.execute(
+            "update despesas set despesa= %s , categoria = %s, valor = %s WHERE id = %s AND usuario = %s",
+            (despesa,categoria,valor,id,usuario)
+        )
         conn.commit()
-        conn.close()        
+        sucesso = cursor.rowcount > 0
+        conn.close()
+        return sucesso
+
+    def deletar_despesa(self, id_despesa, usuario):
+        # só permite excluir uma despesa que pertença ao próprio usuário
+        # logado (senão, no modo casal, dava pra excluir a do cônjuge)
+        usuario = self.get_usuario_by_name(usuario)
+
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM despesas WHERE id = %s AND usuario = %s", (id_despesa, usuario))
+        conn.commit()
+        sucesso = cursor.rowcount > 0
+        conn.close()
+        return sucesso
 
     def tem_conjuge(self,usuario):
 

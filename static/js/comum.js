@@ -141,3 +141,50 @@ document.addEventListener("DOMContentLoaded", () => {
   const temaSalvo = localStorage.getItem("theme") || "blue";
   changeTheme(temaSalvo);
 });
+
+// ============================================================
+// Bloqueio visual de ações em gastos/despesas/receitas que não
+// pertencem ao usuário logado (aparecem no modo Casal, mas só dá
+// pra editar/excluir o que é seu). Os ícones continuam normais —
+// só ao passar o mouse ou clicar é que viram um cadeado por um
+// instante e mostram um aviso, sem executar a ação de verdade.
+// ============================================================
+const MENSAGENS_BLOQUEIO = {
+  gastos: "Você só pode editar/excluir seus próprios gastos",
+  despesas: "Você só pode editar/excluir suas próprias despesas",
+  receitas: "Você só pode editar/excluir suas próprias receitas",
+};
+
+function protegerAcoesDeTerceiros() {
+  document.querySelectorAll('[data-proprio="false"]').forEach((icone) => {
+    if (icone.dataset.bloqueioConfigurado) return;
+    icone.dataset.bloqueioConfigurado = "1";
+
+    const classesOriginais = icone.className;
+    let timeoutTroca = null;
+
+    const bloquear = (e) => {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      icone.className = classesOriginais.replace(/fa-(edit|trash)\b/g, "fa-lock");
+
+      const tipo = icone.dataset.tipoBloqueado || "gastos";
+      if (typeof showToast === "function") {
+        showToast(MENSAGENS_BLOQUEIO[tipo] || MENSAGENS_BLOQUEIO.gastos, false);
+      }
+
+      clearTimeout(timeoutTroca);
+      timeoutTroca = setTimeout(() => {
+        icone.className = classesOriginais;
+      }, 1400);
+    };
+
+    icone.addEventListener("mouseenter", bloquear);
+    icone.addEventListener("click", bloquear);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", protegerAcoesDeTerceiros);

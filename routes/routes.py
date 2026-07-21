@@ -338,14 +338,17 @@ def editar_gasto():
     valor = request.form['valor']
     data = request.form['data']
     categoria = request.form['categoria']
-    
+
     id = request.form['id']
 
-    # usuario = session['usuario']
-    
-    gasto_bp.gasto_service.editar_gasto(gasto,categoria,valor,data,id)
+    usuario = session['usuario']
 
-    return extrato() 
+    sucesso = gasto_bp.gasto_service.editar_gasto(gasto,categoria,valor,data,id,usuario)
+
+    if not sucesso:
+        flash('Você só pode editar os seus próprios gastos.', 'danger')
+
+    return extrato()
 
 @gasto_bp.route('/deletar_gasto', methods=['POST'])
 def deletar_gasto():
@@ -358,16 +361,19 @@ def deletar_gasto():
 
     if not id_gasto:
         # flash('ID do gasto não fornecido!', 'danger')
-        return redirect(url_for('gasto.extrato')) 
+        return redirect(url_for('gasto.extrato'))
+
+    usuario = session['usuario']
 
     try:
-        gasto_bp.gasto_service.deletar_gasto(id_gasto)
-        # flash('Gasto deletado com sucesso!', 'success')
+        sucesso = gasto_bp.gasto_service.deletar_gasto(id_gasto, usuario)
+        if not sucesso:
+            flash('Você só pode excluir os seus próprios gastos.', 'danger')
     except Exception as e:
         print("Erro ao deletar gasto:", e)
         flash('Erro ao tentar deletar o gasto. 😓', 'danger')
 
-    return extrato() 
+    return extrato()
 
 
 @despesa_bp.route('/despesas', methods=['GET','POST'])
@@ -433,6 +439,9 @@ def despesas():
 
 @despesa_bp.route('/atualizar_status', methods=['POST'])
 def atualizar_status():
+    if 'usuario' not in session:
+        return jsonify({'erro': 'Você precisa estar logado.'}), 401
+
     data = request.get_json()
     id_despesa = data.get('id_despesa')
     novo_status = data.get('novo_status')
@@ -441,12 +450,12 @@ def atualizar_status():
         return jsonify({'erro': 'Dados incompletos'}), 400
 
     # Chama método da camada service para atualizar no banco
-    sucesso = despesa_bp.despesa_service.atualizar_status(id_despesa, novo_status)
+    sucesso = despesa_bp.despesa_service.atualizar_status(id_despesa, novo_status, session['usuario'])
 
     if sucesso:
         return jsonify({'mensagem': 'Status atualizado com sucesso'})
     else:
-        return jsonify({'erro': 'Falha ao atualizar'}), 500
+        return jsonify({'erro': 'Você só pode alterar o status das suas próprias despesas.'}), 403
 
 
 
@@ -495,15 +504,21 @@ def editar_despesa():
     valor = request.form['valor']
     categoria = request.form['categoria']
     id = request.form['id']
-    
-    # usuario = session['usuario']
-    
-    despesa_bp.despesa_service.editar_despesa(despesa,categoria,valor,id)
 
-    return despesas() 
+    usuario = session['usuario']
+
+    sucesso = despesa_bp.despesa_service.editar_despesa(despesa,categoria,valor,id,usuario)
+
+    if not sucesso:
+        flash('Você só pode editar as suas próprias despesas.', 'danger')
+
+    return despesas()
 
 @despesa_bp.route('/deletar_despesa', methods=['POST'])
 def deletar_despesa():
+
+    if 'usuario' not in session:
+        return jsonify({'erro': 'Você precisa estar logado.'}), 401
 
     if request.is_json:
         data = request.get_json()
@@ -514,8 +529,12 @@ def deletar_despesa():
     if not id_despesa:
         return jsonify({'erro': 'ID não enviado'}), 400
 
+    usuario = session['usuario']
+
     try:
-        despesa_bp.despesa_service.deletar_despesa(id_despesa)
+        sucesso = despesa_bp.despesa_service.deletar_despesa(id_despesa, usuario)
+        if not sucesso:
+            return jsonify({'erro': 'Você só pode excluir as suas próprias despesas.'}), 403
         return jsonify({'sucesso': True})
     except Exception as e:
         print("Erro ao deletar:", e)

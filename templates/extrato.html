@@ -183,11 +183,15 @@
              data-data="{{ gasto[3] }}"
              data-categoria="{{ gasto[0] }}"
              data-descricao="{{ gasto[1] }}"
-             data-valor="{{ gasto[2] }}">
+             data-valor="{{ gasto[2] }}"
+             data-proprio="{{ 'true' if gasto[6] else 'false' }}"
+             data-tipo-bloqueado="gastos">
           </i>
-        
+
           <i class="fa-solid fa-trash"
-             data-id="{{ gasto[4] }}">
+             data-id="{{ gasto[4] }}"
+             data-proprio="{{ 'true' if gasto[6] else 'false' }}"
+             data-tipo-bloqueado="gastos">
           </i>
         </div>
   
@@ -317,8 +321,12 @@
       <span class="close" id="fechar-modal">&times;</span>
       <h3>Editar Gasto</h3>
       <form id="form-editar" method="POST" action="{{ url_for('gasto.editar_gasto') }}">
-        <label for="editar-data">Data:</label>
-        <input type="date" name="data" id="editar-data">
+        <label for="editar-data-btn">Data:</label>
+        <button type="button" id="editar-data-btn" class="filtro-periodo-btn data-picker-btn">
+          <span class="material-icons">calendar_month</span>
+          <span id="editar-data-texto">Selecionar data</span>
+        </button>
+        <input type="hidden" name="data" id="editar-data">
   
         <label for="editar-categoria">Categoria:</label>
         <!-- <input type="text" name="categoria" id="editar-categoria" required> -->
@@ -369,8 +377,12 @@
       <span class="close" id="fechar-modal-cadastro">&times;</span>
       <h3>Cadastrar Gasto</h3>
       <form id="form-cadastrar" method="POST" action="{{ url_for('gasto.cadastrar_gasto') }}">
-        <label for="cadastrar-data">Data:</label>
-        <input type="date" name="data" id="cadastrar-data">
+        <label for="cadastrar-data-btn">Data:</label>
+        <button type="button" id="cadastrar-data-btn" class="filtro-periodo-btn data-picker-btn">
+          <span class="material-icons">calendar_month</span>
+          <span id="cadastrar-data-texto">Selecionar data</span>
+        </button>
+        <input type="hidden" name="data" id="cadastrar-data">
   
         <label for="cadastrar-categoria">Categoria:</label>
         <!-- <input type="text" name="categoria" id="cadastrar-categoria" required> -->

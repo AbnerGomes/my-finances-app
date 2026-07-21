@@ -65,8 +65,53 @@ function fecharModal(id) {
   document.getElementById(id).style.display = "none";
 }
 
+// ================= SELETOR DE MÊS (calendário bonitinho, mesmo padrão
+// do seletor de data usado em extrato.html) =================
+const NOMES_MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
+function criarSeletorDeMes(botaoId, textoId, hiddenId, valorInicial) {
+  const botao = document.getElementById(botaoId);
+  const texto = document.getElementById(textoId);
+  const hidden = document.getElementById(hiddenId);
+  if (!botao || !texto || !hidden || typeof Litepicker === 'undefined') return null;
+
+  const atualizar = (data) => {
+    hidden.value = data.format('YYYY-MM');
+    texto.textContent = `${NOMES_MESES[data.getMonth()]} ${data.format('YYYY')}`;
+  };
+
+  let dataInicial = new Date();
+  if (valorInicial) {
+    const [ano, mes] = valorInicial.split('-');
+    if (ano && mes) dataInicial = new Date(Number(ano), Number(mes) - 1, 1);
+  }
+
+  const picker = new Litepicker({
+    element: botao,
+    singleMode: true,
+    numberOfMonths: 1,
+    numberOfColumns: 1,
+    lang: 'pt-BR',
+    startDate: dataInicial,
+    autoApply: true,
+    setup: (picker) => {
+      picker.on('selected', (data) => atualizar(data));
+    }
+  });
+
+  atualizar(picker.getStartDate());
+
+  return picker;
+}
+
 // ================= EVENTOS =================
 document.addEventListener('DOMContentLoaded', () => {
+
+  // O filtro de mês voltou a ser o <input type="month"> nativo (o
+  // Litepicker não fazia sentido pra escolher só mês/ano). O calendário
+  // bonito continua só no modal de cadastro, que já é baseado em mês.
+  criarSeletorDeMes('cadastrar-data-btn', 'cadastrar-data-texto', 'cadastrar-data', document.getElementById('cadastrar-data')?.value);
 
   // 👉 BOTÃO ADICIONAR (AGORA CORRETO)
   const btnAdd = document.getElementById("addDespesaBtn");

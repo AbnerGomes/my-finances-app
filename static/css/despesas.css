@@ -280,10 +280,38 @@ form input[type="radio"] {
   font-weight: 600;
   color-scheme: dark;
   padding: 0;
+  /* o navegador mostra o nome do mês em minúsculo ("agosto de 2026") —
+     isso só ajusta a exibição, não o valor real do input */
+  text-transform: capitalize;
 }
 
 .filtro-mes-pill input:focus {
   outline: none;
+}
+
+/* variante botão (abre o calendário via Litepicker) do mesmo pill acima */
+.filtro-mes-pill-btn {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.filtro-mes-pill-btn:hover,
+.filtro-mes-pill-btn:focus-visible {
+  border-color: var(--primary);
+  outline: none;
+}
+
+.filtro-mes-pill-btn span:last-child {
+  flex: 1;
+  min-width: 0;
+  color: var(--dna-text);
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .filtro-mes button {
@@ -420,12 +448,18 @@ form input[type="radio"] {
   transform: translateY(-2px);
 }
 
+/* indicação de quem é a despesa (casal): borda de destaque + leve
+   gradiente de fundo — mais evidente que só sombra, sem virar um
+   bloco colorido inteiro. Usa a borda DIREITA (a esquerda já é do
+   status pago/parcial/pendente, ver .status-pago etc. abaixo) */
 .despesa-card.genero-masculino {
-  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.22), 0 8px 20px rgba(96, 165, 250, 0.15);
+  border-right: 4px solid #60a5fa;
+  background: linear-gradient(to left, rgba(96, 165, 250, 0.12), transparent 55%), var(--dna-card);
 }
 
 .despesa-card.genero-feminino {
-  box-shadow: 0 0 0 1px rgba(244, 114, 182, 0.25), 0 8px 20px rgba(244, 114, 182, 0.18);
+  border-right: 4px solid #f472b6;
+  background: linear-gradient(to left, rgba(244, 114, 182, 0.12), transparent 55%), var(--dna-card);
 }
 
 .despesa-topo {
@@ -647,4 +681,74 @@ form input[type="radio"] {
 .alerta-pendencias.clicando {
   transform: scale(0.95);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) inset;
+}
+
+/* ===================================================================
+   LITEPICKER — overrides mínimos para não destoar do fundo escuro
+   (mesmo tema usado em extrato.css, pro seletor de mês ficar igual)
+=================================================================== */
+.litepicker {
+  background: var(--dna-card) !important;
+  border: 1px solid var(--dna-border) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 45px rgba(3, 7, 18, 0.55) !important;
+  color: var(--dna-text) !important;
+}
+
+.litepicker .container__months {
+  background: var(--dna-card) !important;
+  border-radius: 16px !important;
+}
+
+.litepicker .month-item-name,
+.litepicker .month-item-year {
+  color: var(--dna-text) !important;
+}
+
+.litepicker .month-item-weekdays-row div {
+  color: var(--dna-text-dim) !important;
+}
+
+.litepicker .day-item {
+  color: var(--dna-text) !important;
+}
+
+.litepicker .day-item:hover {
+  box-shadow: none !important;
+  background-color: var(--dna-card-soft) !important;
+  color: var(--dna-text) !important;
+}
+
+.litepicker .day-item.is-locked {
+  color: var(--dna-text-faint) !important;
+}
+
+.litepicker .day-item.is-today {
+  color: var(--primary-light) !important;
+}
+
+.litepicker .day-item.is-start-date,
+.litepicker .day-item.is-end-date {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary)) !important;
+  color: #fff !important;
+}
+
+.litepicker .button-previous-month,
+.litepicker .button-next-month {
+  color: var(--dna-text) !important;
+}
+
+.litepicker .container__footer {
+  background: var(--dna-bg-alt) !important;
+  border-top: 1px solid var(--dna-border) !important;
+}
+
+.litepicker .button-apply {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary)) !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+}
+
+.litepicker .button-cancel {
+  color: var(--dna-text-dim) !important;
 }

@@ -117,6 +117,20 @@
       {% endif %}
     </div>
 
+    <!-- dele/dela (só exibir se for visualização de casal) -->
+    {% if isCasal == 'S' %}
+    <div class="casal">
+      <div class="casal-item">
+        <span class="casal-icon dele"></span>
+        <span class="casal-texto">Ele</span>
+      </div>
+      <div class="casal-item">
+        <span class="casal-icon dela"></span>
+        <span class="casal-texto">Ela</span>
+      </div>
+    </div>
+    {% endif %}
+
     <!-- FILTRO -->
     <div class="topo-card">
 
@@ -158,7 +172,7 @@
           </div>
     
           {% for r in lista %}
-          <div class="receita-card">
+          <div class="receita-card {{ 'genero-masculino' if r[4] == 'H' else 'genero-feminino' }}">
 
             <div class="left">
               <span class="material-icons receita-icon">payments</span>
@@ -179,11 +193,15 @@
                    data-id="{{ r[0] }}"
                    data-descricao="{{ r[1] }}"
                    data-valor="{{ r[2] }}"
-                   data-data="{{ r[3] }}">
+                   data-data="{{ r[3] }}"
+                   data-proprio="{{ 'true' if r[5] else 'false' }}"
+                   data-tipo-bloqueado="receitas">
                 </i>
-          
+
                 <i class="fa-solid fa-trash delete-receita"
-                   data-id="{{ r[0] }}">
+                   data-id="{{ r[0] }}"
+                   data-proprio="{{ 'true' if r[5] else 'false' }}"
+                   data-tipo-bloqueado="receitas">
                 </i>
               </div>
             </div>
