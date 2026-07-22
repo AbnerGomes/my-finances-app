@@ -113,7 +113,10 @@ def index():
     #verifica se é conta casal e exibe dropdon
     tem_conjuge = gasto_bp.gasto_service.tem_conjuge(usuario)
 
-    return render_template('index.html',usuario=usuario,temConjuge=tem_conjuge)
+    # depois de 7 dias de conta, sem assinatura ativa, bloqueia o uso
+    precisa_assinar = gasto_bp.gasto_service.precisa_assinar(usuario)
+
+    return render_template('index.html',usuario=usuario,temConjuge=tem_conjuge,precisaAssinar=precisa_assinar)
 
 @gasto_bp.route('/cadastrar_gasto', methods=['GET', 'POST'])
 def cadastrar_gasto():
@@ -274,27 +277,49 @@ def filtrarMesAno(isCasal):
 @gasto_bp.route("/cadastro", methods=["GET", "POST"])
 def cadastro():
     if request.method == "POST":
-        usuario = request.form["email"]
+        email = request.form["email"]
         senha = request.form["senha"]
         nome = request.form["nome"]
         telefone = request.form["telefone"]
+        pronome = request.form.get("pronome", "")
 
-        dados = gasto_bp.gasto_service.valida_usuario_existente(usuario,senha,nome,telefone)   
-        
-        if dados:
-            flash("Usuário já existe! 🤦🏽‍♂️")
-            return redirect(url_for('gasto.cadastro',usuario=usuario)) 
+        if pronome not in ('Ele/Dele', 'Ela/Dela'):
+            flash("Selecione um gênero válido.", "danger")
+            return redirect(url_for('gasto.cadastro'))
 
-        flash("Usuário cadastrado com sucesso! 😄", "success")
+        try:
+            sucesso = gasto_bp.gasto_service.cadastrar_usuario(nome, email, telefone, senha, pronome)
+        except Exception:
+            flash("Não foi possível criar a conta. Tente novamente. 😓", "danger")
+            return redirect(url_for('gasto.cadastro'))
 
-        return render_template("cadastro.html",usuario=usuario)
-    
+        if not sucesso:
+            flash("Esse e-mail já está cadastrado! 🤦🏽‍♂️", "danger")
+            return redirect(url_for('gasto.cadastro'))
+
+        flash("Conta criada com sucesso! Faça login para continuar. 😄", "success")
+        return redirect(url_for('gasto.login'))
+
     return render_template("cadastro.html")
 
 
 @gasto_bp.route('/esqueci', methods=['GET', 'POST'])
 def esqueci():
     return render_template("esqueci.html")
+
+
+@gasto_bp.route('/politica-privacidade')
+def politica_privacidade():
+    # pública — não depende de login, exigido pela Google Play
+    return render_template("politica_privacidade.html")
+
+
+@gasto_bp.route('/planos')
+def planos():
+    if 'usuario' not in session:
+        return redirect(url_for('gasto.login'))
+
+    return render_template("planos.html")
 
 
 @gasto_bp.route('/cadastrar_conjuge', methods=['POST'])

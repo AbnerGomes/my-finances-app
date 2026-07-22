@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Planos — Dois no Azul</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+  <style>
+    body {
+      margin: 0;
+      background: var(--dna-bg);
+      color: var(--dna-text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .planos-wrapper {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: calc(112px + env(safe-area-inset-top)) 16px calc(60px + env(safe-area-inset-bottom));
+    }
+
+    .planos-topo {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .planos-topo h1 {
+      font-size: 22px;
+      margin: 0 0 6px;
+    }
+
+    .planos-topo p {
+      color: var(--dna-text-dim);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .plano-card {
+      background: var(--dna-card);
+      border: 1px solid var(--dna-border);
+      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 16px;
+      box-shadow: 0 10px 30px rgba(3, 7, 18, 0.35);
+      position: relative;
+    }
+
+    .plano-card.destaque {
+      border-color: var(--primary);
+      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.25);
+    }
+
+    .plano-selo {
+      position: absolute;
+      top: -12px;
+      right: 18px;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+      letter-spacing: 0.02em;
+    }
+
+    .plano-nome {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--dna-text-dim);
+      margin-bottom: 8px;
+    }
+
+    .plano-preco {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--dna-text);
+      margin-bottom: 2px;
+    }
+
+    .plano-preco span {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--dna-text-dim);
+    }
+
+    .plano-economia {
+      font-size: 12px;
+      color: var(--dna-green);
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .plano-lista {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px;
+    }
+
+    .plano-lista li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--dna-text-dim);
+      margin-bottom: 8px;
+    }
+
+    .plano-lista .material-icons {
+      font-size: 16px;
+      color: var(--primary-light);
+    }
+
+    .plano-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: filter 0.15s ease, transform 0.15s ease;
+    }
+
+    .plano-btn:hover {
+      filter: brightness(1.08);
+    }
+
+    .plano-btn:active {
+      transform: scale(0.98);
+    }
+
+    .planos-rodape {
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .planos-rodape a {
+      color: var(--dna-text-dim);
+      font-size: 13px;
+      text-decoration: none;
+    }
+
+    .planos-rodape a:hover {
+      text-decoration: underline;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(30px + env(safe-area-inset-bottom));
+      transform: translateX(-50%) translateY(20px);
+      background: var(--dna-bg-alt);
+      border: 1px solid var(--dna-border);
+      color: var(--dna-text);
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 10px 24px rgba(3, 7, 18, 0.45);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      z-index: 1200;
+      max-width: calc(100vw - 40px);
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body class="dna-page">
+
+  <div class="header-bar center">
+    <div class="logo-text">
+      <img src="{{ url_for('static', filename='images/fin-dark.png') }}" alt="Logo" class="logo">
+      <span class="company-name">Dois no Azul</span>
+    </div>
+  </div>
+
+  <div class="planos-wrapper">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="flash-stack">
+        {% for category, message in messages %}
+        <div class="flash-banner flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="planos-topo">
+      <h1>Escolha seu plano</h1>
+      <p>Seu período de teste gratuito terminou. Continue aproveitando o Dois no Azul.</p>
+    </div>
+
+    <div class="plano-card">
+      <div class="plano-nome">Plano Mensal</div>
+      <div class="plano-preco">R$ 9,90 <span>/ mês</span></div>
+      <ul class="plano-lista">
+        <li><span class="material-icons">check_circle</span> Controle completo de gastos e receitas</li>
+        <li><span class="material-icons">check_circle</span> Modo Casal (conta compartilhada)</li>
+        <li><span class="material-icons">check_circle</span> Exportação em Excel e PDF</li>
+      </ul>
+      <button type="button" class="plano-btn" onclick="escolherPlano('mensal')">Assinar plano mensal</button>
+    </div>
+
+    <div class="plano-card destaque">
+      <span class="plano-selo">Promocional</span>
+      <div class="plano-nome">Plano Anual</div>
+      <div class="plano-preco">R$ 99,90 <span>/ ano</span></div>
+      <div class="plano-economia">Equivale a R$ 8,32/mês — mais barato que o mensal</div>
+      <ul class="plano-lista">
+        <li><span class="material-icons">check_circle</span> Tudo do plano mensal</li>
+        <li><span class="material-icons">check_circle</span> Preço fixo garantido por 12 meses</li>
+        <li><span class="material-icons">check_circle</span> Melhor custo-benefício</li>
+      </ul>
+      <button type="button" class="plano-btn" onclick="escolherPlano('anual')">Assinar plano anual</button>
+    </div>
+
+    <div class="planos-rodape">
+      <a href="#" onclick="signOut(); return false;">Sair da conta</a>
+    </div>
+
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="{{ url_for('static', filename='js/comum.js') }}" defer></script>
+  <script>
+    // TODO: quando o link de pagamento seguro estiver pronto, troque esta
+    // função por um redirect real pra checkout do plano escolhido
+    // ("mensal" ou "anual"). Por enquanto é só um placeholder visual.
+    function escolherPlano(tipo) {
+      const toast = document.getElementById('toast');
+      if (!toast) return;
+      toast.textContent = 'Pagamento em breve! Ainda estamos configurando essa etapa.';
+      toast.style.background = 'var(--dna-card-soft)';
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+  </script>
+</body>
+</html>

@@ -141,3 +141,50 @@ input {
   color: #f5f7ff;
   text-decoration: underline;
 }
+
+.genero-label {
+  display: block;
+  margin-top: 12px;
+  font-size: 12px;
+  color: rgba(245, 247, 255, 0.6);
+}
+
+.genero-toggle {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.genero-toggle input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+}
+
+.genero-pill {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: #1b2550;
+  color: rgba(245, 247, 255, 0.6);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 0;
+}
+
+.genero-toggle input[type="radio"]:checked + .genero-pill {
+  background: linear-gradient(135deg, #93c5fd, #3b82f6);
+  color: #fff;
+  border-color: transparent;
+}
+
+.genero-toggle input[type="radio"]:focus-visible + .genero-pill {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}

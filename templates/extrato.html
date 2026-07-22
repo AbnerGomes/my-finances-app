@@ -92,6 +92,16 @@
 
     <div class="container-detalhes" >
 
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+          <div class="flash-stack">
+            {% for category, message in messages %}
+            <div class="flash-banner flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        {% endwith %}
+
         <h2 class="page-title">Extrato</h2>
 
         <div class="filtro-container">

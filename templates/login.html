@@ -80,19 +80,24 @@
 						<a class="txt2" href="/esqueci">
 							Esqueci minha senha
 						</a>
-					</div>	
+					</div>
 					<br>
-					<!-- <div class="text-center">
+					<div class="text-center">
 						<span class="txt1">
 							Ainda não tem uma conta?
 						</span>
 						<br>
-						<span class="txt1" >seloko numcompensa,</span>
-						<a class="txt2" href="#">
-							<u>bora criar</u>
+						<a class="txt2" href="{{ url_for('gasto.cadastro') }}">
+							<u>Criar conta</u>
 						</a>
-					</div> -->
+					</div>
 				</form>
+
+				<div class="text-center" style="margin-top: 14px;">
+					<a class="txt2" href="{{ url_for('gasto.politica_privacidade') }}" style="font-size: 11px; opacity: 0.75;">
+						Política de Privacidade
+					</a>
+				</div>
 			</div>
 		</div>
 	</div>

@@ -188,3 +188,18 @@ function protegerAcoesDeTerceiros() {
 }
 
 document.addEventListener("DOMContentLoaded", protegerAcoesDeTerceiros);
+
+// ============================================================
+// mensagens flash (ex.: "Você só pode editar seus próprios gastos")
+// somem sozinhas depois de alguns segundos, em vez de ficarem
+// acumulando na sessão do Flask e aparecendo do nada numa tela
+// seguinte que nem tem a ver (ex.: o login)
+// ============================================================
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".flash-banner").forEach((banner) => {
+    setTimeout(() => {
+      banner.classList.add("flash-saindo");
+      banner.addEventListener("transitionend", () => banner.remove(), { once: true });
+    }, 3000);
+  });
+});

@@ -11,27 +11,37 @@
     <div class="container">
 
 
-      {% with messages = get_flashed_messages() %}
+      {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <div class="alert alert-success">
-          {{ messages[0] }}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category if category != 'message' else 'info' }}">
+          {{ message }}
         </div>
+        {% endfor %}
       {% endif %}
     {% endwith %}
 
-        <h3>Cadastro de Usuário</h3>
+        <h3>Criar conta</h3>
         <form class="form-box" action="{{ url_for('gasto.cadastro') }}" method="POST">
-          <!-- <div class="validate-input" data-validate = "Um email válido deve conter: algumacoisa@algumaoutracoisa.c"> -->
             <input type="text" name="nome" placeholder="Nome" required >
             <input type="email" name="email" placeholder="Email" required >
-            
+
             <input type="text" id="telefone" name="telefone" maxlength="15"  placeholder="Telefone" required >
             <input type="password" name="senha" placeholder="Senha" required>
-        <!-- </div> -->
+
+            <label class="genero-label">Gênero</label>
+            <div class="genero-toggle">
+              <input type="radio" id="genero-ele" name="pronome" value="Ele/Dele" checked>
+              <label for="genero-ele" class="genero-pill">Masculino</label>
+
+              <input type="radio" id="genero-ela" name="pronome" value="Ela/Dela">
+              <label for="genero-ela" class="genero-pill">Feminino</label>
+            </div>
+
             <br><br>
             <button class="button-cad" type="submit">Cadastrar</button>
 
-        <a href="/" class="btn-cad-usu">Voltar </a>
+        <a href="{{ url_for('gasto.login') }}" class="btn-cad-usu">Já tenho conta — Fazer login</a>
           </form>
 
     </div>

@@ -23,6 +23,19 @@
 </head>
 <body class="theme-blue home-page dna-page">
 
+  {% if precisaAssinar %}
+  <!-- Bloqueio de teste grátis expirado — não é fechável (sem X, sem
+       clique fora), só sai clicando em "Ver planos" -->
+  <div class="bloqueio-overlay">
+    <div class="bloqueio-card">
+      <span class="material-icons bloqueio-icone">lock</span>
+      <h3>Seu período de teste terminou</h3>
+      <p>Assine um dos nossos planos para continuar usando o Dois no Azul sem interrupções.</p>
+      <a href="{{ url_for('gasto.planos') }}" class="botao-salvar">Ver planos</a>
+    </div>
+  </div>
+  {% endif %}
+
   <div class="header-bar center">
     <div class="logo-text">
       <img id="app-logo" src="{{ url_for('static', filename='images/fin-dark.png') }}" alt="Logo" class="logo">

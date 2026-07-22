@@ -284,23 +284,37 @@ class GastoService:
 
         return dados
 
-    def valida_usuario_existente(self, usuario, senha,nome,telefone):
-
-        usuario = self.get_usuario_by_name(usuario)
+    def cadastrar_usuario(self, nome, email, telefone, senha, pronome):
+        # cadastro público (tela de login -> "Criar conta"). Cria a conta
+        # em AUTENTICACAO (login) e em usuarios (email/nome/pronome, usado
+        # em todo o resto do app pros JOINs e pro Modo Casal).
+        email = email.strip().lower()
 
         conn = get_connection()
         c = conn.cursor()
-                
-        # Verifica se o usuário já existe
-        c.execute("SELECT * FROM AUTENTICACAO WHERE usuario = %s", (usuario,))
-        
-        dados = c.fetchone()
-        if not dados:
-            # Insere novo usuário
-            c.execute("INSERT INTO AUTENTICACAO (usuario, senha, ativo, nome, telefone) VALUES (%s, %s, 1, %s, %s)", (usuario, senha,nome,telefone))
+
+        try:
+            c.execute("SELECT 1 FROM AUTENTICACAO WHERE usuario = %s", (email,))
+            if c.fetchone():
+                conn.close()
+                return False
+
+            c.execute(
+                "INSERT INTO AUTENTICACAO (usuario, senha, ativo, nome, telefone) VALUES (%s, %s, 1, %s, %s)",
+                (email, senha, nome, telefone)
+            )
+            c.execute(
+                "INSERT INTO usuarios (email, nome, pronome) VALUES (%s, %s, %s)",
+                (email, nome, pronome)
+            )
+
             conn.commit()
+            return True
+        except Exception:
+            conn.rollback()
+            raise
+        finally:
             conn.close()
-        return dados   is not None
 
     def cadastrar_conjuge(self, usuario_atual, nome, email, telefone, senha, pronome):
         # session['usuario'] guarda o NOME (não o email/usuario de login — ver
@@ -401,7 +415,48 @@ class GastoService:
         if resultado is None:
             return False
         else:
-            return True    
+            return True
+
+    # ============================================================
+    # Teste grátis de 7 dias + assinatura (usado no /index pra decidir
+    # se mostra o modal de bloqueio levando pra tela de planos)
+    # ============================================================
+    def dias_de_conta(self, usuario):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT data_cadastro FROM autenticacao WHERE nome = %s", (usuario,))
+        resultado = cursor.fetchone()
+        conn.close()
+
+        if not resultado or not resultado[0]:
+            return 0
+
+        return (datetime.now().date() - resultado[0]).days
+
+    def tem_assinatura_ativa(self, usuario):
+        # Por enquanto não existe pagamento de verdade integrado — qualquer
+        # linha 'pago' já registrada na tabela mensalidade (em qualquer mês,
+        # por email ou por nome — há registros antigos nos dois formatos)
+        # conta como assinatura ativa "pra sempre", até o pagamento real
+        # ser conectado.
+        usuario_email = self.get_usuario_by_name(usuario)
+
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT 1 FROM mensalidade WHERE status = 'pago' AND (usuario = %s OR usuario = %s) LIMIT 1",
+            (usuario, usuario_email)
+        )
+        resultado = cursor.fetchone()
+        conn.close()
+
+        return resultado is not None
+
+    def precisa_assinar(self, usuario):
+        if self.dias_de_conta(usuario) <= 7:
+            return False
+
+        return not self.tem_assinatura_ativa(usuario)
 
     def get_receitas_mes(self,usuario, mes_ano,categorias):
         conn = get_connection()

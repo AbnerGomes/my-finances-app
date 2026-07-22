@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Política de Privacidade — Dois no Azul</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+  <style>
+    body {
+      margin: 0;
+      background: var(--dna-bg);
+      color: var(--dna-text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+    }
+
+    .politica-topo {
+      position: sticky;
+      top: 0;
+      background: linear-gradient(180deg, var(--dna-bg-alt), var(--dna-bg));
+      border-bottom: 1px solid var(--dna-border);
+      padding: 18px 20px calc(14px + env(safe-area-inset-top));
+      padding-top: calc(18px + env(safe-area-inset-top));
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    .politica-topo img {
+      height: 34px;
+    }
+
+    .politica-topo span {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .politica-wrapper {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 24px 20px calc(60px + env(safe-area-inset-bottom));
+    }
+
+    .politica-wrapper h1 {
+      font-size: 24px;
+      margin: 0 0 4px;
+    }
+
+    .politica-atualizado {
+      color: var(--dna-text-dim);
+      font-size: 13px;
+      margin: 0 0 28px;
+    }
+
+    .politica-card {
+      background: var(--dna-card);
+      border: 1px solid var(--dna-border);
+      border-radius: 18px;
+      padding: 20px 22px;
+      margin-bottom: 16px;
+      box-shadow: 0 10px 30px rgba(3, 7, 18, 0.35);
+    }
+
+    .politica-card h2 {
+      font-size: 16px;
+      margin: 0 0 10px;
+      color: var(--dna-text);
+    }
+
+    .politica-card p,
+    .politica-card li {
+      font-size: 14px;
+      color: var(--dna-text-dim);
+      margin: 0 0 10px;
+    }
+
+    .politica-card ul {
+      margin: 0 0 10px;
+      padding-left: 20px;
+    }
+
+    .politica-card a {
+      color: var(--primary-light);
+      text-decoration: none;
+    }
+
+    .politica-card a:hover {
+      text-decoration: underline;
+    }
+
+    .politica-voltar {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      color: var(--primary-light);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .politica-voltar:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="politica-topo">
+    <img src="{{ url_for('static', filename='images/fin-dark.png') }}" alt="Logo">
+    <span>Dois no Azul</span>
+  </div>
+
+  <div class="politica-wrapper">
+    <h1>Política de Privacidade</h1>
+    <p class="politica-atualizado">Última atualização: 21 de julho de 2026</p>
+
+    <div class="politica-card">
+      <h2>1. Introdução</h2>
+      <p>
+        Esta Política de Privacidade descreve como o aplicativo <strong>Dois no Azul</strong>
+        ("nós", "aplicativo" ou "app"), desenvolvido por Abner Gomes, coleta, usa, armazena
+        e protege as informações dos usuários ("você"). Ao criar uma conta e usar o
+        aplicativo, você concorda com as práticas descritas aqui.
+      </p>
+    </div>
+
+    <div class="politica-card">
+      <h2>2. Quem é o responsável pelos seus dados</h2>
+      <p>
+        O Dois no Azul é desenvolvido e mantido por Abner Gomes, pessoa física, que atua
+        como responsável pelo tratamento dos dados coletados pelo aplicativo. Dúvidas ou
+        solicitações sobre seus dados podem ser enviadas para o e-mail de contato
+        informado na seção "Contato" abaixo.
+      </p>
+    </div>
+
+    <div class="politica-card">
+      <h2>3. Quais informações coletamos</h2>
+      <p>Para que o aplicativo funcione, coletamos e armazenamos:</p>
+      <ul>
+        <li><strong>Dados de cadastro:</strong> nome, e-mail, telefone e senha.</li>
+        <li><strong>Dados financeiros inseridos por você:</strong> gastos, despesas,
+          receitas, categorias, valores e datas que você cadastra manualmente para
+          acompanhar suas finanças.</li>
+        <li><strong>Dados de conta compartilhada (opcional):</strong> caso você vincule
+          uma conta de cônjuge/parceiro(a) através do recurso "Modo Casal", os dados
+          financeiros de ambas as contas passam a ser visíveis entre si, conforme você
+          mesmo autoriza dentro do app.</li>
+        <li><strong>Gênero/pronome:</strong> usado apenas para diferenciar visualmente,
+          dentro do próprio app, os lançamentos de cada pessoa quando duas contas estão
+          vinculadas no Modo Casal.</li>
+      </ul>
+      <p>
+        Não coletamos dados de localização, contatos do celular, câmera, microfone ou
+        qualquer informação do dispositivo além do estritamente necessário para o
+        funcionamento do app.
+      </p>
+    </div>
+
+    <div class="politica-card">
+      <h2>4. Como usamos suas informações</h2>
+      <ul>
+        <li>Autenticar seu acesso (login) e manter sua conta segura;</li>
+        <li>Exibir, calcular e organizar seus lançamentos financeiros (extrato, despesas,
+          receitas, gráficos e totais);</li>
+        <li>Permitir o compartilhamento de dados financeiros entre duas contas vinculadas
+          (Modo Casal), quando você optar por esse recurso;</li>
+        <li>Gerar exportações (Excel/PDF) do seu próprio extrato, a seu pedido;</li>
+        <li>Gerenciar seu período de teste gratuito e sua assinatura, quando aplicável.</li>
+      </ul>
+      <p>Não usamos seus dados para publicidade, e o aplicativo não exibe anúncios de terceiros.</p>
+    </div>
+
+    <div class="politica-card">
+      <h2>5. Compartilhamento de dados com terceiros</h2>
+      <p>
+        Não vendemos nem compartilhamos seus dados pessoais ou financeiros com
+        terceiros para fins de marketing ou publicidade. Seus dados podem ser
+        processados por provedores de infraestrutura (por exemplo, hospedagem de banco
+        de dados) estritamente para operar o aplicativo, e, quando o pagamento de
+        assinaturas for implementado, por um processador de pagamentos responsável
+        exclusivamente por processar a cobrança — nesse caso, dados de pagamento em si
+        (como número de cartão) são tratados diretamente pelo processador de pagamento,
+        não por nós.
+      </p>
+    </div>
+
+    <div class="politica-card">
+      <h2>6. Armazenamento e segurança</h2>
+      <p>
+        Seus dados são armazenados em um banco de dados na nuvem, protegido por
+        controles de acesso. Adotamos medidas razoáveis para proteger suas informações
+        contra acesso não autorizado, perda ou alteração indevida. Nenhum sistema,
+        porém, é 100% livre de riscos, e recomendamos o uso de uma senha exclusiva
+        para o aplicativo.
+      </p>
+    </div>
+
+    <div class="politica-card">
+      <h2>7. Retenção dos dados</h2>
+      <p>
+        Mantemos suas informações enquanto sua conta estiver ativa. Você pode solicitar
+        a exclusão da sua conta e dos dados associados a qualquer momento, diretamente
+        pelo app (em Configurações) ou entrando em contato conosco.
+      </p>
+    </div>
+
+    <div class="politica-card">
+      <h2>8. Seus direitos</h2>
+      <p>Você pode, a qualquer momento:</p>
+      <ul>
+        <li>Acessar e revisar os dados que você mesmo cadastrou no app;</li>
+        <li>Corrigir informações incorretas;</li>
+        <li>Solicitar a exclusão da sua conta e de todos os dados associados;</li>
+        <li>Revogar o compartilhamento de dados do Modo Casal a qualquer momento.</li>
+      </ul>
+      <p>
+        Esses direitos são assegurados pela Lei Geral de Proteção de Dados (LGPD —
+        Lei nº 13.709/2018).
+      </p>
+    </div>
+
+    <div class="politica-card">
+      <h2>9. Uso por menores de idade</h2>
+      <p>
+        O Dois no Azul não é direcionado a crianças e não deve ser utilizado por
+        menores de 18 anos sem supervisão de um responsável.
+      </p>
+    </div>
+
+    <div class="politica-card">
+      <h2>10. Alterações nesta política</h2>
+      <p>
+        Esta Política de Privacidade pode ser atualizada periodicamente para refletir
+        melhorias no aplicativo ou mudanças legais. A data da última atualização é
+        sempre exibida no topo desta página.
+      </p>
+    </div>
+
+    <div class="politica-card">
+      <h2>11. Contato</h2>
+      <p>
+        Dúvidas, solicitações sobre seus dados ou exclusão de conta podem ser enviadas
+        para: <a href="mailto:abwgomes@gmail.com">abwgomes@gmail.com</a>
+      </p>
+    </div>
+
+    <a class="politica-voltar" href="{{ url_for('gasto.login') }}">
+      &larr; Voltar para o login
+    </a>
+  </div>
+
+</body>
+</html>

@@ -531,3 +531,52 @@ body.theme-dark {
 .fa-lock {
   color: var(--dna-orange) !important;
 }
+
+/* ============================================================
+   MENSAGENS FLASH — aqui (comum.css) em vez de só no styles.css
+   do index, porque despesas/extrato passaram a usar flash() nas
+   rotas de editar/excluir (ex.: bloqueio de dono) e precisam de
+   onde mostrar isso, senão a mensagem fica "presa" na sessão do
+   Flask e aparece do nada na próxima tela que ler flashes (ex.:
+   o login).
+============================================================ */
+.flash-stack {
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.flash-banner {
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid var(--dna-border);
+  overflow: hidden;
+  max-height: 60px;
+  opacity: 1;
+  transition: opacity 0.4s ease, max-height 0.4s ease, padding 0.4s ease, margin 0.4s ease;
+}
+
+.flash-banner.flash-saindo {
+  opacity: 0;
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-width: 0;
+  margin: 0;
+}
+
+.flash-banner.flash-success {
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--dna-green);
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.flash-banner.flash-danger,
+.flash-banner.flash-error {
+  background: rgba(251, 146, 60, 0.12);
+  color: var(--dna-orange);
+  border-color: rgba(251, 146, 60, 0.35);
+}

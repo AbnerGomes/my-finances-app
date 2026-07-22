@@ -526,16 +526,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // mensagens flash (ex.: "Cônjuge cadastrado com sucesso!") somem sozinhas
-    // depois de alguns segundos, em vez de ficarem fixas no topo da tela
-    document.querySelectorAll('.flash-banner').forEach(function (banner) {
-        setTimeout(function () {
-            banner.classList.add('flash-saindo');
-            banner.addEventListener('transitionend', function () {
-                banner.remove();
-            }, { once: true });
-        }, 3000);
-    });
+    // mensagens flash somem sozinhas — ver auto-dismiss em comum.js
+    // (movido pra lá pois despesas/extrato também passaram a usá-las)
 
     // máscara de telefone no modal de cadastro do cônjuge
     const telefoneConjuge = document.getElementById('conjuge-telefone');
