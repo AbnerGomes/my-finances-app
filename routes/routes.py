@@ -23,13 +23,13 @@ despesa_bp = Blueprint('despesa', __name__)
 admin_bp = Blueprint('admin', __name__)
 
 mensagens_erro = [
-    "Senha ou usuario errado 🖕🏼 ",
+    "Usuario ou senha incorretos",
     "Verifique suas credenciais ⚠️",
-    "Cara, olha o que tu ta digitando 🤦🏽‍♂️",
-    "Acesso negado! você é gay 🏳️‍🌈",
-    "Acesso negado! você é gay 🏳️‍🌈",
-    "Acesso negado! você é gay 🏳️‍🌈",
-    "Mds, quem sabe clica em esqueci a senha 🤦🏽‍♂️",
+    #"Cara, olha o que tu ta digitando 🤦🏽‍♂️",
+    #"Acesso negado! você é gay 🏳️‍🌈",
+    #"Acesso negado! você é gay 🏳️‍🌈",
+    #"Acesso negado! você é gay 🏳️‍🌈",
+    #"Mds, quem sabe clica em esqueci a senha 🤦🏽‍♂️",
 ]
 
 #####ROTAS#####
