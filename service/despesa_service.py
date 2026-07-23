@@ -34,6 +34,29 @@ class DespesaService:
         conn.commit()
         conn.close()
 
+    def salvar_despesa_replicada(self, despesa, valor, mes_ano_inicial, categoria, usuario, tipo_despesa):
+        # despesa Fixa com "replicar pro resto do ano" marcado: cria uma
+        # linha pro mês selecionado e mais uma pra cada mês seguinte até
+        # dezembro daquele ano, pra não precisar cadastrar mês a mês.
+        usuario = self.get_usuario_by_name(usuario)
+
+        ano_str, mes_str = mes_ano_inicial.split('-')
+        ano = int(ano_str)
+        mes_inicial = int(mes_str)
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        for mes in range(mes_inicial, 13):
+            mes_ano = f"{ano}-{mes:02d}"
+            cursor.execute('''
+                INSERT INTO Despesas (despesa, valor, mes_ano, categoria, usuario, tipo_despesa)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            ''', (despesa, valor, mes_ano, categoria, usuario, tipo_despesa))
+
+        conn.commit()
+        conn.close()
+
 
     def busca_despesas(self,usuario,mes_ano,categoria,isCasal):
         usuario = self.get_usuario_by_name(usuario)
@@ -82,22 +105,39 @@ class DespesaService:
             cursor = conn.cursor()
 
             if novo_status == "Pago":
+                # marcar como paga também lança um gasto correspondente
+                # (mesma categoria/valor), pra já entrar no extrato do mês
                 cursor.execute(
-                    "UPDATE despesas SET status = %s, data_pagamento = CURRENT_DATE WHERE id = %s AND usuario = %s",
+                    """UPDATE despesas SET status = %s, data_pagamento = CURRENT_DATE
+                       WHERE id = %s AND usuario = %s
+                       RETURNING despesa, valor, categoria""",
                     (novo_status, id_despesa, usuario)
                 )
+                resultado = cursor.fetchone()
+                sucesso = resultado is not None
+
+                if sucesso:
+                    despesa_nome, valor, categoria = resultado
+                    cursor.execute(
+                        """INSERT INTO gastos (gasto, valor_gasto, data, categoria, usuario)
+                           VALUES (%s, %s, CURRENT_DATE, %s, %s)""",
+                        (despesa_nome, valor, categoria, usuario)
+                    )
             else:
                 cursor.execute(
                     "UPDATE despesas SET status = %s, data_pagamento = NULL WHERE id = %s AND usuario = %s",
                     (novo_status, id_despesa, usuario)
                 )
+                sucesso = cursor.rowcount > 0
 
-            sucesso = cursor.rowcount > 0
             conn.commit()
             return sucesso
         except Exception as e:
+            conn.rollback()
             print(f"Erro ao atualizar status: {e}")
             return False
+        finally:
+            conn.close()
 
 
     def editar_despesa(self,despesa,categoria,valor,id,usuario):
@@ -187,4 +227,34 @@ class DespesaService:
         conn.close()
 
         return total #> 0
+
+    def marcar_pago_se_corresponder(self, usuario, nome_gasto, valor, data_gasto):
+        # quando o usuário cadastra um gasto avulso cujo nome e valor batem
+        # com uma despesa do mesmo mês, entende que é o pagamento daquela
+        # despesa e marca ela como Paga automaticamente
+        usuario = self.get_usuario_by_name(usuario)
+        mes_ano = data_gasto[:7]  # 'YYYY-MM' a partir de 'YYYY-MM-DD'
+
+        try:
+            valor_float = float(valor)
+        except (TypeError, ValueError):
+            return False
+
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            """UPDATE despesas
+               SET status = 'Pago', data_pagamento = %s
+               WHERE usuario = %s
+               AND mes_ano = %s
+               AND status != 'Pago'
+               AND lower(despesa) = lower(%s)
+               AND valor = %s""",
+            (data_gasto, usuario, mes_ano, nome_gasto, valor_float)
+        )
+        sucesso = cursor.rowcount > 0
+        conn.commit()
+        conn.close()
+
+        return sucesso
 

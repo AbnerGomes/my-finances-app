@@ -65,6 +65,24 @@ function fecharModal(id) {
   document.getElementById(id).style.display = "none";
 }
 
+// ================= REPLICAR DESPESA FIXA =================
+// o checkbox "replicar para os demais meses do ano" só faz sentido pra
+// despesas do tipo Fixa (valor que não muda mês a mês)
+function atualizarOpcaoReplicar() {
+  const wrapper = document.getElementById("replicar-ano-wrapper");
+  if (!wrapper) return;
+
+  const fixaMarcada = document.querySelector('input[name="tipo_despesa"][value="Fixa"]:checked');
+
+  if (fixaMarcada) {
+    wrapper.style.display = "block";
+  } else {
+    wrapper.style.display = "none";
+    const checkbox = document.getElementById("replicar-ano");
+    if (checkbox) checkbox.checked = false;
+  }
+}
+
 // ================= SELETOR DE MÊS (calendário bonitinho, mesmo padrão
 // do seletor de data usado em extrato.html) =================
 const NOMES_MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
@@ -130,6 +148,8 @@ document.addEventListener('DOMContentLoaded', () => {
       //     }
       //   });
       // por enquanto sempre abrir
+      document.getElementById("form-cadastrar")?.reset();
+      atualizarOpcaoReplicar();
       abrirModal("modal-cadastrar");
     });
   }

@@ -134,12 +134,17 @@ def cadastrar_gasto():
         categoria = request.form['categoria']
         
         usuario = session['usuario']
-        
+
         # Salvar o gasto no banco
         sucesso = gasto_bp.gasto_service.salvar_gasto(gasto, valor, data, categoria,usuario)
-        #flash('Gasto cadastrado com sucesso!', 'success')  
 
-        return """<script>                    
+        # se o nome/valor bater com alguma despesa do mesmo mês, marca
+        # ela como paga automaticamente
+        despesa_bp.despesa_service.marcar_pago_se_corresponder(usuario, gasto, valor, data)
+
+        #flash('Gasto cadastrado com sucesso!', 'success')
+
+        return """<script>
                     window.location.href = '/extrato';
                 </script>"""
 
@@ -163,6 +168,10 @@ def cadastrar_gasto_rapido():
 
     try:
         gasto_bp.gasto_service.salvar_gasto(descricao, valor, hoje, categoria,usuario)
+
+        # se o nome/valor bater com alguma despesa do mesmo mês, marca
+        # ela como paga automaticamente
+        despesa_bp.despesa_service.marcar_pago_se_corresponder(usuario, descricao, valor, hoje)
 
         return jsonify({'sucesso': True})
 
@@ -504,16 +513,22 @@ def cadastrar_despesa():
     
     usuario = session['usuario']
     
+    replicar_ano = request.form.get('replicar_ano') == 'on'
+
     if tipo_despesa == 'Fixa':
         tipo_despesa = 'F'
     elif tipo_despesa == 'Variável':
         tipo_despesa = 'V'
     elif tipo_despesa == 'Exceção':
-        tipo_despesa = 'E' 
+        tipo_despesa = 'E'
 
-    # Salvar o gasto no banco
-    despesa_bp.despesa_service.salvar_despesa(despesa, valor, data, categoria,usuario,tipo_despesa)
-    #flash('Despesa cadastrada com sucesso!', 'success')  
+    # Salvar o gasto no banco (Fixa + "replicar" cria uma linha pro mês
+    # selecionado e mais uma pra cada mês seguinte até dezembro)
+    if tipo_despesa == 'F' and replicar_ano:
+        despesa_bp.despesa_service.salvar_despesa_replicada(despesa, valor, data, categoria, usuario, tipo_despesa)
+    else:
+        despesa_bp.despesa_service.salvar_despesa(despesa, valor, data, categoria,usuario,tipo_despesa)
+    #flash('Despesa cadastrada com sucesso!', 'success')
 
     return despesas()
 
