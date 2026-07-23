@@ -203,3 +203,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 3000);
   });
 });
+
+// ============================================================
+// dica de tutorial na primeira vez que o usuário abre cada tela —
+// some sozinha depois de fechada e nunca mais volta (localStorage)
+// ============================================================
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".tutorial-dica[data-tutorial]").forEach((dica) => {
+    const chave = `tutorial_visto_${dica.dataset.tutorial}`;
+    if (localStorage.getItem(chave)) return;
+
+    dica.classList.add("mostrar");
+
+    const fechar = dica.querySelector(".tutorial-dica-fechar");
+    if (fechar) {
+      fechar.addEventListener("click", () => {
+        localStorage.setItem(chave, "1");
+        dica.classList.remove("mostrar");
+      });
+    }
+  });
+});

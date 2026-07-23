@@ -284,6 +284,14 @@ class GastoService:
 
         return dados
 
+    def registrar_login(self, usuario_email):
+        # auditoria: guarda dia/hora de cada login bem-sucedido
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO log_login (usuario) VALUES (%s)", (usuario_email,))
+        conn.commit()
+        conn.close()
+
     def cadastrar_usuario(self, nome, email, telefone, senha, pronome):
         # cadastro público (tela de login -> "Criar conta"). Cria a conta
         # em AUTENTICACAO (login) e em usuarios (email/nome/pronome, usado

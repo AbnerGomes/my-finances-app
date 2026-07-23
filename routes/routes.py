@@ -65,9 +65,11 @@ def login_post():
         usuario_bd =  gasto_bp.gasto_service.validar_login(usuario, senha)
 
         if usuario_bd is not None:
-            
+
             session['usuario'] = usuario_bd
-            
+
+            gasto_bp.gasto_service.registrar_login(usuario)
+
             dados = gasto_bp.gasto_service.filtrarGastos('mesatual',usuario_bd,'N')
 
             total_gasto = sum([

@@ -580,3 +580,69 @@ body.theme-dark {
   color: var(--dna-orange);
   border-color: rgba(251, 146, 60, 0.35);
 }
+
+/* ============================================================
+   DICA DE TUTORIAL (primeiro acesso a cada tela) — visual leve,
+   dentro do fluxo normal da página (não bloqueia nada). Some
+   sozinha ao clicar no X e nunca mais aparece pra quem já viu
+   (guardado no localStorage do navegador).
+============================================================ */
+.tutorial-dica {
+  display: none;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(59, 130, 246, 0.10);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+
+.tutorial-dica.mostrar {
+  display: flex;
+  animation: tutorialApareceu 0.3s ease;
+}
+
+@keyframes tutorialApareceu {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tutorial-dica-icone {
+  color: var(--primary-light);
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.tutorial-dica p {
+  flex: 1;
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--dna-text-dim);
+}
+
+.tutorial-dica-fechar {
+  background: none;
+  border: none;
+  color: var(--dna-text-dim);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.tutorial-dica-fechar .material-icons {
+  font-size: 18px;
+}
+
+.tutorial-dica-fechar:hover {
+  color: var(--dna-text);
+}

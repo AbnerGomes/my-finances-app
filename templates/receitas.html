@@ -105,6 +105,18 @@
       <span class="sub">Controle mensal de entradas</span>
     </div>
 
+    <!-- dica de tutorial (primeiro acesso) -->
+    <div class="tutorial-dica" data-tutorial="receitas">
+      <span class="material-icons tutorial-dica-icone">lightbulb</span>
+      <p>
+        Aqui ficam os recebimentos do mês selecionado. Use esta tela para
+        cadastrar e visualizar suas receitas.
+      </p>
+      <button type="button" class="tutorial-dica-fechar" aria-label="Entendi">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
     <!-- MODO INDIVIDUAL/CASAL (compacto) -->
     <div class="modo-compacto-wrapper" role="tablist" aria-label="Modo de visualização">
       <button type="button" class="modo-pill-compacta {{ 'active' if isCasal != 'S' else '' }}" data-modo="N" onclick="changeMode('N')">
