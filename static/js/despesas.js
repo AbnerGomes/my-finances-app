@@ -149,6 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
       //   });
       // por enquanto sempre abrir
       document.getElementById("form-cadastrar")?.reset();
+      const selectCadastro = document.getElementById('cadastrar-categoria-select');
+      if (selectCadastro) definirCategoriaSelecionada('cadastrar', selectCadastro.value);
       atualizarOpcaoReplicar();
       abrirModal("modal-cadastrar");
     });
@@ -165,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 👉 EDITAR
   document.querySelectorAll(".edit-icon").forEach(btn => {
     btn.addEventListener("click", () => {
-      document.getElementById('editar-categoria').value = btn.dataset.categoria;
+      definirCategoriaSelecionada('editar', btn.dataset.categoria);
       document.getElementById('editar-descricao').value = btn.dataset.descricao;
       document.getElementById('editar-valor').value = btn.dataset.valor;
       document.getElementById('editar-id').value = btn.dataset.id;

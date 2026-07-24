@@ -208,6 +208,74 @@ document.addEventListener("DOMContentLoaded", () => {
 // dica de tutorial na primeira vez que o usuário abre cada tela —
 // some sozinha depois de fechada e nunca mais volta (localStorage)
 // ============================================================
+// ============================================================
+// Seletor de categoria com opção de criar categoria própria (usado nos
+// modais de cadastrar/editar despesa e gasto). O <select> visível só
+// ajuda a escolher entre as sugestões + "criar nova"; quem realmente
+// vai no <form> é o campo hidden #<prefixo>-categoria — a coluna
+// "categoria" no banco é texto livre, então uma categoria nova digitada
+// pelo usuário já funciona sem precisar de nenhuma tabela nova.
+// ============================================================
+const CATEGORIA_NOVA_VALOR = "__nova__";
+
+function configurarSeletorCategoria(prefixo) {
+  const select = document.getElementById(`${prefixo}-categoria-select`);
+  const hidden = document.getElementById(`${prefixo}-categoria`);
+  const wrapper = document.getElementById(`${prefixo}-nova-categoria-wrapper`);
+  const input = document.getElementById(`${prefixo}-nova-categoria`);
+  if (!select || !hidden) return;
+
+  select.addEventListener("change", () => {
+    if (select.value === CATEGORIA_NOVA_VALOR) {
+      if (wrapper) wrapper.style.display = "flex";
+      hidden.value = input ? input.value.trim() : "";
+      if (input) input.focus();
+    } else {
+      if (wrapper) wrapper.style.display = "none";
+      hidden.value = select.value;
+    }
+  });
+
+  if (input) {
+    input.addEventListener("input", () => {
+      hidden.value = input.value.trim();
+    });
+  }
+
+  // estado inicial (primeira opção do select)
+  hidden.value = select.value;
+}
+
+// Chamado ao abrir o modal de edição, com a categoria já cadastrada do
+// item clicado. Se essa categoria não estiver entre as opções do select
+// (ex.: categoria própria criada há pouco), cai no modo "nova categoria"
+// com o texto já preenchido, em vez de simplesmente não selecionar nada.
+function definirCategoriaSelecionada(prefixo, categoria) {
+  const select = document.getElementById(`${prefixo}-categoria-select`);
+  const hidden = document.getElementById(`${prefixo}-categoria`);
+  const wrapper = document.getElementById(`${prefixo}-nova-categoria-wrapper`);
+  const input = document.getElementById(`${prefixo}-nova-categoria`);
+  if (!hidden) return;
+
+  hidden.value = categoria || "";
+  if (!select) return;
+
+  const opcaoExiste = Array.from(select.options).some((opt) => opt.value === categoria);
+
+  if (opcaoExiste) {
+    select.value = categoria;
+    if (wrapper) wrapper.style.display = "none";
+  } else {
+    select.value = CATEGORIA_NOVA_VALOR;
+    if (wrapper) wrapper.style.display = "flex";
+    if (input) input.value = categoria || "";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  ["cadastrar", "editar"].forEach(configurarSeletorCategoria);
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".tutorial-dica[data-tutorial]").forEach((dica) => {
     const chave = `tutorial_visto_${dica.dataset.tutorial}`;

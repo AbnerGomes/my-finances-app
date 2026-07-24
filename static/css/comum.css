@@ -498,6 +498,16 @@ body.theme-dark {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
+/* input que aparece ao escolher "+ Criar nova categoria" no select de
+   categoria (despesas.html e extrato.html, cadastro/edição) */
+.nova-categoria-wrapper {
+  margin-top: -4px;
+}
+
+.nova-categoria-wrapper input {
+  border-color: var(--primary-light) !important;
+}
+
 #modal-editar .botao-salvar,
 #modal-confirmar-exclusao .botao-salvar,
 #modal-cadastrar .botao-salvar,

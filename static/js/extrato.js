@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.querySelector('input[name="data_inicio"]').value = startDate.format('YYYY-MM-DD');
                 document.querySelector('input[name="data_fim"]').value = endDate.format('YYYY-MM-DD');
                 pickerTexto.textContent = `${startDate.format('DD/MM/YYYY')} até ${endDate.format('DD/MM/YYYY')}`;
+                submeterFiltroExtrato();
             });
         }
     });
@@ -116,7 +117,131 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+    // ================= BUSCA POR NOME =================
+    // filtra os cards já carregados na tela pelo texto digitado, sem
+    // recarregar a página (igual a apps bancários: busca instantânea)
+    const campoBusca = document.getElementById('buscaDescricao');
+    if (campoBusca) {
+        campoBusca.addEventListener('input', (e) => filtrarGastosPorTexto(e.target.value));
+    }
+
+    // ================= ORDENAR =================
+    const ordenarBtn = document.getElementById('ordenar-btn');
+    const painelOrdenar = document.getElementById('painelOrdenar');
+
+    if (ordenarBtn && painelOrdenar) {
+        ordenarBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            painelOrdenar.classList.toggle('show');
+        });
+
+        painelOrdenar.querySelectorAll('.ordenar-opcao').forEach((opcao) => {
+            opcao.addEventListener('click', () => {
+                painelOrdenar.querySelectorAll('.ordenar-opcao').forEach((o) => o.classList.remove('active'));
+                opcao.classList.add('active');
+                aplicarOrdenacaoGastos(opcao.dataset.ordenar);
+                painelOrdenar.classList.remove('show');
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (
+                painelOrdenar.classList.contains('show') &&
+                !painelOrdenar.contains(e.target) &&
+                e.target !== ordenarBtn &&
+                !ordenarBtn.contains(e.target)
+            ) {
+                painelOrdenar.classList.remove('show');
+            }
+        });
+    }
 });
+
+// Filtra os .gasto-card pelo texto digitado (nome/descrição do gasto).
+// Funciona independente da ordenação atual (agrupado por data ou não) —
+// opera direto em cima de cada card e, se os cabeçalhos "📅 data" ainda
+// estiverem no DOM (ordenação padrão "Mais recentes"), some com os que
+// ficarem sem nenhum gasto visível embaixo.
+function filtrarGastosPorTexto(termo) {
+    const termoNorm = termo.trim().toLowerCase();
+    const cards = document.querySelectorAll('.gasto-card');
+
+    cards.forEach((card) => {
+        const nome = card.querySelector('.gasto-descricao')?.textContent.toLowerCase() || '';
+        const visivel = !termoNorm || nome.includes(termoNorm);
+        card.style.display = visivel ? '' : 'none';
+    });
+
+    document.querySelectorAll('.data-grupo').forEach((grupo) => {
+        let algumVisivel = false;
+        let el = grupo.nextElementSibling;
+        while (el && el.classList.contains('gasto-card')) {
+            if (el.style.display !== 'none') algumVisivel = true;
+            el = el.nextElementSibling;
+        }
+        grupo.style.display = algumVisivel ? '' : 'none';
+    });
+
+    const lista = document.querySelector('.lista-gastos');
+    let vazio = document.getElementById('buscaVazia');
+    const algumCardVisivel = Array.from(cards).some((c) => c.style.display !== 'none');
+
+    if (!algumCardVisivel && termoNorm && lista) {
+        if (!vazio) {
+            vazio = document.createElement('div');
+            vazio.id = 'buscaVazia';
+            vazio.className = 'busca-vazia';
+            lista.appendChild(vazio);
+        }
+        vazio.textContent = `Nenhum gasto encontrado para "${termo.trim()}"`;
+    } else if (vazio) {
+        vazio.remove();
+    }
+}
+
+// Reordena os .gasto-card já carregados na tela (sem ir ao backend).
+// "Mais recentes" restaura a ordem original vinda do servidor (agrupada
+// por data, que já é do mais recente pro mais antigo); as demais opções
+// removem os cabeçalhos de data (não fazem sentido fora da ordem
+// cronológica) e reordenam os cards pelo critério escolhido.
+function aplicarOrdenacaoGastos(criterio) {
+    const lista = document.querySelector('.lista-gastos');
+    if (!lista) return;
+
+    if (!window._gastosOrdemOriginal) {
+        window._gastosOrdemOriginal = Array.from(lista.children);
+    }
+
+    if (criterio === 'recentes') {
+        window._gastosOrdemOriginal.forEach((node) => lista.appendChild(node));
+        return;
+    }
+
+    window._gastosOrdemOriginal
+        .filter((node) => node.classList.contains('data-grupo'))
+        .forEach((node) => node.remove());
+
+    const cards = Array.from(lista.querySelectorAll('.gasto-card'));
+
+    const parseDataBr = (str) => {
+        const [dia, mes, ano] = (str || '').split('/');
+        return new Date(Number(ano), Number(mes) - 1, Number(dia));
+    };
+
+    const comparadores = {
+        antigos: (a, b) => parseDataBr(a.dataset.data) - parseDataBr(b.dataset.data),
+        'maior-valor': (a, b) => parseFloat(b.dataset.valor) - parseFloat(a.dataset.valor),
+        'menor-valor': (a, b) => parseFloat(a.dataset.valor) - parseFloat(b.dataset.valor),
+        nome: (a, b) => (a.querySelector('.gasto-descricao')?.textContent || '')
+            .localeCompare(b.querySelector('.gasto-descricao')?.textContent || '', 'pt-BR'),
+    };
+
+    const comparador = comparadores[criterio];
+    if (comparador) cards.sort(comparador);
+
+    cards.forEach((card) => lista.appendChild(card));
+}
 
 
 //modal 
@@ -176,7 +301,7 @@ document.addEventListener('click', function (event) {
     }
 
 
-      document.getElementById('editar-categoria').value = categoria;
+      definirCategoriaSelecionada('editar', categoria);
       document.getElementById('editar-descricao').value = descricao;
       document.getElementById('editar-valor').value = valor;
   
@@ -256,6 +381,22 @@ document.addEventListener('click', function (event) {
   
 });
 
+
+// Envia o formulário de filtro programaticamente (troca de período ou de
+// categoria) — usa requestSubmit() em vez de submit() porque submit()
+// NÃO dispara o evento 'submit' do form, e é nesse evento aqui embaixo
+// que o filtro de período/categoria aprende se a visão é Individual ou
+// Casal (isCasal); só form.submit() faria a página recarregar perdendo
+// esse parâmetro.
+function submeterFiltroExtrato() {
+    const form = document.getElementById('filtro-form');
+    if (!form) return;
+    if (form.requestSubmit) {
+        form.requestSubmit();
+    } else {
+        form.submit();
+    }
+}
 
 const form = document.getElementById('filtro-form');
 form.addEventListener('submit', function(e) {

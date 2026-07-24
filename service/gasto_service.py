@@ -2,6 +2,7 @@ import sqlite3
 import os
 from datetime import datetime, timedelta
 from .db_service import get_connection
+from .categorias import CATEGORIAS_PADRAO, combinar_categorias
 
 class GastoService:
 
@@ -66,19 +67,7 @@ class GastoService:
 
         # Se não houver dados, retorna uma lista com valores padrão
         if not dados:
-            dados = [
-                ('Alimentação', 0),
-                ('Ifood', 0),
-                ('Saúde', 0),
-                ('Mobilidade', 0),
-                ('Entretenimento', 0),
-                ('Moradia', 0),
-                ('Outros', 0),
-                ('Dívidas', 0),
-                ('Educação', 0),
-                ('Pets', 0),
-                ('Investimentos', 0)
-            ]
+            dados = [(categoria, 0) for categoria in CATEGORIAS_PADRAO]
 
         return dados
 
@@ -368,15 +357,20 @@ class GastoService:
 
         conn = get_connection()
         c = conn.cursor()
-                
+
         # Verifica se o usuário já existe
         c.execute("SELECT distinct categoria FROM gastos WHERE usuario = %s", (usuario,))
-        
-        dados = c.fetchall()   
+
+        dados = c.fetchall()
         conn.close()
 
         # transforma [('Alimentação',), ('Saúde',)] em ['Alimentação', 'Saúde']
-        return [row[0] for row in dados]     
+        return [row[0] for row in dados]
+
+    def get_categorias_completas(self, usuario):
+        """Categorias padrão + as que o usuário já usou (inclui categorias
+        próprias/customizadas que ele criou digitando um nome novo)."""
+        return combinar_categorias(self.get_categorias_disponiveis(usuario))
 
 
     def editar_gasto(self,gasto,categoria,valor,data,id,usuario):

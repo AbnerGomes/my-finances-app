@@ -16,6 +16,8 @@ from service.despesa_service import DespesaService
 
 from service.admin_service import AdminService
 
+from service.categorias import CATEGORIAS_PADRAO
+
 import locale
 
 gasto_bp = Blueprint('gasto', __name__)
@@ -101,7 +103,7 @@ def index():
     dados = gasto_bp.gasto_service.filtrarGastos('mesatual',usuario,'N') #verifica_dados_bd(usuario)
 
     if not dados:
-        dados = [('Alimentação', 0), ('Ifood', 0), ('Saúde', 0), ('Mobilidade', 0), ('Entretenimento', 0), ('Moradia', 0), ('Outros', 0), ('Dívidas', 0), ('Educação', 0), ('Pets', 0), ('Investimentos', 0)]
+        dados = [(categoria, 0) for categoria in CATEGORIAS_PADRAO]
 
     total_gasto = sum([
     float(item['valor']) if isinstance(item, dict) and 'valor' in item else float(item[0])
@@ -224,8 +226,11 @@ def extrato():
        gastos_agrupados[data].append(gasto)
 
 
-    # lista de categorias
+    # lista de categorias (filtro só mostra categorias já usadas pelo usuário)
     categorias = gasto_bp.gasto_service.get_categorias_disponiveis(usuario)
+
+    # categorias padrão + próprias (usadas nos selects de cadastrar/editar gasto)
+    categorias_completas = gasto_bp.gasto_service.get_categorias_completas(usuario)
 
     #gastos_pagina = gastos[start:end]
 
@@ -255,6 +260,7 @@ def extrato():
         isCasal=isCasal,
         temConjuge=tem_conjuge,
         categorias=categorias,
+        categorias_completas=categorias_completas,
         acoes=acoes
     )
 
@@ -462,6 +468,8 @@ def despesas():
     if isCasal is None:
         isCasal ='N'
 
+    categorias_completas = despesa_bp.despesa_service.get_categorias_completas(usuario)
+
     return render_template(
         'despesas.html',
         despesas=despesas,
@@ -470,7 +478,8 @@ def despesas():
         isCasal=isCasal,
         temConjuge=tem_conjuge,
         somaDespesas=soma_despesas,
-        temPendencias=tem_pendencias
+        temPendencias=tem_pendencias,
+        categorias_completas=categorias_completas
     )
 
 @despesa_bp.route('/atualizar_status', methods=['POST'])

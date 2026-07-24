@@ -95,21 +95,77 @@ body{
   white-space: nowrap;
 }
 
-/* linha de baixo do filtro: categoria + botão de busca */
-.filtro-linha-inferior {
+/* barra de busca — pílula arredondada com lupa, estilo app bancário */
+.busca-pill {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  background: var(--dna-card-soft);
+  border: 1px solid var(--dna-border);
+  border-radius: 999px;
+  padding: 11px 16px;
+  margin-bottom: 10px;
+  transition: border-color 0.15s ease;
+}
+
+.busca-pill:focus-within {
+  border-color: var(--primary);
+}
+
+.busca-pill .material-icons {
+  font-size: 20px;
+  color: var(--dna-text-dim);
+  flex-shrink: 0;
+}
+
+.busca-pill input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--dna-text);
+  font-size: 14px;
+}
+
+.busca-pill input::placeholder {
+  color: var(--dna-text-faint);
+}
+
+/* linha de filtros: Ordenar | Período | Categoria — rola na horizontal
+   se não couber (telas bem pequenas), sem quebrar layout */
+.filtros-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.filtros-row::-webkit-scrollbar {
+  display: none;
+}
+
+.filtro-dropdown-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 108px;
+}
+
+.filtros-row .filtro-periodo-btn {
+  width: auto;
+  flex: 1;
+  min-width: 108px;
 }
 
 .filtro-select {
   flex: 1;
-  min-width: 0;
-  padding: 9px 14px;
+  min-width: 108px;
+  padding: 10px 14px;
   border: 1px solid var(--dna-border);
   border-radius: 999px;
   background-color: var(--dna-card-soft);
   font-size: 13px;
+  font-weight: 600;
   color: var(--dna-text);
   transition: border-color 0.15s ease;
 }
@@ -119,33 +175,58 @@ body{
   outline: none;
 }
 
-.filtro-btn-buscar {
-  flex-shrink: 0;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: none;
+/* painel flutuante do botão "Ordenar" */
+.painel-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 168px;
+  background: var(--dna-card);
+  border: 1px solid var(--dna-border);
+  border-radius: 14px;
+  padding: 6px;
+  box-shadow: 0 20px 45px rgba(3, 7, 18, 0.55);
+  z-index: 20;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.painel-dropdown.show {
+  display: flex;
+}
+
+.ordenar-opcao {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, var(--primary-light), var(--primary));
-  color: #fff;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--dna-text-dim);
+  font-size: 13px;
+  text-align: left;
+  padding: 9px 10px;
+  border-radius: 9px;
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(59, 130, 246, 0.35);
-  transition: transform 0.15s ease, filter 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
-.filtro-btn-buscar:hover {
-  filter: brightness(1.08);
-  transform: translateY(-1px);
+.ordenar-opcao:hover {
+  background: var(--dna-card-soft);
 }
 
-.filtro-btn-buscar:active {
-  transform: scale(0.92);
+.ordenar-opcao.active {
+  color: var(--primary-light);
+  background: var(--dna-card-soft);
+  font-weight: 600;
 }
 
-.filtro-btn-buscar .material-icons {
-  font-size: 18px;
+/* mensagem quando a busca não encontra nada */
+.busca-vazia {
+  text-align: center;
+  color: var(--dna-text-dim);
+  font-size: 13px;
+  padding: 28px 12px;
 }
 
 
@@ -566,6 +647,11 @@ body {
 
   white-space: nowrap;
   z-index: 1;
+
+  /* cor neutra padrão — categorias sem uma cor própria abaixo (ex.:
+     categorias criadas pelo usuário) caem aqui automaticamente */
+  background: var(--dna-card-soft);
+  color: var(--dna-text-dim);
 }
 
 .gasto-categoria {
@@ -578,6 +664,7 @@ body {
 }
 
 .categoria-Saude { background: rgba(34,197,94,0.15); color: #22c55e; }
+.categoria-SaudeeBeleza { background: rgba(34,197,94,0.15); color: #22c55e; }
 .categoria-Moradia { background: rgba(59,130,246,0.15); color: #3b82f6; }
 .categoria-Alimentação { background: rgba(234,179,8,0.15); color: #eab308; }
 .categoria-Ifood { background: rgba(245, 158, 11, 0.15); color: #d97706; }
@@ -585,6 +672,7 @@ body {
 .categoria-Mobilidade { background: rgba(113, 150, 253, 0.15); color: #2618ee; }
 .categoria-Outros { background: rgba(86, 243, 243, 0.15); color: #55e4f7; }
 .categoria-Entretenimento { background: rgba(168,85,247,0.15); color: #a855f7; }
+.categoria-EntretenimentoeLazer { background: rgba(168,85,247,0.15); color: #a855f7; }
 .categoria-Educação { background: rgba(168,85,247,0.15); color: #e69e34; }
 .categoria-Pets {
   background: rgba(139, 69, 19, 0.15);
@@ -593,6 +681,10 @@ body {
 .categoria-Investimentos {
   background: rgba(22, 163, 74, 0.15);
   color: #16A34A;
+}
+.categoria-Telefonia {
+  background: rgba(56, 189, 248, 0.15);
+  color: #0ea5e9;
 }
 
 .filtro-card {

@@ -214,7 +214,7 @@
       </div>
 
       <!-- CENTRO (CATEGORIA COM COR) -->
-      <div class="categoria-badge categoria-{{ despesa[0] }}">
+      <div class="categoria-badge categoria-{{ despesa[0] | replace(' ', '') }}" data-categoria="{{ despesa[0] }}">
         {{ despesa[0] }}
       </div>
 
@@ -282,22 +282,17 @@
     <h3>Editar Despesa</h3>
     <form id="form-editar" method="POST" action="{{ url_for('despesa.editar_despesa') }}">
 
-      <label for="editar-categoria">Categoria:</label>
-      <!-- <input type="text" name="categoria" id="editar-categoria" required> -->
-      <select name="categoria" id="editar-categoria">
-
-        <option value="Alimentação">Alimentação</option>
-        <option value="Ifood">Ifood</option>
-        <option value="Saúde">Saúde</option>
-        <option value="Mobilidade">Mobilidade</option>
-        <option value="Entretenimento">Entretenimento</option>
-        <option value="Moradia">Moradia</option>
-        <option value="Outros">Outros</option>
-        <option value="Dívidas">Dívidas</option>
-        <option value="Educação">Educação</option>
-        <option value="Pets">Pets</option>
-        <option value="Investimentos">Investimentos</option>
-    </select>
+      <label for="editar-categoria-select">Categoria:</label>
+      <select id="editar-categoria-select">
+        {% for cat in categorias_completas %}
+        <option value="{{ cat }}">{{ cat }}</option>
+        {% endfor %}
+        <option value="__nova__">+ Criar nova categoria</option>
+      </select>
+      <div id="editar-nova-categoria-wrapper" class="nova-categoria-wrapper" style="display:none;">
+        <input type="text" id="editar-nova-categoria" placeholder="Nome da nova categoria" maxlength="30">
+      </div>
+      <input type="hidden" name="categoria" id="editar-categoria">
 
       <label for="editar-descricao">Descrição:</label>
       <input type="text" name="despesa" id="editar-descricao" required>
@@ -342,22 +337,17 @@
     <input type="hidden" name="mes_ano" id="cadastrar-data" value="{{ mes_ano }}">
 
 
-      <label for="cadastrar-categoria">Categoria:</label>
-      <!-- <input type="text" name="categoria" id="cadastrar-categoria" required> -->
-      <select name="categoria" id="cadastrar-categoria">
-
-          <option value="Alimentação">Alimentação</option>
-          <option value="Ifood">Ifood</option>
-          <option value="Saúde">Saúde</option>
-          <option value="Mobilidade">Mobilidade</option>
-          <option value="Entretenimento">Entretenimento</option>
-          <option value="Moradia">Moradia</option>
-          <option value="Outros">Outros</option>
-          <option value="Dívidas">Dívidas</option>
-          <option value="Educação">Educação</option>
-          <option value="Pets">Pets</option>
-          <option value="Investimentos">Investimentos</option>
+      <label for="cadastrar-categoria-select">Categoria:</label>
+      <select id="cadastrar-categoria-select">
+          {% for cat in categorias_completas %}
+          <option value="{{ cat }}">{{ cat }}</option>
+          {% endfor %}
+          <option value="__nova__">+ Criar nova categoria</option>
       </select>
+      <div id="cadastrar-nova-categoria-wrapper" class="nova-categoria-wrapper" style="display:none;">
+        <input type="text" id="cadastrar-nova-categoria" placeholder="Nome da nova categoria" maxlength="30">
+      </div>
+      <input type="hidden" name="categoria" id="cadastrar-categoria">
 
        <!-- Tipo de gasto (Radio Buttons em linha) -->
        <label for="cadastrar-tipo">Tipo Despesa:</label>

@@ -543,6 +543,10 @@ form input[type="radio"] {
   font-size: 10px;
   font-weight: 600;
   white-space: nowrap;
+  /* cor neutra padrão — categorias sem uma cor própria abaixo (ex.:
+     categorias criadas pelo usuário) caem aqui automaticamente */
+  background: var(--dna-card-soft);
+  color: var(--dna-text-dim);
 }
 
 .despesa-topo .direita {
@@ -557,7 +561,7 @@ form input[type="radio"] {
 
 /* categorias — cores próprias mantidas para diferenciação visual,
    ajustadas para bom contraste sobre o card escuro */
-.categoria-Saúde {
+.categoria-SaúdeeBeleza {
   background: rgba(34, 197, 94, 0.18);
   color: #4ade80;
 }
@@ -592,7 +596,7 @@ form input[type="radio"] {
   color: #67e8f9;
 }
 
-.categoria-Entretenimento {
+.categoria-EntretenimentoeLazer {
   background: rgba(168, 85, 247, 0.18);
   color: #c084fc;
 }
@@ -610,6 +614,11 @@ form input[type="radio"] {
 .categoria-Investimentos {
   background: rgba(22, 163, 74, 0.2);
   color: #4ade80;
+}
+
+.categoria-Telefonia {
+  background: rgba(56, 189, 248, 0.18);
+  color: #38bdf8;
 }
 
 .status-pago {

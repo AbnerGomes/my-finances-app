@@ -131,20 +131,41 @@
   {% endif %}
 </div>
 
-<!-- Filtro -->
+<!-- Busca + filtros -->
 <form method="GET" action="{{ url_for('gasto.extrato') }}" class="filtro-card" id="filtro-form">
 
-  <button type="button" id="periodo-picker" class="filtro-periodo-btn">
-    <span class="material-icons">calendar_month</span>
-    <span id="periodo-picker-texto">Selecionar período</span>
-  </button>
+  <div class="busca-pill">
+    <span class="material-icons">search</span>
+    <input type="text" id="buscaDescricao" placeholder="Buscar pelo nome do gasto" autocomplete="off">
+  </div>
 
   <input type="hidden" id="data_inicio" name="data_inicio" value="{{ data_inicio }}">
   <input type="hidden" id="data_fim" name="data_fim" value="{{ data_fim }}">
 
-  <div class="filtro-linha-inferior">
-    <select name="categoria" class="filtro-select">
-        <option value="Todas">Todas</option>
+  <div class="filtros-row">
+
+    <div class="filtro-dropdown-wrapper">
+      <button type="button" id="ordenar-btn" class="filtro-periodo-btn">
+        <span class="material-icons">swap_vert</span>
+        <span>Ordenar</span>
+      </button>
+
+      <div id="painelOrdenar" class="painel-dropdown">
+        <button type="button" class="ordenar-opcao active" data-ordenar="recentes">Mais recentes</button>
+        <button type="button" class="ordenar-opcao" data-ordenar="antigos">Mais antigos</button>
+        <button type="button" class="ordenar-opcao" data-ordenar="maior-valor">Maior valor</button>
+        <button type="button" class="ordenar-opcao" data-ordenar="menor-valor">Menor valor</button>
+        <button type="button" class="ordenar-opcao" data-ordenar="nome">Nome (A–Z)</button>
+      </div>
+    </div>
+
+    <button type="button" id="periodo-picker" class="filtro-periodo-btn">
+      <span class="material-icons">calendar_month</span>
+      <span id="periodo-picker-texto">Período</span>
+    </button>
+
+    <select name="categoria" id="categoria-select" class="filtro-select" onchange="submeterFiltroExtrato()">
+        <option value="Todas">Todas categorias</option>
         {% for cat in categorias %}
             <option value="{{ cat }}" {% if request.args.get('categoria') == cat %}selected{% endif %}>
                 {{ cat }}
@@ -152,9 +173,6 @@
         {% endfor %}
     </select>
 
-    <button type="submit" class="filtro-btn-buscar" aria-label="Filtrar">
-      <span class="material-icons">search</span>
-    </button>
   </div>
 
 </form>
@@ -184,13 +202,13 @@
     <div class="data-grupo">📅 {{ data }}</div>
   
     {% for gasto in lista %}
-      <div class="gasto-card {{ 'genero-masculino' if gasto[5] == 'H' else 'genero-feminino' }}" data-id="{{ gasto[4] }}">
+      <div class="gasto-card {{ 'genero-masculino' if gasto[5] == 'H' else 'genero-feminino' }}" data-id="{{ gasto[4] }}" data-valor="{{ gasto[2] }}" data-data="{{ gasto[3] }}">
         
         <div class="gasto-info">
   
           <div class="gasto-descricao">{{ gasto[1] }}</div>
         
-          <div class="gasto-categoria categoria-{{ gasto[0]|replace(' ', '')|replace('í','i')|replace('ú','u') }}">
+          <div class="gasto-categoria categoria-{{ gasto[0]|replace(' ', '')|replace('í','i')|replace('ú','u') }}" data-categoria="{{ gasto[0] }}">
             {{ gasto[0] }}
           </div>
         
@@ -269,13 +287,14 @@
                {% if acao[2] == 'Mobilidade' %} 🚗
                {% elif acao[2] == 'Alimentação' %} 🍽️
                {% elif acao[2] == 'Ifood' %} 🍕
-               {% elif acao[2] == 'Saúde' %} 🏥
+               {% elif acao[2] in ('Saúde e Beleza', 'Saúde') %} 🏥
                {% elif acao[2] == 'Moradia' %} 🏠
-               {% elif acao[2] == 'Entretenimento' %} 🎮
+               {% elif acao[2] in ('Entretenimento e Lazer', 'Entretenimento') %} 🎮
                {% elif acao[2] == 'Educação' %} 📚
                {% elif acao[2] == 'Dívidas' %} 💳
                {% elif acao[2] == 'Pets' %} 🐶
                {% elif acao[2] == 'Investimentos' %} 💰
+               {% elif acao[2] == 'Telefonia' %} 📱
                {% else %} 💸
                {% endif %}
              </span>
@@ -351,22 +370,18 @@
         </button>
         <input type="hidden" name="data" id="editar-data">
   
-        <label for="editar-categoria">Categoria:</label>
-        <!-- <input type="text" name="categoria" id="editar-categoria" required> -->
-        <select name="categoria" id="editar-categoria">
-
-            <option value="Alimentação">Alimentação</option>
-            <option value="Ifood">Ifood</option>
-            <option value="Saúde">Saúde</option>
-            <option value="Mobilidade">Mobilidade</option>
-            <option value="Entretenimento">Entretenimento</option>
-            <option value="Moradia">Moradia</option>
-            <option value="Outros">Outros</option>
-            <option value="Dívidas">Dívidas</option>
-            <option value="Educação">Educação</option>
-            <option value="Pets">Pets</option>
-            <option value="Investimentos">Investimentos</option>
+        <label for="editar-categoria-select">Categoria:</label>
+        <select id="editar-categoria-select">
+            {% for cat in categorias_completas %}
+            <option value="{{ cat }}">{{ cat }}</option>
+            {% endfor %}
+            <option value="__nova__">+ Criar nova categoria</option>
         </select>
+        <div id="editar-nova-categoria-wrapper" class="nova-categoria-wrapper" style="display:none;">
+          <input type="text" id="editar-nova-categoria" placeholder="Nome da nova categoria" maxlength="30">
+        </div>
+        <input type="hidden" name="categoria" id="editar-categoria">
+
         <label for="editar-descricao">Descrição:</label>
         <input type="text" name="gasto" id="editar-descricao" required>
   
@@ -407,22 +422,18 @@
         </button>
         <input type="hidden" name="data" id="cadastrar-data">
   
-        <label for="cadastrar-categoria">Categoria:</label>
-        <!-- <input type="text" name="categoria" id="cadastrar-categoria" required> -->
-        <select name="categoria" id="cadastrar-categoria">
-
-            <option value="Alimentação">Alimentação</option>
-            <option value="Ifood">Ifood</option>
-            <option value="Saúde">Saúde</option>
-            <option value="Mobilidade">Mobilidade</option>
-            <option value="Entretenimento">Entretenimento</option>
-            <option value="Moradia">Moradia</option>
-            <option value="Outros">Outros</option>
-            <option value="Dívidas">Dívidas</option>
-            <option value="Educação">Educação</option>
-            <option value="Pets">Pets</option>
-            <option value="Investimentos">Investimentos</option>
+        <label for="cadastrar-categoria-select">Categoria:</label>
+        <select id="cadastrar-categoria-select">
+            {% for cat in categorias_completas %}
+            <option value="{{ cat }}">{{ cat }}</option>
+            {% endfor %}
+            <option value="__nova__">+ Criar nova categoria</option>
         </select>
+        <div id="cadastrar-nova-categoria-wrapper" class="nova-categoria-wrapper" style="display:none;">
+          <input type="text" id="cadastrar-nova-categoria" placeholder="Nome da nova categoria" maxlength="30">
+        </div>
+        <input type="hidden" name="categoria" id="cadastrar-categoria">
+
         <label for="cadastrar-descricao">Descrição:</label>
         <input type="text" name="gasto" id="cadastrar-descricao" required>
   

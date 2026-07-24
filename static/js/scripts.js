@@ -90,30 +90,36 @@ const donutSombraPlugin = {
 const coresCategorias = {
   'Alimentação': '#B0E0E6',
   'Ifood': '#F59E0B',
-  'Entretenimento': '#bc89f0',
+  'Entretenimento e Lazer': '#bc89f0',
+  'Entretenimento': '#bc89f0', // compat com registros antigos (pré-renomeação)
   'Mobilidade': '#eb2d2d',
-  'Saúde': '#E0FFFF',
+  'Saúde e Beleza': '#E0FFFF',
+  'Saúde': '#E0FFFF', // compat com registros antigos (pré-renomeação)
   'Moradia': '#8FBC8F',
   'Outros': '#f7f568',
   'Dívidas': '#f78b8b',
   'Educação': '#f0054b',
   'Pets': '#8B4513',
-  'Investimentos': '#16A34A'
+  'Investimentos': '#16A34A',
+  'Telefonia': '#38bdf8'
 };
 
 // Ícones (Material Icons) usados na lista de categorias da nova home
 const iconesCategorias = {
   'Alimentação': 'restaurant',
   'Ifood': 'delivery_dining',
-  'Entretenimento': 'sports_esports',
+  'Entretenimento e Lazer': 'sports_esports',
+  'Entretenimento': 'sports_esports', // compat com registros antigos (pré-renomeação)
   'Mobilidade': 'directions_car',
-  'Saúde': 'favorite',
+  'Saúde e Beleza': 'favorite',
+  'Saúde': 'favorite', // compat com registros antigos (pré-renomeação)
   'Moradia': 'home',
   'Outros': 'category',
   'Dívidas': 'credit_card',
   'Educação': 'school',
   'Pets': 'pets',
-  'Investimentos': 'trending_up'
+  'Investimentos': 'trending_up',
+  'Telefonia': 'smartphone'
 };
 
 // Atualiza o "Saldo total" (card de cima) e o valor central do donut,
@@ -360,7 +366,7 @@ document.addEventListener("DOMContentLoaded", function () {
     donutChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['Alimentação', 'Ifood', 'Entretenimento', 'Mobilidade', 'Saúde', 'Moradia', 'Outros', 'Dívidas', 'Educação', 'Pets'],
+            labels: ['Alimentação', 'Ifood', 'Entretenimento e Lazer', 'Mobilidade', 'Saúde e Beleza', 'Moradia', 'Outros', 'Dívidas', 'Educação', 'Pets'],
             datasets: [{
                 data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 backgroundColor: coresIniciais.map(cor => gerarGradienteFatia(ctxDonut2d, cor)),

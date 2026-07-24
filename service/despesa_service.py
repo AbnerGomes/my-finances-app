@@ -2,6 +2,7 @@ import sqlite3
 import os
 from datetime import datetime, timedelta
 from .db_service import get_connection
+from .categorias import combinar_categorias
 
 class DespesaService:
 
@@ -168,6 +169,22 @@ class DespesaService:
         sucesso = cursor.rowcount > 0
         conn.close()
         return sucesso
+
+    def get_categorias_disponiveis(self, usuario):
+        usuario = self.get_usuario_by_name(usuario)
+
+        conn = get_connection()
+        c = conn.cursor()
+        c.execute("SELECT distinct categoria FROM despesas WHERE usuario = %s", (usuario,))
+        dados = c.fetchall()
+        conn.close()
+
+        return [row[0] for row in dados]
+
+    def get_categorias_completas(self, usuario):
+        """Categorias padrão + as que o usuário já usou (inclui categorias
+        próprias/customizadas que ele criou digitando um nome novo)."""
+        return combinar_categorias(self.get_categorias_disponiveis(usuario))
 
     def tem_conjuge(self,usuario):
 
