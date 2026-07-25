@@ -64,17 +64,24 @@ body{
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: var(--dna-card-soft);
   border: 1px solid var(--dna-border);
   border-radius: 999px;
-  padding: 10px 16px;
+  padding: 9px 12px;
   color: var(--dna-text);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: border-color 0.15s ease, filter 0.15s ease;
   box-sizing: border-box;
+}
+
+.filtro-periodo-btn span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .filtro-periodo-btn:hover,
@@ -92,7 +99,7 @@ body{
 }
 
 .filtro-periodo-btn .material-icons {
-  font-size: 18px;
+  font-size: 16px;
   color: var(--primary-light);
   flex-shrink: 0;
 }
@@ -110,14 +117,14 @@ body{
 .filtros-row .filtro-periodo-btn {
   width: auto;
   flex: 1;
-  min-width: 108px;
+  min-width: 78px;
 }
 
 /* o botão de período mostra duas datas ("01/07 a 24/07") — precisa de
-   mais espaço que "Ordenar"/"Categoria" pra não cortar */
+   um pouco mais de espaço que "Ordenar"/"Categoria" pra não cortar */
 #periodo-picker {
-  flex: 1.5;
-  min-width: 132px;
+  flex: 1.3;
+  min-width: 96px;
 }
 
 .edit-icon {

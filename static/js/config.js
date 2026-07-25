@@ -13,6 +13,10 @@ document.addEventListener('click', function (event) {
 
 
 document.addEventListener('DOMContentLoaded', function () {
+    // só existe em configuracoes_exclusao.html (tela de "conta excluída");
+    // config.js também é carregado em configuracoes.html, que não tem
+    // esse modal — sem o guard, isso jogava um erro de JS toda vez que
+    // a tela normal de Configurações abria
     const modal = document.getElementById('modal-delecao-ok');
-    modal.style.display = 'block';
+    if (modal) modal.style.display = 'block';
 });

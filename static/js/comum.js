@@ -2,6 +2,27 @@
 // comum.js — usado em todas as telas (cabeçalho, rodapé, tema)
 // ============================================================
 
+// ============================================================
+// Botão de voltar (◄) no cabeçalho, discreto, do lado esquerdo do
+// logo — chama o histórico do navegador. Não aparece na tela inicial
+// (não faz sentido "voltar" da home) nem quando não há pra onde
+// voltar (primeira página aberta pelo app).
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const logoText = document.querySelector('.logo-text');
+  const ehHome = document.body.classList.contains('home-page');
+  if (!logoText || ehHome || window.history.length <= 1) return;
+
+  const botaoVoltar = document.createElement('button');
+  botaoVoltar.type = 'button';
+  botaoVoltar.className = 'botao-voltar';
+  botaoVoltar.setAttribute('aria-label', 'Voltar');
+  botaoVoltar.innerHTML = '<span class="material-icons">chevron_left</span>';
+  botaoVoltar.addEventListener('click', () => history.back());
+
+  logoText.prepend(botaoVoltar);
+});
+
 function filtrarGastos(isCasal) {
   const url = new URL(window.location.href);
   url.searchParams.set("isCasal", isCasal);

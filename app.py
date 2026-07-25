@@ -17,6 +17,12 @@ app = Flask(__name__)
 # Defina uma chave secreta
 app.secret_key = 'gomes-abner-py-finn-flask-app-2025'
 
+# Sessão "lembrada" por 30 dias (em vez do padrão do Flask, que expira
+# quando o navegador/webview encerra) — combinado com session.permanent =
+# True no login, evita ter que logar de novo toda vez que o app é
+# reaberto.
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
+
 # Evita que o navegador sirva uma versão em cache de css/js depois de uma
 # edição — sem isso, alterações em static/ podem não aparecer pro usuário
 # até ele limpar o cache manualmente. Sobrescreve o `url_for` usado dentro

@@ -188,8 +188,15 @@ input:checked + .slider:before {
 
 /* elemento clicável — mantém a classe "footer-icon" que o config.js
    já usa (event.target.classList.contains('footer-icon')) para abrir
-   o modal de confirmação de exclusão */
-.footer-icon {
+   o modal de confirmação de exclusão.
+   Seletor ".footer-icon.material-icons" (não só ".footer-icon") de
+   propósito: o CSS do Google Fonts (carregado depois deste arquivo)
+   define ".material-icons { display: inline-block; ... }", e com a
+   mesma especificidade (uma classe só) quem vier depois no HTML vence —
+   isso fazia o ícone perder o display:flex e ficar desalinhado dentro
+   do círculo. Duas classes no seletor aumenta a especificidade e
+   garante que este flex sempre vence, não importa a ordem de carregamento. */
+.footer-icon.material-icons {
   display: flex;
   align-items: center;
   justify-content: center;

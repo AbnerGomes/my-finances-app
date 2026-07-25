@@ -50,6 +50,10 @@ def init_routes(app, gasto_service,despesa_service,admin_service):
 #def configure_routes(app, gasto_service):
 @gasto_bp.route('/')
 def login():
+    # já tem sessão válida (login lembrado) — pula a tela de login e
+    # vai direto pra home, em vez de pedir senha de novo toda hora
+    if 'usuario' in session:
+        return redirect(url_for('gasto.index'))
     return render_template('login.html')
 
 @gasto_bp.route('/voltar_ao_login', methods=['GET','POST'])
@@ -68,6 +72,7 @@ def login_post():
 
         if usuario_bd is not None:
 
+            session.permanent = True  # mantém a sessão entre reaberturas do app (ver PERMANENT_SESSION_LIFETIME)
             session['usuario'] = usuario_bd
 
             gasto_bp.gasto_service.registrar_login(usuario)
@@ -151,7 +156,7 @@ def cadastrar_gasto():
                 </script>"""
 
     # return render_template('cadastrar_gasto.html')
-    return extrato()  
+    return redirect(url_for('gasto.extrato'))
 
 @gasto_bp.route('/cadastrar_gasto_rapido', methods=['POST'])
 def cadastrar_gasto_rapido():
@@ -390,7 +395,7 @@ def editar_gasto():
     if not sucesso:
         flash('Você só pode editar os seus próprios gastos.', 'danger')
 
-    return extrato()
+    return redirect(url_for('gasto.extrato'))
 
 @gasto_bp.route('/deletar_gasto', methods=['POST'])
 def deletar_gasto():
@@ -415,7 +420,7 @@ def deletar_gasto():
         print("Erro ao deletar gasto:", e)
         flash('Erro ao tentar deletar o gasto. 😓', 'danger')
 
-    return extrato()
+    return redirect(url_for('gasto.extrato'))
 
 
 @despesa_bp.route('/despesas', methods=['GET','POST'])
@@ -539,7 +544,7 @@ def cadastrar_despesa():
         despesa_bp.despesa_service.salvar_despesa(despesa, valor, data, categoria,usuario,tipo_despesa)
     #flash('Despesa cadastrada com sucesso!', 'success')
 
-    return despesas()
+    return redirect(url_for('despesa.despesas'))
 
     #return render_template('despesas.html',usuario=usuario)  
 
@@ -563,7 +568,7 @@ def editar_despesa():
     if not sucesso:
         flash('Você só pode editar as suas próprias despesas.', 'danger')
 
-    return despesas()
+    return redirect(url_for('despesa.despesas'))
 
 @despesa_bp.route('/deletar_despesa', methods=['POST'])
 def deletar_despesa():
