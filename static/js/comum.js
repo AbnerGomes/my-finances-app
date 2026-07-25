@@ -205,10 +205,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ============================================================
-// dica de tutorial na primeira vez que o usuário abre cada tela —
-// some sozinha depois de fechada e nunca mais volta (localStorage)
-// ============================================================
-// ============================================================
 // Liga um botão-pílula a um painel flutuante de opções (usado no
 // "Ordenar" e no filtro de "Categoria" de despesas.html e extrato.html):
 // abre/fecha ao clicar no botão, fecha ao clicar fora, marca a opção
@@ -220,8 +216,40 @@ function configurarDropdown(botaoId, painelId, aoEscolher) {
   const painel = document.getElementById(painelId);
   if (!botao || !painel) return;
 
+  // O painel é position:fixed e a posição é calculada aqui (em vez de
+  // position:absolute ancorado no botão) por dois motivos: 1) evita
+  // ficar atrás de elementos com position:fixed (rodapé, cabeçalho),
+  // já que um painel "solto" na página empilha na ordem de quem
+  // apareceu por último, não pelo z-index; 2) um elemento absoluto que
+  // "vaza" pra baixo do fim da página aumenta a altura rolável do
+  // documento, e isso já causou o rodapé/ícone do topo se deslocarem
+  // (o scroll surgindo empurra o layout) — fixed nunca entra nessa conta.
+  const posicionar = () => {
+    const r = botao.getBoundingClientRect();
+    const largura = Math.max(r.width, 168);
+    let esquerda = r.left;
+    const maxEsquerda = window.innerWidth - largura - 8;
+    if (esquerda > maxEsquerda) esquerda = Math.max(8, maxEsquerda);
+
+    painel.style.width = `${largura}px`;
+    painel.style.left = `${esquerda}px`;
+
+    const alturaPainel = Math.min(painel.scrollHeight || 260, 260);
+    const espacoAbaixo = window.innerHeight - r.bottom;
+
+    if (espacoAbaixo < alturaPainel + 16 && r.top > espacoAbaixo) {
+      painel.style.top = 'auto';
+      painel.style.bottom = `${window.innerHeight - r.top + 8}px`;
+    } else {
+      painel.style.bottom = 'auto';
+      painel.style.top = `${r.bottom + 8}px`;
+    }
+  };
+
   botao.addEventListener('click', (e) => {
     e.stopPropagation();
+    const vaiAbrir = !painel.classList.contains('show');
+    if (vaiAbrir) posicionar();
     painel.classList.toggle('show');
   });
 
@@ -243,6 +271,13 @@ function configurarDropdown(botaoId, painelId, aoEscolher) {
     ) {
       painel.classList.remove('show');
     }
+  });
+
+  // fecha em vez de ficar desalinhado — como agora é fixed, rolar a
+  // página move o botão mas não o painel
+  window.addEventListener('scroll', () => painel.classList.remove('show'), true);
+  window.addEventListener('resize', () => {
+    if (painel.classList.contains('show')) posicionar();
   });
 }
 

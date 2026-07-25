@@ -83,50 +83,148 @@ function atualizarOpcaoReplicar() {
   }
 }
 
-// ================= SELETOR DE MÊS (calendário bonitinho, mesmo padrão
-// do seletor de data usado em extrato.html) =================
+// ================= SELETOR DE MÊS =================
+// Despesa é sempre por mês inteiro (coluna mes_ano), então o seletor
+// aqui é só mês/ano — sem dia — pra não sugerir uma precisão que não
+// existe. É um painel próprio (não usa o Litepicker, que é um calendário
+// de dias) mas reaproveita a mesma casca visual .painel-dropdown do
+// resto do app (Ordenar, Categoria), pra manter a cara padrão.
 const NOMES_MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+const NOMES_MESES_ABREV = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
 // aoSelecionar (opcional) só dispara quando o usuário efetivamente
-// escolhe uma data no calendário — não no preenchimento inicial do
-// texto/valor, senão o filtro de mês recarregaria a página sozinho
-// assim que a tela abrisse.
+// escolhe um mês — não no preenchimento inicial do texto/valor, senão
+// o filtro de mês recarregaria a página sozinho assim que a tela abrisse.
 function criarSeletorDeMes(botaoId, textoId, hiddenId, valorInicial, aoSelecionar) {
   const botao = document.getElementById(botaoId);
   const texto = document.getElementById(textoId);
   const hidden = document.getElementById(hiddenId);
-  if (!botao || !texto || !hidden || typeof Litepicker === 'undefined') return null;
+  if (!botao || !texto || !hidden) return null;
 
-  const formatarTexto = (data) => `${NOMES_MESES[data.getMonth()]} ${data.format('YYYY')}`;
+  const painel = document.createElement('div');
+  painel.className = 'painel-dropdown painel-mes';
+  botao.insertAdjacentElement('afterend', painel);
 
-  let dataInicial = new Date();
+  const hoje = new Date();
+  let ano = hoje.getFullYear();
+  let mes = hoje.getMonth() + 1; // 1-12
   if (valorInicial) {
-    const [ano, mes] = valorInicial.split('-');
-    if (ano && mes) dataInicial = new Date(Number(ano), Number(mes) - 1, 1);
+    const [a, m] = valorInicial.split('-');
+    if (a && m) {
+      ano = Number(a);
+      mes = Number(m);
+    }
   }
 
-  const picker = new Litepicker({
-    element: botao,
-    singleMode: true,
-    numberOfMonths: 1,
-    numberOfColumns: 1,
-    lang: 'pt-BR',
-    startDate: dataInicial,
-    autoApply: true,
-    setup: (picker) => {
-      picker.on('selected', (data) => {
-        hidden.value = data.format('YYYY-MM');
-        texto.textContent = formatarTexto(data);
-        if (aoSelecionar) aoSelecionar(data);
+  const definirValor = (novoAno, novoMes) => {
+    ano = novoAno;
+    mes = novoMes;
+    hidden.value = `${ano}-${String(mes).padStart(2, '0')}`;
+    texto.textContent = `${NOMES_MESES[mes - 1]} ${ano}`;
+  };
+
+  const renderizar = (anoExibido) => {
+    painel.innerHTML = '';
+
+    const header = document.createElement('div');
+    header.className = 'mes-picker-header';
+
+    const btnAnterior = document.createElement('button');
+    btnAnterior.type = 'button';
+    btnAnterior.className = 'mes-picker-nav';
+    btnAnterior.setAttribute('aria-label', 'Ano anterior');
+    btnAnterior.innerHTML = '<span class="material-icons">chevron_left</span>';
+    btnAnterior.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderizar(anoExibido - 1);
+    });
+
+    const spanAno = document.createElement('span');
+    spanAno.className = 'mes-picker-ano';
+    spanAno.textContent = anoExibido;
+
+    const btnProximo = document.createElement('button');
+    btnProximo.type = 'button';
+    btnProximo.className = 'mes-picker-nav';
+    btnProximo.setAttribute('aria-label', 'Próximo ano');
+    btnProximo.innerHTML = '<span class="material-icons">chevron_right</span>';
+    btnProximo.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderizar(anoExibido + 1);
+    });
+
+    header.append(btnAnterior, spanAno, btnProximo);
+
+    const grid = document.createElement('div');
+    grid.className = 'mes-picker-grid';
+
+    NOMES_MESES_ABREV.forEach((nome, i) => {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'mes-picker-item';
+      if (anoExibido === ano && i + 1 === mes) item.classList.add('active');
+      item.textContent = nome;
+      item.addEventListener('click', () => {
+        definirValor(anoExibido, i + 1);
+        painel.classList.remove('show');
+        if (aoSelecionar) aoSelecionar({ ano: anoExibido, mes: i + 1 });
       });
+      grid.appendChild(item);
+    });
+
+    painel.append(header, grid);
+  };
+
+  const posicionar = () => {
+    const r = botao.getBoundingClientRect();
+    const largura = Math.max(r.width, 220);
+    let esquerda = r.left;
+    const maxEsquerda = window.innerWidth - largura - 8;
+    if (esquerda > maxEsquerda) esquerda = Math.max(8, maxEsquerda);
+    painel.style.width = `${largura}px`;
+    painel.style.left = `${esquerda}px`;
+
+    const alturaPainel = Math.min(painel.scrollHeight || 240, 300);
+    const espacoAbaixo = window.innerHeight - r.bottom;
+    if (espacoAbaixo < alturaPainel + 16 && r.top > espacoAbaixo) {
+      painel.style.top = 'auto';
+      painel.style.bottom = `${window.innerHeight - r.top + 8}px`;
+    } else {
+      painel.style.bottom = 'auto';
+      painel.style.top = `${r.bottom + 8}px`;
+    }
+  };
+
+  botao.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const vaiAbrir = !painel.classList.contains('show');
+    if (vaiAbrir) {
+      renderizar(ano);
+      posicionar();
+    }
+    painel.classList.toggle('show');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (
+      painel.classList.contains('show') &&
+      !painel.contains(e.target) &&
+      e.target !== botao &&
+      !botao.contains(e.target)
+    ) {
+      painel.classList.remove('show');
     }
   });
 
-  hidden.value = picker.getStartDate().format('YYYY-MM');
-  texto.textContent = formatarTexto(picker.getStartDate());
+  window.addEventListener('scroll', () => painel.classList.remove('show'), true);
+  window.addEventListener('resize', () => {
+    if (painel.classList.contains('show')) posicionar();
+  });
 
-  return picker;
+  definirValor(ano, mes);
+
+  return { getValor: () => hidden.value };
 }
 
 // ================= EVENTOS =================

@@ -559,9 +559,13 @@ body.theme-dark {
 /* painel flutuante do botão "Ordenar"/"Categoria" */
 .painel-dropdown {
   display: none;
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
+  /* position:fixed com left/top/bottom calculados via JS (configurarDropdown
+     em comum.js) — não é position:absolute ancorado no botão de propósito:
+     um painel absoluto que "vaza" pra baixo do fim da página aumenta a
+     altura rolável do documento (o scroll aparecendo empurra o layout,
+     deslocando o rodapé/ícones fixos) e fica atrás de outros elementos
+     fixed (rodapé) na pilha de empilhamento. Fixed evita os dois problemas. */
+  position: fixed;
   min-width: 168px;
   max-height: 260px;
   overflow-y: auto;
@@ -570,7 +574,7 @@ body.theme-dark {
   border-radius: 14px;
   padding: 6px;
   box-shadow: 0 20px 45px rgba(3, 7, 18, 0.55);
-  z-index: 20;
+  z-index: 1100;
   flex-direction: column;
   gap: 2px;
 }
@@ -678,12 +682,6 @@ body.theme-dark {
   font-size: 18px;
   color: var(--dna-text-dim);
   flex-shrink: 0;
-}
-
-.categoria-picker-wrapper .painel-dropdown {
-  left: 0;
-  right: 0;
-  width: 100%;
 }
 
 /* input que aparece ao escolher "+ Criar nova categoria" no select de

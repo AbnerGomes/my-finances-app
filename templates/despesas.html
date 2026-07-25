@@ -16,10 +16,8 @@
 
   <link rel="stylesheet" href="{{ url_for('static', filename='css/despesas.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
     <script src="{{ url_for('static', filename='js/despesas.js') }}" defer></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ url_for('static', filename='js/comum.js') }}" defer></script>
@@ -165,8 +163,8 @@
       </div>
     </div>
 
-    <!-- filtro mês: mesmo calendário (Litepicker) usado no resto do
-         app, filtra assim que um mês é escolhido -->
+    <!-- filtro mês: seletor de mês/ano (sem dia), filtra assim que um
+         mês é escolhido -->
     <button type="button" id="filtroMesBtn" class="filtro-mes-pill filtro-mes-pill-btn">
       <span class="material-icons">calendar_month</span>
       <span id="filtroMesTexto">Selecionar mês</span>

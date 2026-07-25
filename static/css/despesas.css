@@ -305,6 +305,14 @@ form input[type="radio"] {
   font-family: inherit;
 }
 
+/* nenhum filho do botão deve "roubar" o clique — o Litepicker abre
+   comparando o alvo do clique com o próprio botão por igualdade
+   estrita (event.target === elemento), então clicar num filho (ícone,
+   texto) em vez de cair no botão faz o calendário nunca abrir */
+.filtro-mes-pill-btn * {
+  pointer-events: none;
+}
+
 .filtro-mes-pill-btn:hover,
 .filtro-mes-pill-btn:focus-visible {
   border-color: var(--primary);
@@ -320,6 +328,77 @@ form input[type="radio"] {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* seletor de mês/ano (sem dia — despesa é sempre por mês inteiro),
+   mesma casca visual do .painel-dropdown compartilhado (Ordenar/Categoria) */
+.painel-mes {
+  padding: 10px;
+  gap: 10px;
+}
+
+.mes-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.mes-picker-ano {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dna-text);
+}
+
+.mes-picker-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: var(--dna-card-soft);
+  color: var(--dna-text-dim);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.mes-picker-nav:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.mes-picker-nav .material-icons {
+  font-size: 18px;
+}
+
+.mes-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.mes-picker-item {
+  padding: 9px 4px;
+  border-radius: 10px;
+  border: none;
+  background: var(--dna-card-soft);
+  color: var(--dna-text-dim);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.mes-picker-item:hover {
+  background: var(--dna-border);
+  color: var(--dna-text);
+}
+
+.mes-picker-item.active {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  color: #fff;
 }
 
 /* toggle compacto Individual/Casal */
@@ -435,13 +514,13 @@ form input[type="radio"] {
    bloco colorido inteiro. Usa a borda DIREITA (a esquerda já é do
    status pago/parcial/pendente, ver .status-pago etc. abaixo) */
 .despesa-card.genero-masculino {
-  border-right: 3px solid rgba(96, 165, 250, 0.4);
-  background: linear-gradient(to left, rgba(96, 165, 250, 0.12), transparent 55%), var(--dna-card);
+  border-right: 2px solid rgba(96, 165, 250, 0.25);
+  background: linear-gradient(to left, rgba(96, 165, 250, 0.08), transparent 55%), var(--dna-card);
 }
 
 .despesa-card.genero-feminino {
-  border-right: 3px solid rgba(244, 114, 182, 0.4);
-  background: linear-gradient(to left, rgba(244, 114, 182, 0.12), transparent 55%), var(--dna-card);
+  border-right: 2px solid rgba(244, 114, 182, 0.25);
+  background: linear-gradient(to left, rgba(244, 114, 182, 0.08), transparent 55%), var(--dna-card);
 }
 
 .despesa-topo {
@@ -521,15 +600,15 @@ form input[type="radio"] {
    (mesmas cores usadas em despesas.html e extrato.html) */
 
 .status-pago {
-  border-left: 3px solid rgba(34, 197, 94, 0.45);
+  border-left: 2px solid rgba(34, 197, 94, 0.3);
 }
 
 .status-parcial {
-  border-left: 3px solid rgba(245, 158, 11, 0.45);
+  border-left: 2px solid rgba(245, 158, 11, 0.3);
 }
 
 .status-pendente {
-  border-left: 3px solid rgba(239, 68, 68, 0.45);
+  border-left: 2px solid rgba(239, 68, 68, 0.3);
 }
 
 .despesa-detalhe {

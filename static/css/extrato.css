@@ -83,6 +83,14 @@ body{
   outline: none;
 }
 
+/* nenhum filho do botão deve "roubar" o clique — o Litepicker abre
+   comparando o alvo do clique com o próprio botão por igualdade
+   estrita (event.target === elemento), então clicar num filho (ícone,
+   texto) em vez de cair no botão faz o calendário nunca abrir */
+.filtro-periodo-btn * {
+  pointer-events: none;
+}
+
 .filtro-periodo-btn .material-icons {
   font-size: 18px;
   color: var(--primary-light);
@@ -456,12 +464,12 @@ body {
    gradiente de fundo — mais evidente que só sombra, sem virar um
    bloco colorido inteiro */
 .gasto-card.genero-masculino {
-  border-left: 3px solid rgba(96, 165, 250, 0.4);
-  background: linear-gradient(to right, rgba(96, 165, 250, 0.12), transparent 55%), var(--dna-card);
+  border-left: 2px solid rgba(96, 165, 250, 0.25);
+  background: linear-gradient(to right, rgba(96, 165, 250, 0.08), transparent 55%), var(--dna-card);
 }
 .gasto-card.genero-feminino {
-  border-left: 3px solid rgba(244, 114, 182, 0.4);
-  background: linear-gradient(to right, rgba(244, 114, 182, 0.12), transparent 55%), var(--dna-card);
+  border-left: 2px solid rgba(244, 114, 182, 0.25);
+  background: linear-gradient(to right, rgba(244, 114, 182, 0.08), transparent 55%), var(--dna-card);
 }
 
 /* BLOCO ESQUERDA (cresce) */
@@ -488,12 +496,25 @@ body {
   text-overflow: ellipsis;
 }
 /* VALOR FIXO */
+.gasto-valor-bloco {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.gasto-data-mini {
+  font-size: 10px;
+  color: var(--dna-text-faint);
+  white-space: nowrap;
+}
+
 .gasto-valor {
   width: 90px;          /* largura fixa */
   text-align: right;    /* alinha à direita */
   font-weight: bold;
   color: var(--dna-orange);
-  flex-shrink: 0;       /* não deixa encolher */
 }
 
 /* AÇÕES FIXAS */
