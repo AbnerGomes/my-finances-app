@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Extrato</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/extrato.css') }}">
-    <script src="static/js/extrato.js" defer></script>
+    <script src="{{ url_for('static', filename='js/extrato.js') }}" defer></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
-    <script src="static/js/comum.js" defer></script>
+    <script src="{{ url_for('static', filename='js/comum.js') }}" defer></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
 </head>
@@ -151,11 +151,11 @@
       </button>
 
       <div id="painelOrdenar" class="painel-dropdown">
-        <button type="button" class="ordenar-opcao active" data-ordenar="recentes">Mais recentes</button>
-        <button type="button" class="ordenar-opcao" data-ordenar="antigos">Mais antigos</button>
-        <button type="button" class="ordenar-opcao" data-ordenar="maior-valor">Maior valor</button>
-        <button type="button" class="ordenar-opcao" data-ordenar="menor-valor">Menor valor</button>
-        <button type="button" class="ordenar-opcao" data-ordenar="nome">Nome (A–Z)</button>
+        <button type="button" class="ordenar-opcao active" data-ordenar="recentes">Data (mais recente)</button>
+        <button type="button" class="ordenar-opcao" data-ordenar="antigos">Data (mais antiga)</button>
+        <button type="button" class="ordenar-opcao" data-ordenar="maior-valor">Valor (maior)</button>
+        <button type="button" class="ordenar-opcao" data-ordenar="menor-valor">Valor (menor)</button>
+        <button type="button" class="ordenar-opcao" data-ordenar="categoria">Categoria (A–Z)</button>
       </div>
     </div>
 

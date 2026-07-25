@@ -5,8 +5,8 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-	<link rel="stylesheet" type="text/css" href="static/css/util.css">
-	<link rel="stylesheet" type="text/css" href="static/css/login.css">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/util.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login.css') }}">
 	<!-- ZMDI Icons (Material Design Iconic Font) -->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/material-design-iconic-font@2.2.0/dist/css/material-design-iconic-font.min.css">
 	<link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
@@ -113,6 +113,6 @@
 	  gtag('config', 'UA-23581568-13');
 	</script>
 
-<script src="static/js/login.js" defer></script>
+<script src="{{ url_for('static', filename='js/login.js') }}" defer></script>
 </body>
 </html>

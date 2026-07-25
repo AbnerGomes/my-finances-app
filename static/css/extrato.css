@@ -95,61 +95,9 @@ body{
   white-space: nowrap;
 }
 
-/* barra de busca — pílula arredondada com lupa, estilo app bancário */
-.busca-pill {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--dna-card-soft);
-  border: 1px solid var(--dna-border);
-  border-radius: 999px;
-  padding: 11px 16px;
-  margin-bottom: 10px;
-  transition: border-color 0.15s ease;
-}
-
-.busca-pill:focus-within {
-  border-color: var(--primary);
-}
-
-.busca-pill .material-icons {
-  font-size: 20px;
-  color: var(--dna-text-dim);
-  flex-shrink: 0;
-}
-
-.busca-pill input {
-  flex: 1;
-  min-width: 0;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: var(--dna-text);
-  font-size: 14px;
-}
-
-.busca-pill input::placeholder {
-  color: var(--dna-text-faint);
-}
-
-/* linha de filtros: Ordenar | Período | Categoria — rola na horizontal
-   se não couber (telas bem pequenas), sem quebrar layout */
-.filtros-row {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.filtros-row::-webkit-scrollbar {
-  display: none;
-}
-
-.filtro-dropdown-wrapper {
-  position: relative;
-  flex: 1;
-  min-width: 108px;
-}
+/* .busca-pill, .filtros-row, .filtro-dropdown-wrapper, .painel-dropdown,
+   .ordenar-opcao e .busca-vazia (componentes de busca/ordenar/filtro
+   compartilhados com despesas.html) agora vivem em comum.css */
 
 .filtros-row .filtro-periodo-btn {
   width: auto;
@@ -174,61 +122,6 @@ body{
   border-color: var(--primary);
   outline: none;
 }
-
-/* painel flutuante do botão "Ordenar" */
-.painel-dropdown {
-  display: none;
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  min-width: 168px;
-  background: var(--dna-card);
-  border: 1px solid var(--dna-border);
-  border-radius: 14px;
-  padding: 6px;
-  box-shadow: 0 20px 45px rgba(3, 7, 18, 0.55);
-  z-index: 20;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.painel-dropdown.show {
-  display: flex;
-}
-
-.ordenar-opcao {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  background: transparent;
-  border: none;
-  color: var(--dna-text-dim);
-  font-size: 13px;
-  text-align: left;
-  padding: 9px 10px;
-  border-radius: 9px;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.ordenar-opcao:hover {
-  background: var(--dna-card-soft);
-}
-
-.ordenar-opcao.active {
-  color: var(--primary-light);
-  background: var(--dna-card-soft);
-  font-weight: 600;
-}
-
-/* mensagem quando a busca não encontra nada */
-.busca-vazia {
-  text-align: center;
-  color: var(--dna-text-dim);
-  font-size: 13px;
-  padding: 28px 12px;
-}
-
 
 .edit-icon {
   color: var(--dna-text-dim);
@@ -581,11 +474,11 @@ body {
    gradiente de fundo — mais evidente que só sombra, sem virar um
    bloco colorido inteiro */
 .gasto-card.genero-masculino {
-  border-left: 4px solid #60a5fa;
+  border-left: 3px solid rgba(96, 165, 250, 0.4);
   background: linear-gradient(to right, rgba(96, 165, 250, 0.12), transparent 55%), var(--dna-card);
 }
 .gasto-card.genero-feminino {
-  border-left: 4px solid #f472b6;
+  border-left: 3px solid rgba(244, 114, 182, 0.4);
   background: linear-gradient(to right, rgba(244, 114, 182, 0.12), transparent 55%), var(--dna-card);
 }
 

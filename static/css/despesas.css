@@ -268,6 +268,18 @@ form input[type="radio"] {
   gap: 14px;
 }
 
+/* dentro da nova .filtros-row (busca + Ordenar/Mês/Categoria), o filtro
+   de mês vira só mais um item da linha, dividindo espaço com os outros
+   dois botões em vez de ocupar a largura toda */
+.filtros-row .filtro-mes {
+  flex: 1.3;
+  min-width: 150px;
+}
+
+.filtros-row .filtro-mes-pill-btn {
+  width: auto;
+}
+
 .filtro-mes {
   display: flex;
   align-items: center;
@@ -477,12 +489,12 @@ form input[type="radio"] {
    bloco colorido inteiro. Usa a borda DIREITA (a esquerda já é do
    status pago/parcial/pendente, ver .status-pago etc. abaixo) */
 .despesa-card.genero-masculino {
-  border-right: 4px solid #60a5fa;
+  border-right: 3px solid rgba(96, 165, 250, 0.4);
   background: linear-gradient(to left, rgba(96, 165, 250, 0.12), transparent 55%), var(--dna-card);
 }
 
 .despesa-card.genero-feminino {
-  border-right: 4px solid #f472b6;
+  border-right: 3px solid rgba(244, 114, 182, 0.4);
   background: linear-gradient(to left, rgba(244, 114, 182, 0.12), transparent 55%), var(--dna-card);
 }
 
@@ -622,15 +634,15 @@ form input[type="radio"] {
 }
 
 .status-pago {
-  border-left: 4px solid var(--dna-green);
+  border-left: 3px solid rgba(34, 197, 94, 0.45);
 }
 
 .status-parcial {
-  border-left: 4px solid #f59e0b;
+  border-left: 3px solid rgba(245, 158, 11, 0.45);
 }
 
 .status-pendente {
-  border-left: 4px solid #ef4444;
+  border-left: 3px solid rgba(239, 68, 68, 0.45);
 }
 
 .despesa-detalhe {

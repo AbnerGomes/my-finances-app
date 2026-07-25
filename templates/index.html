@@ -19,7 +19,7 @@
 	<meta property="og:image" content="https://my-financess-app.onrender.com/static/images/favicon.ico">
 	<meta property="og:url" content="https://my-financess-app.onrender.com">
 	<meta property="og:type" content="website">
-  <script src="static/js/comum.js" defer></script>
+  <script src="{{ url_for('static', filename='js/comum.js') }}" defer></script>
 </head>
 <body class="theme-blue home-page dna-page">
 
@@ -312,6 +312,6 @@
   </div>
   {% endif %}
 
-  <script src="static/js/scripts.js" defer></script>
+  <script src="{{ url_for('static', filename='js/scripts.js') }}" defer></script>
 </body>
 </html>

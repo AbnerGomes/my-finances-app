@@ -20,9 +20,9 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
-    <script src="static/js/despesas.js" defer></script>
+    <script src="{{ url_for('static', filename='js/despesas.js') }}" defer></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="static/js/comum.js" defer></script>
+    <script src="{{ url_for('static', filename='js/comum.js') }}" defer></script>
     <title>Quadro de Despesas Mensais </title>
 </head>
 <body class="dna-page" data-is-casal="{{ isCasal }}" data-tem-conjuge="{{ 'true' if temConjuge else 'false' }}">
@@ -137,15 +137,51 @@
 
 <div class="topo-filtro">
 
-  <!-- filtro mês -->
-  <div class="filtro-mes">
-    <div class="filtro-mes-pill">
-      <span class="material-icons">calendar_month</span>
-      <input type="month" id="filtroMes" value="{{ mes_ano }}">
+  <!-- busca por nome -->
+  <div class="busca-pill">
+    <span class="material-icons">search</span>
+    <input type="text" id="buscaDespesa" placeholder="Buscar pelo nome da despesa" autocomplete="off">
+  </div>
+
+  <div class="filtros-row">
+
+    <div class="filtro-dropdown-wrapper">
+      <button type="button" id="ordenar-despesas-btn" class="filtro-mes-pill filtro-mes-pill-btn">
+        <span class="material-icons">swap_vert</span>
+        <span>Ordenar</span>
+      </button>
+      <div id="painelOrdenarDespesas" class="painel-dropdown">
+        <button type="button" class="ordenar-opcao active" data-ordenar="padrao">Padrão</button>
+        <button type="button" class="ordenar-opcao" data-ordenar="maior-valor">Valor (maior)</button>
+        <button type="button" class="ordenar-opcao" data-ordenar="menor-valor">Valor (menor)</button>
+        <button type="button" class="ordenar-opcao" data-ordenar="categoria">Categoria (A–Z)</button>
+      </div>
     </div>
-    <button type="button" onclick="filtrarPorMes()" aria-label="Filtrar">
-      <span class="material-icons">search</span>
-    </button>
+
+    <!-- filtro mês -->
+    <div class="filtro-mes">
+      <div class="filtro-mes-pill">
+        <span class="material-icons">calendar_month</span>
+        <input type="month" id="filtroMes" value="{{ mes_ano }}">
+      </div>
+      <button type="button" onclick="filtrarPorMes()" aria-label="Filtrar">
+        <span class="material-icons">search</span>
+      </button>
+    </div>
+
+    <div class="filtro-dropdown-wrapper">
+      <button type="button" id="categoria-despesas-btn" class="filtro-mes-pill filtro-mes-pill-btn">
+        <span class="material-icons">sell</span>
+        <span id="categoria-despesas-texto">Categoria</span>
+      </button>
+      <div id="painelCategoriaDespesas" class="painel-dropdown">
+        <button type="button" class="ordenar-opcao active" data-categoria="Todas">Todas categorias</button>
+        {% for cat in categorias_completas %}
+        <button type="button" class="ordenar-opcao" data-categoria="{{ cat }}">{{ cat }}</button>
+        {% endfor %}
+      </div>
+    </div>
+
   </div>
 
   <!-- toggle compacto Individual/Casal -->
@@ -203,7 +239,9 @@
   {% if despesa[7] == 'H' %}genero-masculino{% else %}genero-feminino{% endif %}"
   data-id="{{ despesa[6] }}"
   data-status="{{ despesa[4] }}"
-  data-data_pagamento="{{ despesa[8] }}">
+  data-data_pagamento="{{ despesa[8] }}"
+  data-valor="{{ despesa[2] }}"
+  data-categoria="{{ despesa[0] }}">
 
     <!-- TOPO (AGORA COM 3 COLUNAS) -->
     <div class="despesa-topo">

@@ -244,16 +244,104 @@ document.addEventListener('DOMContentLoaded', () => {
       // abre se não estava aberto
       if (!jaAberto) {
         card.classList.add("aberto");
-  
+
         // ⚡ AQUI entra o teu código
         detalhe.style.height = detalhe.scrollHeight + "px";
       }
-  
+
     });
-  
+
+  });
+
+  // ================= BUSCA POR NOME =================
+  const campoBusca = document.getElementById('buscaDespesa');
+  if (campoBusca) {
+    campoBusca.addEventListener('input', aplicarFiltrosDespesas);
+  }
+
+  // ================= ORDENAR =================
+  configurarDropdown('ordenar-despesas-btn', 'painelOrdenarDespesas', (opcao) => {
+    aplicarOrdenacaoDespesas(opcao.dataset.ordenar);
+  });
+
+  // ================= FILTRO DE CATEGORIA (client-side — as despesas
+  // do mês já estão todas carregadas na tela, sem precisar ir ao
+  // backend de novo) =================
+  configurarDropdown('categoria-despesas-btn', 'painelCategoriaDespesas', (opcao) => {
+    categoriaDespesaAtiva = opcao.dataset.categoria;
+    const texto = document.getElementById('categoria-despesas-texto');
+    if (texto) texto.textContent = categoriaDespesaAtiva === 'Todas' ? 'Categoria' : categoriaDespesaAtiva;
+    aplicarFiltrosDespesas();
   });
 
 });
+
+let categoriaDespesaAtiva = 'Todas';
+
+// Filtra os .despesa-card já carregados na tela pelo texto digitado E
+// pela categoria escolhida no dropdown (as duas condições precisam
+// bater — é uma busca combinada, não duas buscas independentes).
+function aplicarFiltrosDespesas() {
+  const campoBusca = document.getElementById('buscaDespesa');
+  const termo = (campoBusca?.value || '').trim().toLowerCase();
+  const cards = document.querySelectorAll('.despesa-card');
+  let algumVisivel = false;
+
+  cards.forEach((card) => {
+    const nome = card.querySelector('.despesa-descricao')?.textContent.trim().toLowerCase() || '';
+    const categoria = card.dataset.categoria || '';
+    const passaTexto = !termo || nome.includes(termo);
+    const passaCategoria = categoriaDespesaAtiva === 'Todas' || categoria === categoriaDespesaAtiva;
+    const visivel = passaTexto && passaCategoria;
+    card.style.display = visivel ? '' : 'none';
+    if (visivel) algumVisivel = true;
+  });
+
+  const lista = document.querySelector('.lista-despesas');
+  let vazio = document.getElementById('buscaDespesaVazia');
+
+  if (!algumVisivel && lista) {
+    if (!vazio) {
+      vazio = document.createElement('div');
+      vazio.id = 'buscaDespesaVazia';
+      vazio.className = 'busca-vazia';
+      lista.appendChild(vazio);
+    }
+    vazio.textContent = termo
+      ? `Nenhuma despesa encontrada para "${campoBusca.value.trim()}"`
+      : 'Nenhuma despesa nessa categoria';
+  } else if (vazio) {
+    vazio.remove();
+  }
+}
+
+// Reordena os .despesa-card já carregados na tela (sem ir ao backend).
+function aplicarOrdenacaoDespesas(criterio) {
+  const lista = document.querySelector('.lista-despesas');
+  if (!lista) return;
+
+  if (!window._despesasOrdemOriginal) {
+    window._despesasOrdemOriginal = Array.from(lista.querySelectorAll('.despesa-card'));
+  }
+
+  if (criterio === 'padrao') {
+    window._despesasOrdemOriginal.forEach((card) => lista.appendChild(card));
+    return;
+  }
+
+  const cards = Array.from(lista.querySelectorAll('.despesa-card'));
+
+  const comparadores = {
+    'maior-valor': (a, b) => parseFloat(b.dataset.valor) - parseFloat(a.dataset.valor),
+    'menor-valor': (a, b) => parseFloat(a.dataset.valor) - parseFloat(b.dataset.valor),
+    categoria: (a, b) => (a.dataset.categoria || '').localeCompare(b.dataset.categoria || '', 'pt-BR'),
+  };
+
+  const comparador = comparadores[criterio];
+  if (comparador) cards.sort(comparador);
+
+  cards.forEach((card) => lista.appendChild(card));
+}
 
 function filtrarPendentesAntigos(el) {
 

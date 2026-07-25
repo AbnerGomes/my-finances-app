@@ -8,7 +8,7 @@
   <title>Configurações</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-  <script src="static/js/comum.js" defer></script>
+  <script src="{{ url_for('static', filename='js/comum.js') }}" defer></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/config.css') }}">
 </head>
 <body class="dna-page">
@@ -187,6 +187,6 @@
   </a>
 </div>
 
-<script src="static/js/config.js" defer></script>
+<script src="{{ url_for('static', filename='js/config.js') }}" defer></script>
 </body>
 </html>

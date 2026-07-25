@@ -209,6 +209,44 @@ document.addEventListener("DOMContentLoaded", () => {
 // some sozinha depois de fechada e nunca mais volta (localStorage)
 // ============================================================
 // ============================================================
+// Liga um botão-pílula a um painel flutuante de opções (usado no
+// "Ordenar" e no filtro de "Categoria" de despesas.html e extrato.html):
+// abre/fecha ao clicar no botão, fecha ao clicar fora, marca a opção
+// escolhida como ativa (classe "active") e dispara o callback com o
+// botão de opção clicado.
+// ============================================================
+function configurarDropdown(botaoId, painelId, aoEscolher) {
+  const botao = document.getElementById(botaoId);
+  const painel = document.getElementById(painelId);
+  if (!botao || !painel) return;
+
+  botao.addEventListener('click', (e) => {
+    e.stopPropagation();
+    painel.classList.toggle('show');
+  });
+
+  painel.querySelectorAll('.ordenar-opcao').forEach((opcao) => {
+    opcao.addEventListener('click', () => {
+      painel.querySelectorAll('.ordenar-opcao').forEach((o) => o.classList.remove('active'));
+      opcao.classList.add('active');
+      aoEscolher(opcao);
+      painel.classList.remove('show');
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (
+      painel.classList.contains('show') &&
+      !painel.contains(e.target) &&
+      e.target !== botao &&
+      !botao.contains(e.target)
+    ) {
+      painel.classList.remove('show');
+    }
+  });
+}
+
+// ============================================================
 // Seletor de categoria com opção de criar categoria própria (usado nos
 // modais de cadastrar/editar despesa e gasto). O <select> visível só
 // ajuda a escolher entre as sugestões + "criar nova"; quem realmente

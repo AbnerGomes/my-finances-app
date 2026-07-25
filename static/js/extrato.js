@@ -127,35 +127,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ================= ORDENAR =================
-    const ordenarBtn = document.getElementById('ordenar-btn');
-    const painelOrdenar = document.getElementById('painelOrdenar');
-
-    if (ordenarBtn && painelOrdenar) {
-        ordenarBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            painelOrdenar.classList.toggle('show');
-        });
-
-        painelOrdenar.querySelectorAll('.ordenar-opcao').forEach((opcao) => {
-            opcao.addEventListener('click', () => {
-                painelOrdenar.querySelectorAll('.ordenar-opcao').forEach((o) => o.classList.remove('active'));
-                opcao.classList.add('active');
-                aplicarOrdenacaoGastos(opcao.dataset.ordenar);
-                painelOrdenar.classList.remove('show');
-            });
-        });
-
-        document.addEventListener('click', (e) => {
-            if (
-                painelOrdenar.classList.contains('show') &&
-                !painelOrdenar.contains(e.target) &&
-                e.target !== ordenarBtn &&
-                !ordenarBtn.contains(e.target)
-            ) {
-                painelOrdenar.classList.remove('show');
-            }
-        });
-    }
+    configurarDropdown('ordenar-btn', 'painelOrdenar', (opcao) => {
+        aplicarOrdenacaoGastos(opcao.dataset.ordenar);
+    });
 });
 
 // Filtra os .gasto-card pelo texto digitado (nome/descrição do gasto).
@@ -233,8 +207,8 @@ function aplicarOrdenacaoGastos(criterio) {
         antigos: (a, b) => parseDataBr(a.dataset.data) - parseDataBr(b.dataset.data),
         'maior-valor': (a, b) => parseFloat(b.dataset.valor) - parseFloat(a.dataset.valor),
         'menor-valor': (a, b) => parseFloat(a.dataset.valor) - parseFloat(b.dataset.valor),
-        nome: (a, b) => (a.querySelector('.gasto-descricao')?.textContent || '')
-            .localeCompare(b.querySelector('.gasto-descricao')?.textContent || '', 'pt-BR'),
+        categoria: (a, b) => (a.querySelector('.gasto-categoria')?.dataset.categoria || '')
+            .localeCompare(b.querySelector('.gasto-categoria')?.dataset.categoria || '', 'pt-BR'),
     };
 
     const comparador = comparadores[criterio];
