@@ -270,13 +270,13 @@
         </button>
 
 
-          <a href="{{ url_for('gasto.exportar_excel', data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria')) }}"
+          <a href="{{ url_for('gasto.exportar_excel', data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria'), token=token_exportacao) }}"
             class="btn-float-acao excel">
             <span class="material-icons">table_view</span>
           </a>
 
           <a id="enviapdf"
-            href="{{ url_for('gasto.exportar_pdf', data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria')) }}"
+            href="{{ url_for('gasto.exportar_pdf', data_inicio=request.args.get('data_inicio'), data_fim=request.args.get('data_fim'), categoria=request.args.get('categoria'), token=token_exportacao) }}"
             class="btn-float-acao pdf">
             <span class="material-icons">picture_as_pdf</span>
           </a>

@@ -1,14 +1,15 @@
-from flask import Blueprint, render_template, session, redirect, url_for, request, flash,jsonify, send_file, request, Response
+from flask import Blueprint, render_template, session, redirect, url_for, request, flash,jsonify, send_file, request, Response, current_app
 from service.gasto_service import GastoService
 from io import BytesIO
 import pandas as pd
 from xhtml2pdf import pisa
 import random
 from datetime import datetime, timedelta
-from datetime import date 
+from datetime import date
 from collections import defaultdict
 import calendar
 import locale
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
 from collections import defaultdict
 
@@ -33,6 +34,30 @@ mensagens_erro = [
     #"Acesso negado! você é gay 🏳️‍🌈",
     #"Mds, quem sabe clica em esqueci a senha 🤦🏽‍♂️",
 ]
+
+# ============================================================
+# Token de exportação (Excel/PDF): os botões de exportar abrem a URL
+# no navegador do aparelho (fora do WebView do app, pra conseguir usar
+# o gerenciador de download nativo — ver flutter_app/lib/main.dart),
+# e esse navegador externo não tem o cookie de sessão do WebView. Sem
+# um jeito de autenticar essa requisição, session['usuario'] vem vazio
+# e a rota quebra com 500. O token abaixo é assinado com a mesma
+# secret_key do app, carrega só o usuário, e expira em 10 minutos —
+# tempo de sobra pra abrir o link, mas curto o bastante pra não virar
+# um link "eterno" se vazar.
+def _serializer_exportacao():
+    return URLSafeTimedSerializer(current_app.secret_key, salt='exportacao')
+
+def gerar_token_exportacao(usuario):
+    return _serializer_exportacao().dumps(usuario)
+
+def validar_token_exportacao(token, max_age=600):
+    if not token:
+        return None
+    try:
+        return _serializer_exportacao().loads(token, max_age=max_age)
+    except (BadSignature, SignatureExpired):
+        return None
 
 #####ROTAS#####
 
@@ -266,7 +291,8 @@ def extrato():
         temConjuge=tem_conjuge,
         categorias=categorias,
         categorias_completas=categorias_completas,
-        acoes=acoes
+        acoes=acoes,
+        token_exportacao=gerar_token_exportacao(usuario)
     )
 
 
@@ -599,7 +625,9 @@ def deletar_despesa():
 #exportação
 @gasto_bp.route('/exportar/excel')
 def exportar_excel():
-    usuario = session['usuario']
+    usuario = session.get('usuario') or validar_token_exportacao(request.args.get('token'))
+    if not usuario:
+        return jsonify({'erro': 'Sessão expirada. Volte pro extrato e tente exportar de novo.'}), 401
 
     if request.is_json:
         data = request.get_json()
@@ -632,7 +660,9 @@ def exportar_excel():
 
 @gasto_bp.route('/exportar/pdf')
 def exportar_pdf():
-    usuario = session['usuario']
+    usuario = session.get('usuario') or validar_token_exportacao(request.args.get('token'))
+    if not usuario:
+        return jsonify({'erro': 'Sessão expirada. Volte pro extrato e tente exportar de novo.'}), 401
 
     if request.is_json:
         data = request.get_json()
