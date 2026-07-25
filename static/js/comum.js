@@ -392,9 +392,16 @@ document.addEventListener("DOMContentLoaded", () => {
     dica.classList.add("mostrar");
 
     const fechar = dica.querySelector(".tutorial-dica-fechar");
+    const naoMostrar = dica.querySelector(".tutorial-dica-nao-mostrar");
+
     if (fechar) {
       fechar.addEventListener("click", () => {
-        localStorage.setItem(chave, "1");
+        // só grava "não mostrar mais" se a pessoa marcou a caixinha —
+        // fechar sem marcar só esconde por agora, e a dica volta a
+        // aparecer da próxima vez que abrir essa tela
+        if (naoMostrar && naoMostrar.checked) {
+          localStorage.setItem(chave, "1");
+        }
         dica.classList.remove("mostrar");
       });
     }

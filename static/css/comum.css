@@ -846,12 +846,37 @@ body.theme-dark {
   margin-top: 1px;
 }
 
-.tutorial-dica p {
+.tutorial-dica-conteudo {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.tutorial-dica-conteudo p {
   margin: 0;
   font-size: 12.5px;
   line-height: 1.5;
   color: var(--dna-text-dim);
+}
+
+.tutorial-dica-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--dna-text-faint);
+  cursor: pointer;
+  user-select: none;
+}
+
+.tutorial-dica-checkbox input {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .tutorial-dica-fechar {
@@ -870,4 +895,54 @@ body.theme-dark {
 
 .tutorial-dica-fechar:hover {
   color: var(--dna-text);
+}
+
+/* ============================================================
+   LOADER DE ABERTURA (só a primeira vez que o app abre, ver index.html)
+============================================================ */
+.loader-abertura {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  background: linear-gradient(180deg, var(--dna-bg-alt), var(--dna-bg));
+  transition: opacity 0.3s ease;
+}
+
+.loader-abertura-logo {
+  width: 68px;
+  height: 68px;
+  border-radius: 18px;
+  box-shadow: 0 12px 32px rgba(3, 7, 18, 0.55);
+  animation: loaderAberturaPulso 1.4s ease-in-out infinite;
+}
+
+.loader-abertura-spinner {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 3px solid var(--dna-border);
+  border-top-color: var(--primary);
+  animation: loaderAberturaGirar 0.8s linear infinite;
+}
+
+@keyframes loaderAberturaGirar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loaderAberturaPulso {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.85;
+  }
 }

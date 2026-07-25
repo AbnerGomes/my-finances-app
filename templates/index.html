@@ -9,9 +9,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- defer nos 3 — sem isso são scripts síncronos no <head> que travam
+       a renderização da página inteira (inclusive o loader de abertura)
+       até terminarem de baixar, o que em conexões mais lentas pode levar
+       vários segundos "em branco" antes de qualquer coisa aparecer -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+  <script src="https://cdn.tailwindcss.com" defer></script>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
   <meta property="og:title" content="Meu App de Finanças">
@@ -22,6 +26,32 @@
   <script src="{{ url_for('static', filename='js/comum.js') }}" defer></script>
 </head>
 <body class="theme-blue home-page dna-page">
+
+  <!-- Loader de abertura do app — só na primeira vez que o app é aberto
+       nesta sessão (sessionStorage some quando o app é fechado/reaberto
+       de verdade, mas não some só por navegar dentro do app). Fica no
+       ar por pelo menos 1s, mesmo que a home carregue mais rápido. -->
+  <div id="loaderAbertura" class="loader-abertura">
+    <img src="{{ url_for('static', filename='images/fin-dark.png') }}" alt="" class="loader-abertura-logo">
+    <div class="loader-abertura-spinner"></div>
+  </div>
+  <script>
+    (function () {
+      var el = document.getElementById('loaderAbertura');
+      if (sessionStorage.getItem('appAbertoNestaSessao')) {
+        el.style.display = 'none';
+        return;
+      }
+      sessionStorage.setItem('appAbertoNestaSessao', '1');
+      // tempo fixo (não espera "load" da página) — CDNs externos (fontes,
+      // gráficos) podem demorar bem mais que 1s pra carregar tudo, e o
+      // pedido era um mínimo de ~1s, não "esperar tudo terminar"
+      setTimeout(function () {
+        el.style.opacity = '0';
+        setTimeout(function () { el.style.display = 'none'; }, 300);
+      }, 1000);
+    })();
+  </script>
 
   {% if precisaAssinar %}
   <!-- Bloqueio de teste grátis expirado — não é fechável (sem X, sem
@@ -117,11 +147,17 @@
     <!-- dica de tutorial (primeiro acesso) -->
     <div class="tutorial-dica" data-tutorial="home">
       <span class="material-icons tutorial-dica-icone">lightbulb</span>
-      <p>
-        Aqui está o seu resumo: seus gastos totalizados por categoria e o
-        saldo do período. Use os filtros abaixo para ver por mês, semana
-        ou dia.
-      </p>
+      <div class="tutorial-dica-conteudo">
+        <p>
+          Aqui está o seu resumo: seus gastos totalizados por categoria e o
+          saldo do período. Use os filtros abaixo para ver por mês, semana
+          ou dia.
+        </p>
+        <label class="tutorial-dica-checkbox">
+          <input type="checkbox" class="tutorial-dica-nao-mostrar">
+          Não mostrar novamente
+        </label>
+      </div>
       <button type="button" class="tutorial-dica-fechar" aria-label="Entendi">
         <span class="material-icons">close</span>
       </button>
