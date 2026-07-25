@@ -113,6 +113,13 @@ body{
   min-width: 108px;
 }
 
+/* o botão de período mostra duas datas ("01/07 a 24/07") — precisa de
+   mais espaço que "Ordenar"/"Categoria" pra não cortar */
+#periodo-picker {
+  flex: 1.5;
+  min-width: 132px;
+}
+
 .edit-icon {
   color: var(--dna-text-dim);
   cursor: pointer;
@@ -496,25 +503,12 @@ body {
   text-overflow: ellipsis;
 }
 /* VALOR FIXO */
-.gasto-valor-bloco {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  flex-shrink: 0;
-}
-
-.gasto-data-mini {
-  font-size: 10px;
-  color: var(--dna-text-faint);
-  white-space: nowrap;
-}
-
 .gasto-valor {
   width: 90px;          /* largura fixa */
   text-align: right;    /* alinha à direita */
   font-weight: bold;
   color: var(--dna-orange);
+  flex-shrink: 0;
 }
 
 /* AÇÕES FIXAS */

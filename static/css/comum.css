@@ -511,7 +511,7 @@ body.theme-dark {
   background: var(--dna-card-soft);
   border: 1px solid var(--dna-border);
   border-radius: 999px;
-  padding: 11px 16px;
+  padding: 9px 14px;
   margin-bottom: 10px;
   transition: border-color 0.15s ease;
 }
@@ -521,7 +521,7 @@ body.theme-dark {
 }
 
 .busca-pill .material-icons {
-  font-size: 20px;
+  font-size: 18px;
   color: var(--dna-text-dim);
   flex-shrink: 0;
 }
@@ -533,7 +533,7 @@ body.theme-dark {
   outline: none;
   background: transparent;
   color: var(--dna-text);
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .busca-pill input::placeholder {
