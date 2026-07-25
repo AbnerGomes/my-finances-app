@@ -88,16 +88,17 @@ function atualizarOpcaoReplicar() {
 const NOMES_MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
-function criarSeletorDeMes(botaoId, textoId, hiddenId, valorInicial) {
+// aoSelecionar (opcional) só dispara quando o usuário efetivamente
+// escolhe uma data no calendário — não no preenchimento inicial do
+// texto/valor, senão o filtro de mês recarregaria a página sozinho
+// assim que a tela abrisse.
+function criarSeletorDeMes(botaoId, textoId, hiddenId, valorInicial, aoSelecionar) {
   const botao = document.getElementById(botaoId);
   const texto = document.getElementById(textoId);
   const hidden = document.getElementById(hiddenId);
   if (!botao || !texto || !hidden || typeof Litepicker === 'undefined') return null;
 
-  const atualizar = (data) => {
-    hidden.value = data.format('YYYY-MM');
-    texto.textContent = `${NOMES_MESES[data.getMonth()]} ${data.format('YYYY')}`;
-  };
+  const formatarTexto = (data) => `${NOMES_MESES[data.getMonth()]} ${data.format('YYYY')}`;
 
   let dataInicial = new Date();
   if (valorInicial) {
@@ -114,11 +115,16 @@ function criarSeletorDeMes(botaoId, textoId, hiddenId, valorInicial) {
     startDate: dataInicial,
     autoApply: true,
     setup: (picker) => {
-      picker.on('selected', (data) => atualizar(data));
+      picker.on('selected', (data) => {
+        hidden.value = data.format('YYYY-MM');
+        texto.textContent = formatarTexto(data);
+        if (aoSelecionar) aoSelecionar(data);
+      });
     }
   });
 
-  atualizar(picker.getStartDate());
+  hidden.value = picker.getStartDate().format('YYYY-MM');
+  texto.textContent = formatarTexto(picker.getStartDate());
 
   return picker;
 }
@@ -126,10 +132,10 @@ function criarSeletorDeMes(botaoId, textoId, hiddenId, valorInicial) {
 // ================= EVENTOS =================
 document.addEventListener('DOMContentLoaded', () => {
 
-  // O filtro de mês voltou a ser o <input type="month"> nativo (o
-  // Litepicker não fazia sentido pra escolher só mês/ano). O calendário
-  // bonito continua só no modal de cadastro, que já é baseado em mês.
   criarSeletorDeMes('cadastrar-data-btn', 'cadastrar-data-texto', 'cadastrar-data', document.getElementById('cadastrar-data')?.value);
+
+  // filtro de mês do topo — mesmo calendário, filtra assim que um mês é escolhido
+  criarSeletorDeMes('filtroMesBtn', 'filtroMesTexto', 'filtroMes', document.getElementById('filtroMes')?.value, () => filtrarPorMes());
 
   // 👉 BOTÃO ADICIONAR (AGORA CORRETO)
   const btnAdd = document.getElementById("addDespesaBtn");
@@ -149,8 +155,8 @@ document.addEventListener('DOMContentLoaded', () => {
       //   });
       // por enquanto sempre abrir
       document.getElementById("form-cadastrar")?.reset();
-      const selectCadastro = document.getElementById('cadastrar-categoria-select');
-      if (selectCadastro) definirCategoriaSelecionada('cadastrar', selectCadastro.value);
+      const primeiraCategoria = document.getElementById('cadastrar-categoria-painel')?.querySelector('.ordenar-opcao')?.dataset.categoria;
+      if (primeiraCategoria) definirCategoriaSelecionada('cadastrar', primeiraCategoria);
       atualizarOpcaoReplicar();
       abrirModal("modal-cadastrar");
     });
@@ -253,12 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   });
 
-  // ================= BUSCA POR NOME =================
-  const campoBusca = document.getElementById('buscaDespesa');
-  if (campoBusca) {
-    campoBusca.addEventListener('input', aplicarFiltrosDespesas);
-  }
-
   // ================= ORDENAR =================
   configurarDropdown('ordenar-despesas-btn', 'painelOrdenarDespesas', (opcao) => {
     aplicarOrdenacaoDespesas(opcao.dataset.ordenar);
@@ -271,45 +271,37 @@ document.addEventListener('DOMContentLoaded', () => {
     categoriaDespesaAtiva = opcao.dataset.categoria;
     const texto = document.getElementById('categoria-despesas-texto');
     if (texto) texto.textContent = categoriaDespesaAtiva === 'Todas' ? 'Categoria' : categoriaDespesaAtiva;
-    aplicarFiltrosDespesas();
+    aplicarFiltroCategoriaDespesas();
   });
 
 });
 
 let categoriaDespesaAtiva = 'Todas';
 
-// Filtra os .despesa-card já carregados na tela pelo texto digitado E
-// pela categoria escolhida no dropdown (as duas condições precisam
-// bater — é uma busca combinada, não duas buscas independentes).
-function aplicarFiltrosDespesas() {
-  const campoBusca = document.getElementById('buscaDespesa');
-  const termo = (campoBusca?.value || '').trim().toLowerCase();
+// Filtra os .despesa-card já carregados na tela pela categoria
+// escolhida no dropdown.
+function aplicarFiltroCategoriaDespesas() {
   const cards = document.querySelectorAll('.despesa-card');
   let algumVisivel = false;
 
   cards.forEach((card) => {
-    const nome = card.querySelector('.despesa-descricao')?.textContent.trim().toLowerCase() || '';
     const categoria = card.dataset.categoria || '';
-    const passaTexto = !termo || nome.includes(termo);
-    const passaCategoria = categoriaDespesaAtiva === 'Todas' || categoria === categoriaDespesaAtiva;
-    const visivel = passaTexto && passaCategoria;
+    const visivel = categoriaDespesaAtiva === 'Todas' || categoria === categoriaDespesaAtiva;
     card.style.display = visivel ? '' : 'none';
     if (visivel) algumVisivel = true;
   });
 
   const lista = document.querySelector('.lista-despesas');
-  let vazio = document.getElementById('buscaDespesaVazia');
+  let vazio = document.getElementById('categoriaDespesaVazia');
 
   if (!algumVisivel && lista) {
     if (!vazio) {
       vazio = document.createElement('div');
-      vazio.id = 'buscaDespesaVazia';
+      vazio.id = 'categoriaDespesaVazia';
       vazio.className = 'busca-vazia';
       lista.appendChild(vazio);
     }
-    vazio.textContent = termo
-      ? `Nenhuma despesa encontrada para "${campoBusca.value.trim()}"`
-      : 'Nenhuma despesa nessa categoria';
+    vazio.textContent = 'Nenhuma despesa nessa categoria';
   } else if (vazio) {
     vazio.remove();
   }
@@ -335,6 +327,8 @@ function aplicarOrdenacaoDespesas(criterio) {
     'maior-valor': (a, b) => parseFloat(b.dataset.valor) - parseFloat(a.dataset.valor),
     'menor-valor': (a, b) => parseFloat(a.dataset.valor) - parseFloat(b.dataset.valor),
     categoria: (a, b) => (a.dataset.categoria || '').localeCompare(b.dataset.categoria || '', 'pt-BR'),
+    nome: (a, b) => (a.querySelector('.despesa-descricao')?.textContent.trim() || '')
+      .localeCompare(b.querySelector('.despesa-descricao')?.textContent.trim() || '', 'pt-BR'),
   };
 
   const comparador = comparadores[criterio];

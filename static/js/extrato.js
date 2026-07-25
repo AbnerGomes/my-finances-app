@@ -130,6 +130,15 @@ document.addEventListener('DOMContentLoaded', function () {
     configurarDropdown('ordenar-btn', 'painelOrdenar', (opcao) => {
         aplicarOrdenacaoGastos(opcao.dataset.ordenar);
     });
+
+    // ================= FILTRO DE CATEGORIA =================
+    configurarDropdown('categoria-filtro-btn', 'categoria-filtro-painel', (opcao) => {
+        const hidden = document.getElementById('categoria-filtro-hidden');
+        if (hidden) hidden.value = opcao.dataset.categoria;
+        const texto = document.getElementById('categoria-filtro-texto');
+        if (texto) texto.textContent = opcao.dataset.categoria === 'Todas' ? 'Categoria' : opcao.dataset.categoria;
+        submeterFiltroExtrato();
+    });
 });
 
 // Filtra os .gasto-card pelo texto digitado (nome/descrição do gasto).
@@ -209,6 +218,8 @@ function aplicarOrdenacaoGastos(criterio) {
         'menor-valor': (a, b) => parseFloat(a.dataset.valor) - parseFloat(b.dataset.valor),
         categoria: (a, b) => (a.querySelector('.gasto-categoria')?.dataset.categoria || '')
             .localeCompare(b.querySelector('.gasto-categoria')?.dataset.categoria || '', 'pt-BR'),
+        nome: (a, b) => (a.querySelector('.gasto-descricao')?.textContent.trim() || '')
+            .localeCompare(b.querySelector('.gasto-descricao')?.textContent.trim() || '', 'pt-BR'),
     };
 
     const comparador = comparadores[criterio];

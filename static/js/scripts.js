@@ -87,20 +87,23 @@ const donutSombraPlugin = {
     }
 };
 
+// Mesma paleta usada nos badges de despesas.html/extrato.html (.categoria-X
+// em comum.css) — cores pastel/vibrantes escolhidas pra ler bem sobre o
+// fundo escuro de qualquer tema do app.
 const coresCategorias = {
-  'Alimentação': '#B0E0E6',
-  'Ifood': '#F59E0B',
-  'Entretenimento e Lazer': '#bc89f0',
-  'Entretenimento': '#bc89f0', // compat com registros antigos (pré-renomeação)
-  'Mobilidade': '#eb2d2d',
-  'Saúde e Beleza': '#E0FFFF',
-  'Saúde': '#E0FFFF', // compat com registros antigos (pré-renomeação)
-  'Moradia': '#8FBC8F',
-  'Outros': '#f7f568',
-  'Dívidas': '#f78b8b',
-  'Educação': '#f0054b',
-  'Pets': '#8B4513',
-  'Investimentos': '#16A34A',
+  'Alimentação': '#facc15',
+  'Ifood': '#fb923c',
+  'Entretenimento e Lazer': '#c084fc',
+  'Entretenimento': '#c084fc', // compat com registros antigos (pré-renomeação)
+  'Mobilidade': '#818cf8',
+  'Saúde e Beleza': '#4ade80',
+  'Saúde': '#4ade80', // compat com registros antigos (pré-renomeação)
+  'Moradia': '#60a5fa',
+  'Outros': '#67e8f9',
+  'Dívidas': '#f87171',
+  'Educação': '#5eead4',
+  'Pets': '#deb887',
+  'Investimentos': '#a3e635',
   'Telefonia': '#38bdf8'
 };
 
@@ -360,7 +363,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const ctxDonut2d = ctx.getContext('2d');
-    const coresIniciais = ['#B0E0E6', '#F59E0B', '#bc89f0', '#eb2d2d', '#E0FFFF', '#8FBC8F', '#f7f568', '#f78b8b', '#f0054b', '#8B4513'];
+    const coresIniciais = ['#facc15', '#fb923c', '#c084fc', '#818cf8', '#4ade80', '#60a5fa', '#67e8f9', '#f87171', '#5eead4', '#deb887'];
     const dnaCard = getComputedStyle(document.body).getPropertyValue('--dna-card').trim() || '#141c3f';
 
     donutChart = new Chart(ctx, {

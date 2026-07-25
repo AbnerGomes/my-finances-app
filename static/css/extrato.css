@@ -105,24 +105,6 @@ body{
   min-width: 108px;
 }
 
-.filtro-select {
-  flex: 1;
-  min-width: 108px;
-  padding: 10px 14px;
-  border: 1px solid var(--dna-border);
-  border-radius: 999px;
-  background-color: var(--dna-card-soft);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--dna-text);
-  transition: border-color 0.15s ease;
-}
-
-.filtro-select:focus {
-  border-color: var(--primary);
-  outline: none;
-}
-
 .edit-icon {
   color: var(--dna-text-dim);
   cursor: pointer;
@@ -556,29 +538,8 @@ body {
   z-index: 2;
 }
 
-.categoria-Saude { background: rgba(34,197,94,0.15); color: #22c55e; }
-.categoria-SaudeeBeleza { background: rgba(34,197,94,0.15); color: #22c55e; }
-.categoria-Moradia { background: rgba(59,130,246,0.15); color: #3b82f6; }
-.categoria-Alimentação { background: rgba(234,179,8,0.15); color: #eab308; }
-.categoria-Ifood { background: rgba(245, 158, 11, 0.15); color: #d97706; }
-.categoria-Dividas { background: rgba(247, 96, 85, 0.15); color: #d82020; }
-.categoria-Mobilidade { background: rgba(113, 150, 253, 0.15); color: #2618ee; }
-.categoria-Outros { background: rgba(86, 243, 243, 0.15); color: #55e4f7; }
-.categoria-Entretenimento { background: rgba(168,85,247,0.15); color: #a855f7; }
-.categoria-EntretenimentoeLazer { background: rgba(168,85,247,0.15); color: #a855f7; }
-.categoria-Educação { background: rgba(168,85,247,0.15); color: #e69e34; }
-.categoria-Pets {
-  background: rgba(139, 69, 19, 0.15);
-  color: #8B4513;
-}
-.categoria-Investimentos {
-  background: rgba(22, 163, 74, 0.15);
-  color: #16A34A;
-}
-.categoria-Telefonia {
-  background: rgba(56, 189, 248, 0.15);
-  color: #0ea5e9;
-}
+/* cores das categorias: ver bloco compartilhado .categoria-X em comum.css
+   (mesmas cores usadas em despesas.html e extrato.html) */
 
 .filtro-card {
   display: flex;

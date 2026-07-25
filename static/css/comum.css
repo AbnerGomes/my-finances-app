@@ -612,6 +612,80 @@ body.theme-dark {
   padding: 28px 12px;
 }
 
+/* ============================================================
+   Cores das categorias (badge em despesas.html/.categoria-badge e
+   extrato.html/.gasto-categoria — mesma classe .categoria-X nos dois,
+   compartilhada aqui pra nunca mais divergir entre os arquivos).
+   Todos os "temas" do app têm fundo escuro (só muda o matiz — ver
+   TEMAS acima), então as cores abaixo foram escolhidas com luminosidade
+   alta o bastante (tom pastel/vibrante) pra ler bem sobre qualquer um
+   deles. Ex.: o antigo azul de Mobilidade (#2618ee) era escuro demais
+   e sumia contra o fundo — trocado por um tom mais claro. */
+.categoria-Alimentação { background: rgba(250, 204, 21, 0.18); color: #facc15; }
+.categoria-Ifood { background: rgba(251, 146, 60, 0.18); color: #fb923c; }
+.categoria-SaúdeeBeleza,
+.categoria-Saúde { background: rgba(74, 222, 128, 0.18); color: #4ade80; }
+.categoria-Mobilidade { background: rgba(129, 140, 248, 0.2); color: #818cf8; }
+.categoria-EntretenimentoeLazer,
+.categoria-Entretenimento { background: rgba(192, 132, 252, 0.18); color: #c084fc; }
+.categoria-Moradia { background: rgba(96, 165, 250, 0.18); color: #60a5fa; }
+.categoria-Outros { background: rgba(103, 232, 249, 0.18); color: #67e8f9; }
+.categoria-Dívidas { background: rgba(248, 113, 113, 0.2); color: #f87171; }
+.categoria-Educação { background: rgba(94, 234, 212, 0.18); color: #5eead4; }
+.categoria-Pets { background: rgba(222, 184, 135, 0.22); color: #deb887; }
+.categoria-Investimentos { background: rgba(163, 230, 53, 0.2); color: #a3e635; }
+.categoria-Telefonia { background: rgba(56, 189, 248, 0.18); color: #38bdf8; }
+
+/* botão-pílula que abre o painel de categorias nos modais de
+   cadastrar/editar (despesas.html e extrato.html) — mesmo visual dos
+   outros campos do modal (input/select), só que aciona um .painel-dropdown
+   em vez da lista nativa feia do <select> */
+.categoria-picker-wrapper {
+  position: relative;
+}
+
+.categoria-picker-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--dna-card-soft);
+  border: 1px solid var(--dna-border);
+  color: var(--dna-text);
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 13px;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.categoria-picker-btn:hover,
+.categoria-picker-btn:focus-visible {
+  border-color: var(--primary);
+  outline: none;
+}
+
+.categoria-picker-btn span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.categoria-picker-btn .material-icons {
+  font-size: 18px;
+  color: var(--dna-text-dim);
+  flex-shrink: 0;
+}
+
+.categoria-picker-wrapper .painel-dropdown {
+  left: 0;
+  right: 0;
+  width: 100%;
+}
+
 /* input que aparece ao escolher "+ Criar nova categoria" no select de
    categoria (despesas.html e extrato.html, cadastro/edição) */
 .nova-categoria-wrapper {

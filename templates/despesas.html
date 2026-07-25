@@ -135,13 +135,19 @@
     </button>
   </div>
 
-<div class="topo-filtro">
+<!-- toggle compacto Individual/Casal (separado do bloco de filtros, igual à tela de extrato) -->
+<div class="modo-compacto-wrapper" role="tablist" aria-label="Modo de visualização">
+  <button type="button" class="modo-pill-compacta {{ 'active' if isCasal != 'S' else '' }}" data-modo="N" onclick="changeMode('N')">
+    <span class="material-icons">person</span> Individual
+  </button>
+  {% if temConjuge %}
+  <button type="button" class="modo-pill-compacta {{ 'active' if isCasal == 'S' else '' }}" data-modo="S" onclick="changeMode('S')">
+    <span class="material-icons">people</span> Casal
+  </button>
+  {% endif %}
+</div>
 
-  <!-- busca por nome -->
-  <div class="busca-pill">
-    <span class="material-icons">search</span>
-    <input type="text" id="buscaDespesa" placeholder="Buscar pelo nome da despesa" autocomplete="off">
-  </div>
+<div class="topo-filtro">
 
   <div class="filtros-row">
 
@@ -155,19 +161,17 @@
         <button type="button" class="ordenar-opcao" data-ordenar="maior-valor">Valor (maior)</button>
         <button type="button" class="ordenar-opcao" data-ordenar="menor-valor">Valor (menor)</button>
         <button type="button" class="ordenar-opcao" data-ordenar="categoria">Categoria (A–Z)</button>
+        <button type="button" class="ordenar-opcao" data-ordenar="nome">Nome (A–Z)</button>
       </div>
     </div>
 
-    <!-- filtro mês -->
-    <div class="filtro-mes">
-      <div class="filtro-mes-pill">
-        <span class="material-icons">calendar_month</span>
-        <input type="month" id="filtroMes" value="{{ mes_ano }}">
-      </div>
-      <button type="button" onclick="filtrarPorMes()" aria-label="Filtrar">
-        <span class="material-icons">search</span>
-      </button>
-    </div>
+    <!-- filtro mês: mesmo calendário (Litepicker) usado no resto do
+         app, filtra assim que um mês é escolhido -->
+    <button type="button" id="filtroMesBtn" class="filtro-mes-pill filtro-mes-pill-btn">
+      <span class="material-icons">calendar_month</span>
+      <span id="filtroMesTexto">Selecionar mês</span>
+    </button>
+    <input type="hidden" id="filtroMes" value="{{ mes_ano }}">
 
     <div class="filtro-dropdown-wrapper">
       <button type="button" id="categoria-despesas-btn" class="filtro-mes-pill filtro-mes-pill-btn">
@@ -184,51 +188,40 @@
 
   </div>
 
-  <!-- toggle compacto Individual/Casal -->
-  <div class="modo-compacto-wrapper" role="tablist" aria-label="Modo de visualização">
-    <button type="button" class="modo-pill-compacta {{ 'active' if isCasal != 'S' else '' }}" data-modo="N" onclick="changeMode('N')">
-      <span class="material-icons">person</span> Individual
-    </button>
-    {% if temConjuge %}
-    <button type="button" class="modo-pill-compacta {{ 'active' if isCasal == 'S' else '' }}" data-modo="S" onclick="changeMode('S')">
-      <span class="material-icons">people</span> Casal
-    </button>
-    {% endif %}
+</div>
+
+<!-- legendas -->
+<div class="legendas">
+
+  <div class="legenda-item">
+    <span class="dot pago"></span>
+    Pago
   </div>
 
-  <!-- legendas -->
-  <div class="legendas">
-
-    <div class="legenda-item">
-      <span class="dot pago"></span>
-      Pago
-    </div>
-
-    <div class="legenda-item">
-      <span class="dot parcial"></span>
-      Parcial
-    </div>
-
-    <div class="legenda-item">
-      <span class="dot pendente"></span>
-      Pendente
-    </div>
-
-    {% if isCasal == 'S' %}
-    <div class="legenda-item">
-      <span class="dot dele"></span>
-      Ele
-    </div>
-
-    <div class="legenda-item">
-      <span class="dot dela"></span>
-      Ela
-    </div>
-    {% endif %}
-
+  <div class="legenda-item">
+    <span class="dot parcial"></span>
+    Parcial
   </div>
+
+  <div class="legenda-item">
+    <span class="dot pendente"></span>
+    Pendente
+  </div>
+
+  {% if isCasal == 'S' %}
+  <div class="legenda-item">
+    <span class="dot dele"></span>
+    Ele
+  </div>
+
+  <div class="legenda-item">
+    <span class="dot dela"></span>
+    Ela
+  </div>
+  {% endif %}
 
 </div>
+
 <div class="lista-despesas">
 
   {% for despesa in despesas %}
@@ -320,13 +313,19 @@
     <h3>Editar Despesa</h3>
     <form id="form-editar" method="POST" action="{{ url_for('despesa.editar_despesa') }}">
 
-      <label for="editar-categoria-select">Categoria:</label>
-      <select id="editar-categoria-select">
-        {% for cat in categorias_completas %}
-        <option value="{{ cat }}">{{ cat }}</option>
-        {% endfor %}
-        <option value="__nova__">+ Criar nova categoria</option>
-      </select>
+      <label>Categoria:</label>
+      <div class="categoria-picker-wrapper">
+        <button type="button" id="editar-categoria-btn" class="categoria-picker-btn">
+          <span id="editar-categoria-texto">Selecione</span>
+          <span class="material-icons">expand_more</span>
+        </button>
+        <div id="editar-categoria-painel" class="painel-dropdown">
+          {% for cat in categorias_completas %}
+          <button type="button" class="ordenar-opcao" data-categoria="{{ cat }}">{{ cat }}</button>
+          {% endfor %}
+          <button type="button" class="ordenar-opcao" data-categoria="__nova__">+ Criar nova categoria</button>
+        </div>
+      </div>
       <div id="editar-nova-categoria-wrapper" class="nova-categoria-wrapper" style="display:none;">
         <input type="text" id="editar-nova-categoria" placeholder="Nome da nova categoria" maxlength="30">
       </div>
@@ -375,13 +374,19 @@
     <input type="hidden" name="mes_ano" id="cadastrar-data" value="{{ mes_ano }}">
 
 
-      <label for="cadastrar-categoria-select">Categoria:</label>
-      <select id="cadastrar-categoria-select">
+      <label>Categoria:</label>
+      <div class="categoria-picker-wrapper">
+        <button type="button" id="cadastrar-categoria-btn" class="categoria-picker-btn">
+          <span id="cadastrar-categoria-texto">Selecione</span>
+          <span class="material-icons">expand_more</span>
+        </button>
+        <div id="cadastrar-categoria-painel" class="painel-dropdown">
           {% for cat in categorias_completas %}
-          <option value="{{ cat }}">{{ cat }}</option>
+          <button type="button" class="ordenar-opcao" data-categoria="{{ cat }}">{{ cat }}</button>
           {% endfor %}
-          <option value="__nova__">+ Criar nova categoria</option>
-      </select>
+          <button type="button" class="ordenar-opcao" data-categoria="__nova__">+ Criar nova categoria</button>
+        </div>
+      </div>
       <div id="cadastrar-nova-categoria-wrapper" class="nova-categoria-wrapper" style="display:none;">
         <input type="text" id="cadastrar-nova-categoria" placeholder="Nome da nova categoria" maxlength="30">
       </div>

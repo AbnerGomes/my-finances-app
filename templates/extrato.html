@@ -156,6 +156,7 @@
         <button type="button" class="ordenar-opcao" data-ordenar="maior-valor">Valor (maior)</button>
         <button type="button" class="ordenar-opcao" data-ordenar="menor-valor">Valor (menor)</button>
         <button type="button" class="ordenar-opcao" data-ordenar="categoria">Categoria (A–Z)</button>
+        <button type="button" class="ordenar-opcao" data-ordenar="nome">Nome (A–Z)</button>
       </div>
     </div>
 
@@ -164,14 +165,19 @@
       <span id="periodo-picker-texto">Período</span>
     </button>
 
-    <select name="categoria" id="categoria-select" class="filtro-select" onchange="submeterFiltroExtrato()">
-        <option value="Todas">Todas categorias</option>
+    <div class="filtro-dropdown-wrapper">
+      <button type="button" id="categoria-filtro-btn" class="filtro-periodo-btn">
+        <span class="material-icons">sell</span>
+        <span id="categoria-filtro-texto">{{ categoria if categoria and categoria != 'Todas' else 'Categoria' }}</span>
+      </button>
+      <div id="categoria-filtro-painel" class="painel-dropdown">
+        <button type="button" class="ordenar-opcao {{ 'active' if not categoria or categoria == 'Todas' else '' }}" data-categoria="Todas">Todas categorias</button>
         {% for cat in categorias %}
-            <option value="{{ cat }}" {% if request.args.get('categoria') == cat %}selected{% endif %}>
-                {{ cat }}
-            </option>
+        <button type="button" class="ordenar-opcao {{ 'active' if categoria == cat else '' }}" data-categoria="{{ cat }}">{{ cat }}</button>
         {% endfor %}
-    </select>
+      </div>
+    </div>
+    <input type="hidden" name="categoria" id="categoria-filtro-hidden" value="{{ categoria }}">
 
   </div>
 
@@ -208,7 +214,7 @@
   
           <div class="gasto-descricao">{{ gasto[1] }}</div>
         
-          <div class="gasto-categoria categoria-{{ gasto[0]|replace(' ', '')|replace('í','i')|replace('ú','u') }}" data-categoria="{{ gasto[0] }}">
+          <div class="gasto-categoria categoria-{{ gasto[0] | replace(' ', '') }}" data-categoria="{{ gasto[0] }}">
             {{ gasto[0] }}
           </div>
         
@@ -370,13 +376,19 @@
         </button>
         <input type="hidden" name="data" id="editar-data">
   
-        <label for="editar-categoria-select">Categoria:</label>
-        <select id="editar-categoria-select">
+        <label>Categoria:</label>
+        <div class="categoria-picker-wrapper">
+          <button type="button" id="editar-categoria-btn" class="categoria-picker-btn">
+            <span id="editar-categoria-texto">Selecione</span>
+            <span class="material-icons">expand_more</span>
+          </button>
+          <div id="editar-categoria-painel" class="painel-dropdown">
             {% for cat in categorias_completas %}
-            <option value="{{ cat }}">{{ cat }}</option>
+            <button type="button" class="ordenar-opcao" data-categoria="{{ cat }}">{{ cat }}</button>
             {% endfor %}
-            <option value="__nova__">+ Criar nova categoria</option>
-        </select>
+            <button type="button" class="ordenar-opcao" data-categoria="__nova__">+ Criar nova categoria</button>
+          </div>
+        </div>
         <div id="editar-nova-categoria-wrapper" class="nova-categoria-wrapper" style="display:none;">
           <input type="text" id="editar-nova-categoria" placeholder="Nome da nova categoria" maxlength="30">
         </div>
@@ -422,13 +434,19 @@
         </button>
         <input type="hidden" name="data" id="cadastrar-data">
   
-        <label for="cadastrar-categoria-select">Categoria:</label>
-        <select id="cadastrar-categoria-select">
+        <label>Categoria:</label>
+        <div class="categoria-picker-wrapper">
+          <button type="button" id="cadastrar-categoria-btn" class="categoria-picker-btn">
+            <span id="cadastrar-categoria-texto">Selecione</span>
+            <span class="material-icons">expand_more</span>
+          </button>
+          <div id="cadastrar-categoria-painel" class="painel-dropdown">
             {% for cat in categorias_completas %}
-            <option value="{{ cat }}">{{ cat }}</option>
+            <button type="button" class="ordenar-opcao" data-categoria="{{ cat }}">{{ cat }}</button>
             {% endfor %}
-            <option value="__nova__">+ Criar nova categoria</option>
-        </select>
+            <button type="button" class="ordenar-opcao" data-categoria="__nova__">+ Criar nova categoria</button>
+          </div>
+        </div>
         <div id="cadastrar-nova-categoria-wrapper" class="nova-categoria-wrapper" style="display:none;">
           <input type="text" id="cadastrar-nova-categoria" placeholder="Nome da nova categoria" maxlength="30">
         </div>

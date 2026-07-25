@@ -268,22 +268,12 @@ form input[type="radio"] {
   gap: 14px;
 }
 
-/* dentro da nova .filtros-row (busca + Ordenar/Mês/Categoria), o filtro
-   de mês vira só mais um item da linha, dividindo espaço com os outros
-   dois botões em vez de ocupar a largura toda */
-.filtros-row .filtro-mes {
-  flex: 1.3;
-  min-width: 150px;
-}
-
+/* dentro da .filtros-row (Ordenar/Mês/Categoria), cada botão-pílula
+   divide espaço com os outros dois em vez de ocupar a largura toda */
 .filtros-row .filtro-mes-pill-btn {
   width: auto;
-}
-
-.filtro-mes {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  flex: 1;
+  min-width: 108px;
 }
 
 .filtro-mes-pill {
@@ -305,24 +295,6 @@ form input[type="radio"] {
 .filtro-mes-pill .material-icons {
   font-size: 18px;
   color: var(--primary-light);
-}
-
-.filtro-mes-pill input {
-  flex: 1;
-  border: none;
-  background: transparent;
-  color: var(--dna-text);
-  font-size: 13px;
-  font-weight: 600;
-  color-scheme: dark;
-  padding: 0;
-  /* o navegador mostra o nome do mês em minúsculo ("agosto de 2026") —
-     isso só ajusta a exibição, não o valor real do input */
-  text-transform: capitalize;
-}
-
-.filtro-mes-pill input:focus {
-  outline: none;
 }
 
 /* variante botão (abre o calendário via Litepicker) do mesmo pill acima */
@@ -350,40 +322,12 @@ form input[type="radio"] {
   white-space: nowrap;
 }
 
-.filtro-mes button {
-  flex-shrink: 0;
-  width: 42px;
-  height: 42px;
-  background: linear-gradient(135deg, var(--primary-light), var(--primary));
-  border: none;
-  border-radius: 50%;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  cursor: pointer;
-  box-shadow: 0 8px 18px rgba(59, 130, 246, 0.35);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
-}
-
-/* hover leve */
-.filtro-mes button:hover {
-  filter: brightness(1.08);
-  transform: translateY(-1px);
-}
-
-/* efeito de clique */
-.filtro-mes button:active {
-  transform: scale(0.92);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35) inset;
-}
-
 /* toggle compacto Individual/Casal */
 .modo-compacto-wrapper {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-bottom: 10px;
 }
 
 .modo-pill-compacta {
@@ -424,6 +368,8 @@ form input[type="radio"] {
   flex-wrap: wrap;
   gap: 8px;
   font-size: 11px;
+  margin: -4px 0 14px;
+  padding: 0 4px;
 }
 
 .legenda-item {
@@ -571,67 +517,8 @@ form input[type="radio"] {
   color: var(--dna-text-faint);
 }
 
-/* categorias — cores próprias mantidas para diferenciação visual,
-   ajustadas para bom contraste sobre o card escuro */
-.categoria-SaúdeeBeleza {
-  background: rgba(34, 197, 94, 0.18);
-  color: #4ade80;
-}
-
-.categoria-Moradia {
-  background: rgba(59, 130, 246, 0.18);
-  color: #60a5fa;
-}
-
-.categoria-Alimentação {
-  background: rgba(234, 179, 8, 0.18);
-  color: #facc15;
-}
-
-.categoria-Ifood {
-  background: rgba(245, 158, 11, 0.18);
-  color: #fbbf24;
-}
-
-.categoria-Dívidas {
-  background: rgba(247, 96, 85, 0.2);
-  color: #f87171;
-}
-
-.categoria-Mobilidade {
-  background: rgba(113, 150, 253, 0.2);
-  color: #818cf8;
-}
-
-.categoria-Outros {
-  background: rgba(86, 243, 243, 0.18);
-  color: #67e8f9;
-}
-
-.categoria-EntretenimentoeLazer {
-  background: rgba(168, 85, 247, 0.18);
-  color: #c084fc;
-}
-
-.categoria-Educação {
-  background: rgba(205, 176, 231, 0.2);
-  color: #e9d5ff;
-}
-
-.categoria-Pets {
-  background: rgba(180, 120, 60, 0.22);
-  color: #d2a679;
-}
-
-.categoria-Investimentos {
-  background: rgba(22, 163, 74, 0.2);
-  color: #4ade80;
-}
-
-.categoria-Telefonia {
-  background: rgba(56, 189, 248, 0.18);
-  color: #38bdf8;
-}
+/* cores das categorias: ver bloco compartilhado .categoria-X em comum.css
+   (mesmas cores usadas em despesas.html e extrato.html) */
 
 .status-pago {
   border-left: 3px solid rgba(34, 197, 94, 0.45);

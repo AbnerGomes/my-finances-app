@@ -248,29 +248,34 @@ function configurarDropdown(botaoId, painelId, aoEscolher) {
 
 // ============================================================
 // Seletor de categoria com opção de criar categoria própria (usado nos
-// modais de cadastrar/editar despesa e gasto). O <select> visível só
-// ajuda a escolher entre as sugestões + "criar nova"; quem realmente
-// vai no <form> é o campo hidden #<prefixo>-categoria — a coluna
-// "categoria" no banco é texto livre, então uma categoria nova digitada
-// pelo usuário já funciona sem precisar de nenhuma tabela nova.
+// modais de cadastrar/editar despesa e gasto). É um botão-pílula +
+// painel flutuante (mesmo componente do "Ordenar", pro estilo das
+// opções ficar igual em vez de usar a lista feia/nativa do <select>).
+// Quem realmente vai no <form> é o campo hidden #<prefixo>-categoria —
+// a coluna "categoria" no banco é texto livre, então uma categoria nova
+// digitada pelo usuário já funciona sem precisar de nenhuma tabela nova.
 // ============================================================
 const CATEGORIA_NOVA_VALOR = "__nova__";
 
 function configurarSeletorCategoria(prefixo) {
-  const select = document.getElementById(`${prefixo}-categoria-select`);
   const hidden = document.getElementById(`${prefixo}-categoria`);
+  const textoBtn = document.getElementById(`${prefixo}-categoria-texto`);
   const wrapper = document.getElementById(`${prefixo}-nova-categoria-wrapper`);
   const input = document.getElementById(`${prefixo}-nova-categoria`);
-  if (!select || !hidden) return;
+  const painel = document.getElementById(`${prefixo}-categoria-painel`);
+  if (!hidden || !painel) return;
 
-  select.addEventListener("change", () => {
-    if (select.value === CATEGORIA_NOVA_VALOR) {
+  configurarDropdown(`${prefixo}-categoria-btn`, `${prefixo}-categoria-painel`, (opcao) => {
+    const categoria = opcao.dataset.categoria;
+    if (categoria === CATEGORIA_NOVA_VALOR) {
       if (wrapper) wrapper.style.display = "flex";
+      if (textoBtn) textoBtn.textContent = "+ Criar nova categoria";
       hidden.value = input ? input.value.trim() : "";
       if (input) input.focus();
     } else {
       if (wrapper) wrapper.style.display = "none";
-      hidden.value = select.value;
+      if (textoBtn) textoBtn.textContent = categoria;
+      hidden.value = categoria;
     }
   });
 
@@ -280,31 +285,40 @@ function configurarSeletorCategoria(prefixo) {
     });
   }
 
-  // estado inicial (primeira opção do select)
-  hidden.value = select.value;
+  // estado inicial: primeira categoria da lista
+  const primeiraOpcao = painel.querySelector(".ordenar-opcao");
+  if (primeiraOpcao) {
+    primeiraOpcao.classList.add("active");
+    hidden.value = primeiraOpcao.dataset.categoria;
+    if (textoBtn) textoBtn.textContent = primeiraOpcao.dataset.categoria;
+  }
 }
 
 // Chamado ao abrir o modal de edição, com a categoria já cadastrada do
-// item clicado. Se essa categoria não estiver entre as opções do select
+// item clicado. Se essa categoria não estiver entre as opções do painel
 // (ex.: categoria própria criada há pouco), cai no modo "nova categoria"
 // com o texto já preenchido, em vez de simplesmente não selecionar nada.
 function definirCategoriaSelecionada(prefixo, categoria) {
-  const select = document.getElementById(`${prefixo}-categoria-select`);
   const hidden = document.getElementById(`${prefixo}-categoria`);
+  const textoBtn = document.getElementById(`${prefixo}-categoria-texto`);
   const wrapper = document.getElementById(`${prefixo}-nova-categoria-wrapper`);
   const input = document.getElementById(`${prefixo}-nova-categoria`);
+  const painel = document.getElementById(`${prefixo}-categoria-painel`);
   if (!hidden) return;
 
   hidden.value = categoria || "";
-  if (!select) return;
+  painel?.querySelectorAll(".ordenar-opcao").forEach((o) => o.classList.remove("active"));
 
-  const opcaoExiste = Array.from(select.options).some((opt) => opt.value === categoria);
+  const opcaoExiste = painel
+    ? Array.from(painel.querySelectorAll(".ordenar-opcao")).find((o) => o.dataset.categoria === categoria)
+    : null;
 
   if (opcaoExiste) {
-    select.value = categoria;
+    opcaoExiste.classList.add("active");
+    if (textoBtn) textoBtn.textContent = categoria;
     if (wrapper) wrapper.style.display = "none";
   } else {
-    select.value = CATEGORIA_NOVA_VALOR;
+    if (textoBtn) textoBtn.textContent = categoria || "+ Criar nova categoria";
     if (wrapper) wrapper.style.display = "flex";
     if (input) input.value = categoria || "";
   }
