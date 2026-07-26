@@ -596,7 +596,7 @@ body.theme-dark {
      fixed (rodapé) na pilha de empilhamento. Fixed evita os dois problemas. */
   position: fixed;
   min-width: 168px;
-  max-height: 260px;
+  max-height: 320px;
   overflow-y: auto;
   background: var(--dna-card);
   border: 1px solid var(--dna-border);
@@ -606,6 +606,26 @@ body.theme-dark {
   z-index: 1100;
   flex-direction: column;
   gap: 2px;
+  /* lista pode ter mais opções do que cabe na tela (ex.: muitas
+     categorias) — deixa a barra de rolagem sempre visível (fina, na
+     cor do tema) em vez de depender da barra "fantasma" do sistema,
+     que em touchscreen só aparece durante o toque e pode passar a
+     impressão de que a lista acabou ali */
+  scrollbar-width: thin;
+  scrollbar-color: var(--dna-border) transparent;
+}
+
+.painel-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.painel-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.painel-dropdown::-webkit-scrollbar-thumb {
+  background: var(--dna-border);
+  border-radius: 999px;
 }
 
 .painel-dropdown.show {

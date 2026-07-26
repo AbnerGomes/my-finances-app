@@ -371,7 +371,7 @@ class GastoService:
                 conjuge = resultado[0]
 
         # Verifica se o usuário já existe
-        c.execute("SELECT distinct categoria FROM gastos WHERE usuario IN (%s, %s)", (usuario, conjuge))
+        c.execute("SELECT distinct categoria FROM gastos WHERE usuario IN (%s, %s) ORDER BY categoria", (usuario, conjuge))
 
         dados = c.fetchall()
         conn.close()

@@ -188,7 +188,7 @@ class DespesaService:
             if resultado:
                 conjuge = resultado[0]
 
-        c.execute("SELECT distinct categoria FROM despesas WHERE usuario IN (%s, %s)", (usuario, conjuge))
+        c.execute("SELECT distinct categoria FROM despesas WHERE usuario IN (%s, %s) ORDER BY categoria", (usuario, conjuge))
         dados = c.fetchall()
         conn.close()
 
