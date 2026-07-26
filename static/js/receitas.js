@@ -12,7 +12,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //const mesInput = document.getElementById("receita-mes");
   const dataInput = document.getElementById("receita-data");
-  dataInput.value = new Date().toISOString().split("T")[0];
+  // seletor de data (calendário via Litepicker, mesmo padrão do extrato) —
+  // criarSeletorDeDataUnica vive em comum.js
+  const pickerReceita = (typeof criarSeletorDeDataUnica === 'function')
+    ? criarSeletorDeDataUnica('receita-data-btn', 'receita-data-texto', 'receita-data', new Date())
+    : null;
 
   // ================= ABRIR MODAL =================
   addBtn.addEventListener("click", () => {
@@ -28,6 +32,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // ================= EDITAR =================
   document.addEventListener("click", function (e) {
     if (e.target.classList.contains("edit-receita")) {
+      // receita de outra pessoa (modo Casal) — nem abre o modal de
+      // edição; quem barra e avisa é o protegerAcoesDeTerceiros (comum.js)
+      if (e.target.dataset.proprio === "false") return;
 
       modal.style.display = "flex";
 
@@ -37,7 +44,16 @@ document.addEventListener("DOMContentLoaded", () => {
       descInput.value = e.target.dataset.descricao;
       valorInput.value = e.target.dataset.valor;
       //mesInput.value = e.target.dataset.mes;
-      dataInput.value = e.target.dataset.data;
+
+      const dataReceita = e.target.dataset.data; // "YYYY-MM-DD"
+      dataInput.value = dataReceita;
+
+      if (pickerReceita && dataReceita) {
+        const [ano, mes, dia] = dataReceita.split('-');
+        pickerReceita.setDate(new Date(ano, mes - 1, dia));
+        const textoData = document.getElementById('receita-data-texto');
+        if (textoData) textoData.textContent = `${dia}/${mes}/${ano}`;
+      }
     }
   });
 
@@ -48,7 +64,11 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("click", function (e) {
 
     const btn = e.target.closest(".delete-receita"); // 🔥 MELHOR
-  
+
+    // receita de outra pessoa (modo Casal) — nem abre o modal de
+    // confirmação; quem barra e avisa é o protegerAcoesDeTerceiros (comum.js)
+    if (btn && btn.dataset.proprio === "false") return;
+
     if (btn) {
       receitaIdParaDeletar = btn.dataset.id;
       cardParaRemover = btn.closest(".receita-card");

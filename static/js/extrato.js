@@ -55,41 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     //validacao icone de casal
 
-    // Seletor de data único (calendário bonitinho, mesmo padrão do filtro
-    // de período) usado nos modais de cadastrar/editar gasto. Recebe o
-    // botão que abre o calendário, o span onde o texto aparece, o input
-    // hidden que guarda o valor (formato YYYY-MM-DD, o que o backend
-    // espera) e uma data inicial opcional.
-    function criarSeletorDeDataUnica(botaoId, textoId, hiddenId, dataInicial) {
-        const botao = document.getElementById(botaoId);
-        const texto = document.getElementById(textoId);
-        const hidden = document.getElementById(hiddenId);
-        if (!botao || !texto || !hidden) return null;
-
-        const atualizar = (data) => {
-            hidden.value = data.format('YYYY-MM-DD');
-            texto.textContent = data.format('DD/MM/YYYY');
-        };
-
-        const picker = new Litepicker({
-            element: botao,
-            singleMode: true,
-            numberOfMonths: 1,
-            numberOfColumns: 1,
-            format: 'DD/MM/YYYY',
-            lang: 'pt-BR',
-            startDate: dataInicial || hoje,
-            autoApply: true,
-            setup: (picker) => {
-                picker.on('selected', (data) => atualizar(data));
-            }
-        });
-
-        if (dataInicial) atualizar(picker.getStartDate());
-
-        return picker;
-    }
-
+    // criarSeletorDeDataUnica agora vive em comum.js (compartilhado com receitas.js)
     const pickerCadastrar = criarSeletorDeDataUnica('cadastrar-data-btn', 'cadastrar-data-texto', 'cadastrar-data', hoje);
     const pickerEditar = criarSeletorDeDataUnica('editar-data-btn', 'editar-data-texto', 'editar-data');
 
@@ -286,6 +252,10 @@ document.addEventListener('click', function (event) {
     //editar
 
     if (event.target && event.target.classList.contains('edit-icon')) {
+      // gasto de outra pessoa (modo Casal) — nem abre o modal de
+      // edição; quem barra e avisa é o protegerAcoesDeTerceiros (comum.js)
+      if (event.target.getAttribute('data-proprio') === 'false') return;
+
       const data = event.target.getAttribute('data-data');
       const categoria = event.target.getAttribute('data-categoria');
       const descricao = event.target.getAttribute('data-descricao');
@@ -316,8 +286,13 @@ document.addEventListener('click', function (event) {
     }
   
 
-    //deletar  
+    //deletar
      if (event.target && event.target.classList.contains('fa-trash')) {
+        // gasto de outra pessoa (modo Casal) — nem abre o modal de
+        // confirmação; quem barra e avisa é o protegerAcoesDeTerceiros
+        // (comum.js), que também escuta o clique nesse mesmo ícone
+        if (event.target.getAttribute('data-proprio') === 'false') return;
+
         const modal = document.getElementById('modal-confirmar-exclusao');
         const fecharModal = document.getElementById('fechar-modal-excluir');
         const confirmarBtn = document.getElementById('confirmar-exclusao');
@@ -325,7 +300,7 @@ document.addEventListener('click', function (event) {
         let idSelecionado = null;
 
         // Abre o modal ao clicar na lixeira
-        
+
         idSelecionado = event.target.getAttribute('data-id');
         modal.style.display = 'block';
                 

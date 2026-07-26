@@ -7,14 +7,16 @@
 
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" />
 
   <!-- CSS -->
- 
+
   <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/receitas.css') }}">
 
   <!-- JS -->
-  
+
+  <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
   <script src="{{ url_for('static', filename='js/comum.js') }}" defer></script>
   <script src="{{ url_for('static', filename='js/receitas.js') }}" defer></script>
 </head>
@@ -267,8 +269,12 @@
             </option>
           {% endfor %}
         </select> -->
-        <label>Data</label>
-        <input type="date" id="receita-data" required>
+        <label for="receita-data-btn">Data</label>
+        <button type="button" id="receita-data-btn" class="receita-data-btn">
+          <span class="material-icons">calendar_month</span>
+          <span id="receita-data-texto">Selecionar data</span>
+        </button>
+        <input type="hidden" id="receita-data" required>
 
         <button type="submit" class="btn-acao primary">Salvar</button>
       </form>

@@ -23,6 +23,42 @@ document.addEventListener('DOMContentLoaded', () => {
   logoText.prepend(botaoVoltar);
 });
 
+// ============================================================
+// Seletor de data único (calendário via Litepicker) usado nos modais
+// de cadastrar/editar gasto (extrato.html) e receita (receitas.html).
+// Recebe o botão que abre o calendário, o span onde o texto aparece,
+// o input hidden que guarda o valor (formato YYYY-MM-DD, o que o
+// backend espera) e uma data inicial opcional.
+function criarSeletorDeDataUnica(botaoId, textoId, hiddenId, dataInicial) {
+  const botao = document.getElementById(botaoId);
+  const texto = document.getElementById(textoId);
+  const hidden = document.getElementById(hiddenId);
+  if (!botao || !texto || !hidden || typeof Litepicker === 'undefined') return null;
+
+  const atualizar = (data) => {
+    hidden.value = data.format('YYYY-MM-DD');
+    texto.textContent = data.format('DD/MM/YYYY');
+  };
+
+  const picker = new Litepicker({
+    element: botao,
+    singleMode: true,
+    numberOfMonths: 1,
+    numberOfColumns: 1,
+    format: 'DD/MM/YYYY',
+    lang: 'pt-BR',
+    startDate: dataInicial || new Date(),
+    autoApply: true,
+    setup: (picker) => {
+      picker.on('selected', (data) => atualizar(data));
+    }
+  });
+
+  if (dataInicial) atualizar(picker.getStartDate());
+
+  return picker;
+}
+
 function filtrarGastos(isCasal) {
   const url = new URL(window.location.href);
   url.searchParams.set("isCasal", isCasal);

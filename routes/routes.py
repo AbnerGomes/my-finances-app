@@ -256,11 +256,12 @@ def extrato():
        gastos_agrupados[data].append(gasto)
 
 
-    # lista de categorias (filtro só mostra categorias já usadas pelo usuário)
-    categorias = gasto_bp.gasto_service.get_categorias_disponiveis(usuario)
+    # lista de categorias (filtro só mostra categorias já usadas pelo
+    # usuário — e pelo cônjuge, no modo Casal)
+    categorias = gasto_bp.gasto_service.get_categorias_disponiveis(usuario, isCasal)
 
     # categorias padrão + próprias (usadas nos selects de cadastrar/editar gasto)
-    categorias_completas = gasto_bp.gasto_service.get_categorias_completas(usuario)
+    categorias_completas = gasto_bp.gasto_service.get_categorias_completas(usuario, isCasal)
 
     #gastos_pagina = gastos[start:end]
 
@@ -499,7 +500,7 @@ def despesas():
     if isCasal is None:
         isCasal ='N'
 
-    categorias_completas = despesa_bp.despesa_service.get_categorias_completas(usuario)
+    categorias_completas = despesa_bp.despesa_service.get_categorias_completas(usuario, isCasal)
 
     return render_template(
         'despesas.html',

@@ -351,15 +351,27 @@ class GastoService:
         finally:
             conn.close()
 
-    def get_categorias_disponiveis(self,usuario):
+    def get_categorias_disponiveis(self,usuario,isCasal='N'):
 
         usuario = self.get_usuario_by_name(usuario)
 
         conn = get_connection()
         c = conn.cursor()
 
+        conjuge = ''
+
+        # no modo Casal, o filtro tem que incluir categorias que só o
+        # cônjuge usou — senão o filtro de categoria fica incompleto pra
+        # quem tá vendo o extrato combinado dos dois
+        if isCasal == 'S':
+            query = "SELECT a.usuario AS conjuge FROM casal c JOIN autenticacao a ON a.usuario = CASE WHEN c.conjuge_1 = %s THEN c.conjuge_2 ELSE c.conjuge_1 END WHERE %s IN (c.conjuge_1, c.conjuge_2);"
+            c.execute(query, (usuario, usuario))
+            resultado = c.fetchone()
+            if resultado:
+                conjuge = resultado[0]
+
         # Verifica se o usuário já existe
-        c.execute("SELECT distinct categoria FROM gastos WHERE usuario = %s", (usuario,))
+        c.execute("SELECT distinct categoria FROM gastos WHERE usuario IN (%s, %s)", (usuario, conjuge))
 
         dados = c.fetchall()
         conn.close()
@@ -367,10 +379,11 @@ class GastoService:
         # transforma [('Alimentação',), ('Saúde',)] em ['Alimentação', 'Saúde']
         return [row[0] for row in dados]
 
-    def get_categorias_completas(self, usuario):
-        """Categorias padrão + as que o usuário já usou (inclui categorias
-        próprias/customizadas que ele criou digitando um nome novo)."""
-        return combinar_categorias(self.get_categorias_disponiveis(usuario))
+    def get_categorias_completas(self, usuario, isCasal='N'):
+        """Categorias padrão + as que o usuário (e o cônjuge, no modo
+        Casal) já usaram (inclui categorias próprias/customizadas que
+        alguém criou digitando um nome novo)."""
+        return combinar_categorias(self.get_categorias_disponiveis(usuario, isCasal))
 
 
     def editar_gasto(self,gasto,categoria,valor,data,id,usuario):

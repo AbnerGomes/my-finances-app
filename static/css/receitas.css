@@ -458,6 +458,45 @@ body {
   cursor: pointer;
 }
 
+/* botão que abre o calendário (Litepicker) no cadastro/edição de
+   receita — mesmo padrão usado em despesas/extrato */
+.receita-data-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--dna-border);
+  background: var(--dna-card-soft);
+  color: var(--dna-text);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.receita-data-btn:hover,
+.receita-data-btn:focus-visible {
+  border-color: var(--primary);
+  outline: none;
+}
+
+/* nenhum filho do botão pode "roubar" o clique — o Litepicker abre
+   comparando o alvo do clique com o próprio botão por igualdade
+   estrita (event.target === elemento); um ícone/texto no meio faz o
+   clique cair nele em vez do botão e o calendário nunca abre */
+.receita-data-btn * {
+  pointer-events: none;
+}
+
+.receita-data-btn .material-icons {
+  font-size: 18px;
+  color: var(--primary-light);
+}
+
 /* botões de ação genéricos usados no modal de confirmação */
 .btn-acao {
   padding: 10px 16px;

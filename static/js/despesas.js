@@ -271,6 +271,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // 👉 EDITAR
   document.querySelectorAll(".edit-icon").forEach(btn => {
     btn.addEventListener("click", () => {
+      // despesa de outra pessoa (modo Casal) — nem abre o modal de
+      // edição; quem barra e avisa é o protegerAcoesDeTerceiros (comum.js)
+      if (btn.dataset.proprio === "false") return;
+
       definirCategoriaSelecionada('editar', btn.dataset.categoria);
       document.getElementById('editar-descricao').value = btn.dataset.descricao;
       document.getElementById('editar-valor').value = btn.dataset.valor;
@@ -284,6 +288,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll(".delete-despesa").forEach(btn => {
 
     btn.addEventListener("click", () => {
+
+      // despesa de outra pessoa (modo Casal) — nem abre o modal de
+      // confirmação; quem barra e avisa é o protegerAcoesDeTerceiros
+      // (comum.js), que também escuta o clique nesse mesmo ícone
+      if (btn.dataset.proprio === "false") return;
 
       const id = btn.dataset.id;
       console.log(id)
