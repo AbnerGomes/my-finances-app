@@ -3,6 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <script>
+      (function () {
+        const tema = localStorage.getItem('theme') || 'blue';
+        document.documentElement.setAttribute('data-theme', tema);
+      })();
+    </script>
+
     <title>Extrato</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/extrato.css') }}">
     <script src="{{ url_for('static', filename='js/extrato.js') }}" defer></script>
@@ -68,16 +76,20 @@
                 🔵 Azul
               </div>
 
-              <div class="dropdown-item" onclick="changeTheme('yellow')">
-                🟡 Yellow
-              </div>
-
               <div class="dropdown-item" onclick="changeTheme('ocean')">
                 🌊 Ocean
               </div>
 
               <div class="dropdown-item" onclick="changeTheme('dark')">
                 ⚫ Dark
+              </div>
+
+              <div class="dropdown-item" onclick="changeTheme('orange')">
+                🟠 Laranja
+              </div>
+
+              <div class="dropdown-item" onclick="changeTheme('pink')">
+                🌸 Pink
               </div>
 
             </div>

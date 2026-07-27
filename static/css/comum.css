@@ -86,16 +86,42 @@ body.theme-green {
   --dna-card-soft: #1b2550;
 }
 
-/* "Yellow" → âmbar suave, fundo escuro com matiz quente */
-body.theme-yellow {
-  --primary: #f2b84b;
-  --primary-dark: #c8860d;
-  --primary-light: #ffd98a;
+/* "Laranja" → laranja suave, fundo escuro com matiz quente (substitui o
+   antigo "Yellow", que destoava da paleta do resto do app) */
+body.theme-orange {
+  --primary: #fb923c;
+  --primary-dark: #c2410c;
+  --primary-light: #fdba74;
 
-  --dna-bg: #1c1508;
-  --dna-bg-alt: #241c0d;
-  --dna-card: #2b2211;
-  --dna-card-soft: #372c16;
+  --dna-bg: #1f140b;
+  --dna-bg-alt: #271a0f;
+  --dna-card: #331f11;
+  --dna-card-soft: #402813;
+}
+
+/* Alias legado: quem ainda tiver "theme-yellow" salvo no localStorage
+   cai automaticamente no novo tema Laranja. */
+body.theme-yellow {
+  --primary: #fb923c;
+  --primary-dark: #c2410c;
+  --primary-light: #fdba74;
+
+  --dna-bg: #1f140b;
+  --dna-bg-alt: #271a0f;
+  --dna-card: #331f11;
+  --dna-card-soft: #402813;
+}
+
+/* "Pink" → rosa suave, fundo escuro com matiz de vinho */
+body.theme-pink {
+  --primary: #f472b6;
+  --primary-dark: #db2777;
+  --primary-light: #fbcfe8;
+
+  --dna-bg: #1c0f16;
+  --dna-bg-alt: #24131b;
+  --dna-card: #2e1822;
+  --dna-card-soft: #3a1f2b;
 }
 
 /* "Ocean" → teal suave, fundo escuro com matiz esverdeado-azulado */
@@ -166,15 +192,27 @@ body.theme-dark {
   --text-light: #9ca3af;
 }
 
+:root[data-theme="orange"],
 :root[data-theme="yellow"] {
-  --primary: #f2b84b;
-  --primary-dark: #c8860d;
-  --primary-light: #ffd98a;
+  --primary: #fb923c;
+  --primary-dark: #c2410c;
+  --primary-light: #fdba74;
 
-  --dna-bg: #1c1508;
-  --dna-bg-alt: #241c0d;
-  --dna-card: #2b2211;
-  --dna-card-soft: #372c16;
+  --dna-bg: #1f140b;
+  --dna-bg-alt: #271a0f;
+  --dna-card: #331f11;
+  --dna-card-soft: #402813;
+}
+
+:root[data-theme="pink"] {
+  --primary: #f472b6;
+  --primary-dark: #db2777;
+  --primary-light: #fbcfe8;
+
+  --dna-bg: #1c0f16;
+  --dna-bg-alt: #24131b;
+  --dna-card: #2e1822;
+  --dna-card-soft: #3a1f2b;
 }
 
  /* ==================== RODAPÉ ==================== */
@@ -630,6 +668,79 @@ body.theme-dark {
 
 .painel-dropdown.show {
   display: flex;
+}
+
+/* seletor de mês/ano (sem dia — despesa/receita são sempre por mês
+   inteiro), mesma casca visual do .painel-dropdown acima (Ordenar/
+   Categoria). Compartilhado entre despesas.html e receitas.html
+   (criarSeletorDeMes, em comum.js). */
+.painel-mes {
+  padding: 10px;
+  gap: 10px;
+}
+
+.mes-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.mes-picker-ano {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dna-text);
+}
+
+.mes-picker-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: var(--dna-card-soft);
+  color: var(--dna-text-dim);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.mes-picker-nav:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.mes-picker-nav .material-icons {
+  font-size: 18px;
+}
+
+.mes-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.mes-picker-item {
+  padding: 9px 4px;
+  border-radius: 10px;
+  border: none;
+  background: var(--dna-card-soft);
+  color: var(--dna-text-dim);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.mes-picker-item:hover {
+  background: var(--dna-border);
+  color: var(--dna-text);
+}
+
+.mes-picker-item.active {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  color: #fff;
 }
 
 .ordenar-opcao {

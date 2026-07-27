@@ -28,7 +28,7 @@ h2 {
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
-  padding: calc(112px + env(safe-area-inset-top)) 14px calc(140px + env(safe-area-inset-bottom));
+  padding: calc(78px + env(safe-area-inset-top)) 14px calc(140px + env(safe-area-inset-bottom));
 }
 
 /* Estilo do select "solto" (status da despesa no card) */
@@ -330,76 +330,8 @@ form input[type="radio"] {
   white-space: nowrap;
 }
 
-/* seletor de mês/ano (sem dia — despesa é sempre por mês inteiro),
-   mesma casca visual do .painel-dropdown compartilhado (Ordenar/Categoria) */
-.painel-mes {
-  padding: 10px;
-  gap: 10px;
-}
-
-.mes-picker-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 2px;
-}
-
-.mes-picker-ano {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--dna-text);
-}
-
-.mes-picker-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: none;
-  background: var(--dna-card-soft);
-  color: var(--dna-text-dim);
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.mes-picker-nav:hover {
-  background: var(--primary);
-  color: #fff;
-}
-
-.mes-picker-nav .material-icons {
-  font-size: 18px;
-}
-
-.mes-picker-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-}
-
-.mes-picker-item {
-  padding: 9px 4px;
-  border-radius: 10px;
-  border: none;
-  background: var(--dna-card-soft);
-  color: var(--dna-text-dim);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.mes-picker-item:hover {
-  background: var(--dna-border);
-  color: var(--dna-text);
-}
-
-.mes-picker-item.active {
-  background: linear-gradient(135deg, var(--primary-light), var(--primary));
-  color: #fff;
-}
+/* seletor de mês/ano (.painel-mes/.mes-picker-*) agora mora em comum.css
+   — compartilhado com receitas.html, que usa o mesmo componente. */
 
 /* toggle compacto Individual/Casal */
 .modo-compacto-wrapper {
@@ -580,6 +512,14 @@ form input[type="radio"] {
   font-size: 10px;
   font-weight: 600;
   white-space: nowrap;
+  /* .despesa-topo é um grid "1fr auto 1fr" e essa é a coluna "auto" — sem
+     um teto, uma categoria longa (ex.: "Entretenimento e Lazer") força a
+     coluna a crescer pelo texto inteiro, empurrando o grid pra fora da
+     largura do card/tela (e arrastando rodapé/ícones fixos junto). Com
+     max-width + ellipsis a coluna nunca passa desse tamanho. */
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   /* cor neutra padrão — categorias sem uma cor própria abaixo (ex.:
      categorias criadas pelo usuário) caem aqui automaticamente */
   background: var(--dna-card-soft);

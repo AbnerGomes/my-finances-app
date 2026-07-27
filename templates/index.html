@@ -3,6 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <!-- aplica o tema salvo ANTES de qualquer CSS pintar a tela — sem isso,
+       a página sempre nasce com o tema padrão (azul) e só troca pro tema
+       salvo depois que comum.js roda, o que pisca a cor errada por um
+       instante toda vez que se navega pra esta tela com outro tema ativo -->
+  <script>
+    (function () {
+      const tema = localStorage.getItem('theme') || 'blue';
+      document.documentElement.setAttribute('data-theme', tema);
+    })();
+  </script>
+
   <title>APP Finanças - Abner Gomes ©</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
@@ -25,7 +37,7 @@
 	<meta property="og:type" content="website">
   <script src="{{ url_for('static', filename='js/comum.js') }}" defer></script>
 </head>
-<body class="theme-blue home-page dna-page">
+<body class="home-page dna-page">
 
   <!-- Loader de abertura do app — só na primeira vez que o app é aberto
        nesta sessão (sessionStorage some quando o app é fechado/reaberto
@@ -44,12 +56,12 @@
       }
       sessionStorage.setItem('appAbertoNestaSessao', '1');
       // tempo fixo (não espera "load" da página) — CDNs externos (fontes,
-      // gráficos) podem demorar bem mais que 1s pra carregar tudo, e o
-      // pedido era um mínimo de ~1s, não "esperar tudo terminar"
+      // gráficos) podem demorar bem mais que isso pra carregar tudo, e o
+      // pedido era um mínimo de ~1,5s, não "esperar tudo terminar"
       setTimeout(function () {
         el.style.opacity = '0';
         setTimeout(function () { el.style.display = 'none'; }, 300);
-      }, 1000);
+      }, 1500);
     })();
   </script>
 
@@ -112,9 +124,10 @@
 
           <div id="theme-dropdown" class="dropdown-submenu">
             <div class="dropdown-item" onclick="changeTheme('blue')">🔵 Azul</div>
-            <div class="dropdown-item" onclick="changeTheme('yellow')">🟡 Yellow</div>
             <div class="dropdown-item" onclick="changeTheme('ocean')">🌊 Ocean</div>
             <div class="dropdown-item" onclick="changeTheme('dark')">⚫ Dark</div>
+            <div class="dropdown-item" onclick="changeTheme('orange')">🟠 Laranja</div>
+            <div class="dropdown-item" onclick="changeTheme('pink')">🌸 Pink</div>
           </div>
 
           <div class="dropdown-item" onclick="signOut()">Sign out</div>
@@ -216,7 +229,7 @@
           <div id="total-receitas" class="valor receita">0,00</div>
         </div>
         <div class="rd-item align-right">
-          <span class="label-muted">Despesas</span>
+          <span class="label-muted">Gastos</span>
           <div id="total-gastos" class="valor despesa">0,00</div>
         </div>
       </div>
@@ -227,7 +240,7 @@
         <canvas id="donutChart"></canvas>
         <div class="donut-center">
           <div class="donut-center-valor" id="donut-center-saldo">R$ 0,00</div>
-          <div class="donut-center-label">Saldo</div>
+          <div class="donut-center-label" id="donut-center-label">Total do período</div>
         </div>
       </div>
     </div>

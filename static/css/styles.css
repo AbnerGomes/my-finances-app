@@ -634,7 +634,7 @@ body.dna-page .dashboard-wrapper {
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
-  padding: calc(112px + env(safe-area-inset-top)) 14px calc(140px + env(safe-area-inset-bottom));
+  padding: calc(78px + env(safe-area-inset-top)) 14px calc(140px + env(safe-area-inset-bottom));
   background: var(--dna-bg);
   color: var(--dna-text);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;

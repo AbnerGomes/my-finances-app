@@ -59,6 +59,157 @@ function criarSeletorDeDataUnica(botaoId, textoId, hiddenId, dataInicial) {
   return picker;
 }
 
+// ============================================================
+// Seletor de mês/ano (sem dia) usado no filtro de mês de despesas.html e
+// receitas.html — despesa e receita são sempre por mês inteiro (colunas
+// mes_ano/data_receita truncada por mês), então não faz sentido um
+// calendário de dias (Litepicker) aqui. É um painel próprio que
+// reaproveita a mesma casca visual .painel-dropdown do resto do app
+// (Ordenar, Categoria), pra manter a cara padrão.
+// ============================================================
+const NOMES_MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+const NOMES_MESES_ABREV = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+// aoSelecionar (opcional) só dispara quando o usuário efetivamente
+// escolhe um mês — não no preenchimento inicial do texto/valor, senão
+// o filtro de mês recarregaria a página sozinho assim que a tela abrisse.
+function criarSeletorDeMes(botaoId, textoId, hiddenId, valorInicial, aoSelecionar) {
+  const botao = document.getElementById(botaoId);
+  const texto = document.getElementById(textoId);
+  const hidden = document.getElementById(hiddenId);
+  if (!botao || !texto || !hidden) return null;
+
+  const painel = document.createElement('div');
+  painel.className = 'painel-dropdown painel-mes';
+  botao.insertAdjacentElement('afterend', painel);
+
+  const hoje = new Date();
+  let ano = hoje.getFullYear();
+  let mes = hoje.getMonth() + 1; // 1-12
+  if (valorInicial) {
+    const [a, m] = valorInicial.split('-');
+    if (a && m) {
+      ano = Number(a);
+      mes = Number(m);
+    }
+  }
+
+  const definirValor = (novoAno, novoMes) => {
+    ano = novoAno;
+    mes = novoMes;
+    hidden.value = `${ano}-${String(mes).padStart(2, '0')}`;
+    texto.textContent = `${NOMES_MESES[mes - 1]} ${ano}`;
+  };
+
+  const renderizar = (anoExibido) => {
+    painel.innerHTML = '';
+
+    const header = document.createElement('div');
+    header.className = 'mes-picker-header';
+
+    const btnAnterior = document.createElement('button');
+    btnAnterior.type = 'button';
+    btnAnterior.className = 'mes-picker-nav';
+    btnAnterior.setAttribute('aria-label', 'Ano anterior');
+    btnAnterior.innerHTML = '<span class="material-icons">chevron_left</span>';
+    btnAnterior.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderizar(anoExibido - 1);
+    });
+
+    const spanAno = document.createElement('span');
+    spanAno.className = 'mes-picker-ano';
+    spanAno.textContent = anoExibido;
+
+    const btnProximo = document.createElement('button');
+    btnProximo.type = 'button';
+    btnProximo.className = 'mes-picker-nav';
+    btnProximo.setAttribute('aria-label', 'Próximo ano');
+    btnProximo.innerHTML = '<span class="material-icons">chevron_right</span>';
+    btnProximo.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderizar(anoExibido + 1);
+    });
+
+    header.append(btnAnterior, spanAno, btnProximo);
+
+    const grid = document.createElement('div');
+    grid.className = 'mes-picker-grid';
+
+    NOMES_MESES_ABREV.forEach((nome, i) => {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'mes-picker-item';
+      if (anoExibido === ano && i + 1 === mes) item.classList.add('active');
+      item.textContent = nome;
+      item.addEventListener('click', () => {
+        definirValor(anoExibido, i + 1);
+        painel.classList.remove('show');
+        if (aoSelecionar) aoSelecionar({ ano: anoExibido, mes: i + 1 });
+      });
+      grid.appendChild(item);
+    });
+
+    painel.append(header, grid);
+  };
+
+  const posicionar = () => {
+    const r = botao.getBoundingClientRect();
+    const largura = Math.max(r.width, 220);
+    let esquerda = r.left;
+    const maxEsquerda = window.innerWidth - largura - 8;
+    if (esquerda > maxEsquerda) esquerda = Math.max(8, maxEsquerda);
+    painel.style.width = `${largura}px`;
+    painel.style.left = `${esquerda}px`;
+
+    const alturaPainel = Math.min(painel.scrollHeight || 240, 300);
+    const espacoAbaixo = window.innerHeight - r.bottom;
+    if (espacoAbaixo < alturaPainel + 16 && r.top > espacoAbaixo) {
+      painel.style.top = 'auto';
+      painel.style.bottom = `${window.innerHeight - r.top + 8}px`;
+    } else {
+      painel.style.bottom = 'auto';
+      painel.style.top = `${r.bottom + 8}px`;
+    }
+  };
+
+  botao.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const vaiAbrir = !painel.classList.contains('show');
+    if (vaiAbrir) {
+      renderizar(ano);
+      posicionar();
+    }
+    painel.classList.toggle('show');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (
+      painel.classList.contains('show') &&
+      !painel.contains(e.target) &&
+      e.target !== botao &&
+      !botao.contains(e.target)
+    ) {
+      painel.classList.remove('show');
+    }
+  });
+
+  // só fecha se quem rolou foi a página, não o próprio painel (mesmo
+  // cuidado do configurarDropdown acima)
+  window.addEventListener('scroll', (e) => {
+    if (painel.contains(e.target)) return;
+    painel.classList.remove('show');
+  }, true);
+  window.addEventListener('resize', () => {
+    if (painel.classList.contains('show')) posicionar();
+  });
+
+  definirValor(ano, mes);
+
+  return { getValor: () => hidden.value };
+}
+
 function filtrarGastos(isCasal) {
   const url = new URL(window.location.href);
   url.searchParams.set("isCasal", isCasal);
@@ -331,8 +482,15 @@ function configurarDropdown(botaoId, painelId, aoEscolher) {
   });
 
   // fecha em vez de ficar desalinhado — como agora é fixed, rolar a
-  // página move o botão mas não o painel
-  window.addEventListener('scroll', () => painel.classList.remove('show'), true);
+  // página move o botão mas não o painel. Só quando quem rolou foi a
+  // PÁGINA, porém: 'scroll' é capturado aqui em fase de captura (então
+  // pega qualquer scroll da árvore, inclusive o interno do próprio
+  // painel), e sem esse filtro, arrastar a lista de categorias pra ver
+  // as opções de baixo fechava o painel imediatamente no meio do gesto.
+  window.addEventListener('scroll', (e) => {
+    if (painel.contains(e.target)) return;
+    painel.classList.remove('show');
+  }, true);
   window.addEventListener('resize', () => {
     if (painel.classList.contains('show')) posicionar();
   });

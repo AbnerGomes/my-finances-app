@@ -18,7 +18,7 @@ body {
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
-  padding: calc(112px + env(safe-area-inset-top)) 14px calc(140px + env(safe-area-inset-bottom));
+  padding: calc(78px + env(safe-area-inset-top)) 14px calc(140px + env(safe-area-inset-bottom));
   color: var(--dna-text);
 }
 

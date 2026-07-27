@@ -3,6 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <script>
+    (function () {
+      const tema = localStorage.getItem('theme') || 'blue';
+      document.documentElement.setAttribute('data-theme', tema);
+    })();
+  </script>
+
   <title>Receitas</title>
 
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -79,16 +87,20 @@
               🔵 Azul
             </div>
 
-            <div class="dropdown-item" onclick="changeTheme('yellow')">
-              🟡 Yellow
-            </div>
-
             <div class="dropdown-item" onclick="changeTheme('ocean')">
               🌊 Ocean
             </div>
 
             <div class="dropdown-item" onclick="changeTheme('dark')">
               ⚫ Dark
+            </div>
+
+            <div class="dropdown-item" onclick="changeTheme('orange')">
+              🟠 Laranja
+            </div>
+
+            <div class="dropdown-item" onclick="changeTheme('pink')">
+              🌸 Pink
             </div>
 
           </div>
@@ -154,19 +166,14 @@
     <!-- FILTRO -->
     <div class="topo-card">
 
-      <form method="get" class="filters">
-        <div class="filtro-mes-pill">
-          <span class="material-icons">calendar_month</span>
-          <select name="mes" onchange="this.form.submit()">
-            {% for m in meses %}
-              <option value="{{ m }}" {% if m == mes_atual %}selected{% endif %}>
-                {{ m|capitalize }}
-              </option>
-            {% endfor %}
-          </select>
-        </div>
-      </form>
-    
+      <!-- seletor de mês/ano — mesmo componente (criarSeletorDeMes, em
+           comum.js) usado no filtro de mês de despesas.html -->
+      <button type="button" id="filtroMesReceitasBtn" class="filtro-mes-pill filtro-mes-pill-btn">
+        <span class="material-icons">calendar_month</span>
+        <span id="filtroMesReceitasTexto">Selecionar mês</span>
+      </button>
+      <input type="hidden" id="filtroMesReceitas" value="{{ mes_atual }}">
+
       <div class="card-total-receita">
         <div class="icone">
           <span class="material-icons">trending_up</span>
@@ -261,14 +268,6 @@
         <label>Valor</label>
         <input type="number" id="receita-valor" step="0.01" required>
 
-        <!-- <label>Mês</label>
-        <select id="receita-mes">
-          {% for m in meses %}
-            <option value="{{ m }}" {% if m == mes_atual %}selected{% endif %}>
-              {{ m|capitalize }}
-            </option>
-          {% endfor %}
-        </select> -->
         <label for="receita-data-btn">Data</label>
         <button type="button" id="receita-data-btn" class="receita-data-btn">
           <span class="material-icons">calendar_month</span>

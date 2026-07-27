@@ -24,7 +24,7 @@ body {
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
-  padding: calc(112px + env(safe-area-inset-top)) 14px calc(140px + env(safe-area-inset-bottom));
+  padding: calc(78px + env(safe-area-inset-top)) 14px calc(140px + env(safe-area-inset-bottom));
   background: var(--dna-bg);
   color: var(--dna-text);
 }
@@ -121,6 +121,37 @@ body {
   font-size: 18px;
   color: var(--primary-light);
   flex-shrink: 0;
+}
+
+/* variante botão (abre o seletor de mês/ano compartilhado — criarSeletorDeMes,
+   em comum.js) do mesmo pill acima; mesmo padrão de despesas.css */
+.filtro-mes-pill-btn {
+  width: auto;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* nenhum filho do botão deve "roubar" o clique — mesmo cuidado do
+   filtro de mês de despesas.html */
+.filtro-mes-pill-btn * {
+  pointer-events: none;
+}
+
+.filtro-mes-pill-btn:hover,
+.filtro-mes-pill-btn:focus-visible {
+  border-color: var(--primary);
+  outline: none;
+}
+
+.filtro-mes-pill-btn span:last-child {
+  min-width: 0;
+  color: var(--dna-text);
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .filters select {

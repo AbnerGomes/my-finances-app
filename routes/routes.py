@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, session, redirect, url_for, request, flash,jsonify, send_file, request, Response, current_app
+import os
 from service.gasto_service import GastoService
 from io import BytesIO
 import pandas as pd
@@ -9,6 +10,8 @@ from datetime import date
 from collections import defaultdict
 import calendar
 import locale
+import hmac
+import hashlib
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
 from collections import defaultdict
@@ -19,11 +22,16 @@ from service.admin_service import AdminService
 
 from service.categorias import CATEGORIAS_PADRAO
 
+from service.whatsapp_service import WhatsappService
+from service.whatsapp_client import enviar_mensagem_whatsapp
+from service.claude_agent_service import responder_mensagem
+
 import locale
 
 gasto_bp = Blueprint('gasto', __name__)
 despesa_bp = Blueprint('despesa', __name__)
 admin_bp = Blueprint('admin', __name__)
+whatsapp_bp = Blueprint('whatsapp', __name__)
 
 mensagens_erro = [
     "Usuario ou senha incorretos",
@@ -61,17 +69,19 @@ def validar_token_exportacao(token, max_age=600):
 
 #####ROTAS#####
 
-def init_routes(app, gasto_service,despesa_service,admin_service):
+def init_routes(app, gasto_service,despesa_service,admin_service,whatsapp_service=None):
 
     app.register_blueprint(gasto_bp)
     app.register_blueprint(despesa_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(whatsapp_bp)
 
     # Armazena a instância do service dentro do blueprint
     gasto_bp.gasto_service = gasto_service
     despesa_bp.despesa_service = despesa_service
     admin_bp.admin_service = admin_service
-    
+    whatsapp_bp.whatsapp_service = whatsapp_service or WhatsappService()
+
 #def configure_routes(app, gasto_service):
 @gasto_bp.route('/')
 def login():
@@ -780,8 +790,93 @@ def configuracoes():
     #dados = gasto_bp.gasto_service.busca_config(usuario) #verifica_dados_bd(usuario)
 
     tem_conjuge = gasto_bp.gasto_service.tem_conjuge(usuario)
+    telefone_whatsapp = whatsapp_bp.whatsapp_service.get_telefone_vinculado(usuario)
 
-    return render_template('configuracoes.html',usuario=usuario,temConjuge=tem_conjuge)
+    return render_template('configuracoes.html',usuario=usuario,temConjuge=tem_conjuge,telefoneWhatsapp=telefone_whatsapp)
+
+
+@gasto_bp.route('/configuracoes/whatsapp', methods=['POST'])
+def salvar_telefone_whatsapp():
+    if 'usuario' not in session:
+        return redirect(url_for('gasto.login'))
+
+    usuario = session['usuario']
+    telefone = request.form.get('telefone', '').strip()
+
+    if telefone:
+        whatsapp_bp.whatsapp_service.vincular_telefone(telefone, usuario)
+        flash('WhatsApp vinculado com sucesso!')
+    else:
+        whatsapp_bp.whatsapp_service.desvincular_telefone(usuario)
+        flash('WhatsApp desvinculado.')
+
+    return redirect(url_for('gasto.configuracoes'))
+
+
+# ============================================================
+# Bot do WhatsApp: webhook do Meta Cloud API. GET é a verificação que a
+# Meta faz uma vez ao salvar a URL do webhook; POST é toda mensagem que
+# chega. Ver WHATSAPP_SETUP.md pra config completa (variáveis de
+# ambiente, passo a passo no Meta, etc).
+# ============================================================
+@whatsapp_bp.route('/webhook/whatsapp', methods=['GET'])
+def whatsapp_verificar():
+    modo = request.args.get('hub.mode')
+    token = request.args.get('hub.verify_token')
+    desafio = request.args.get('hub.challenge')
+
+    if modo == 'subscribe' and token and token == os.environ.get('WHATSAPP_VERIFY_TOKEN'):
+        return desafio, 200
+
+    return 'Token de verificação inválido', 403
+
+
+@whatsapp_bp.route('/webhook/whatsapp', methods=['POST'])
+def whatsapp_receber():
+    # confirma que a requisição realmente veio da Meta (assinada com o
+    # App Secret) antes de processar qualquer coisa
+    segredo = os.environ.get('WHATSAPP_APP_SECRET', '')
+    if segredo:
+        assinatura = request.headers.get('X-Hub-Signature-256', '')
+        esperado = 'sha256=' + hmac.new(segredo.encode(), request.data, hashlib.sha256).hexdigest()
+        if not hmac.compare_digest(esperado, assinatura):
+            return '', 403
+
+    dados = request.get_json(silent=True) or {}
+
+    try:
+        entrada = dados['entry'][0]['changes'][0]['value']
+        mensagens = entrada.get('messages')
+
+        if not mensagens:
+            # não é uma mensagem nova (ex: confirmação de entrega/leitura) — ignora
+            return jsonify(status='ignorado'), 200
+
+        mensagem = mensagens[0]
+        telefone_remetente = mensagem['from']  # ex: '5551995035983'
+        texto = (mensagem.get('text') or {}).get('body', '').strip()
+
+        if not texto:
+            return jsonify(status='ignorado'), 200
+
+        usuario_nome = whatsapp_bp.whatsapp_service.get_usuario_por_telefone(telefone_remetente)
+
+        if not usuario_nome:
+            enviar_mensagem_whatsapp(
+                telefone_remetente,
+                "Esse número ainda não está vinculado a nenhuma conta do Dois no Azul. "
+                "Entra no app, vai em Configurações e cadastra seu WhatsApp por lá."
+            )
+            return jsonify(status='numero_nao_vinculado'), 200
+
+        resposta_texto = responder_mensagem(texto, usuario_nome)
+        enviar_mensagem_whatsapp(telefone_remetente, resposta_texto)
+
+    except Exception as e:
+        print("Erro processando webhook WhatsApp:", e)
+
+    # sempre responde 200 pro Meta não ficar reenviando o mesmo evento
+    return jsonify(status='ok'), 200
 
 
 @admin_bp.route('/deletar_usuario', methods=['GET','POST'], strict_slashes=False)
@@ -833,74 +928,29 @@ def metas():
 @gasto_bp.route('/receitas', methods=['GET', 'POST'], strict_slashes=False)
 def receitas():
 
-    data_atual = datetime.now()
-
-    # pega número do mês (1-12)
-    mes_num = data_atual.month
-
-    # mapa reverso (número -> nome em português)
-    meses_portugues_lista = [
-        "janeiro", "fevereiro", "março", "abril",
-        "maio", "junho", "julho", "agosto",
-        "setembro", "outubro", "novembro", "dezembro"
-    ]
-
-    mes_por_extenso = meses_portugues_lista[mes_num - 1]
-
-    mes = request.args.get('mes') or mes_por_extenso.lower()
-    #categorias = request.args.getlist('categorias')  # ❌ NÃO PRECISA MAIS (não usa filtro por categoria)
+    # mês no formato YYYY-MM (mesmo padrão do filtro de despesas) — vem do
+    # seletor de mês/ano do front (criarSeletorDeMes, em comum.js), que
+    # substitui o antigo <select> nativo por mês (que além de feio também
+    # não deixava escolher o ANO, então trocar de ano não era possível).
+    mes = request.args.get('mes') or datetime.now().strftime('%Y-%m')
     usuario = session['usuario']
 
     isCasal = request.args.get('isCasal') or request.form.get('isCasal') or 'N'
 
-    # Se não há categorias, define como 'Todas'
-    #if not categorias:
-    #   categorias = ['Todas']  # ❌ NÃO PRECISA MAIS
-
-    meses_portugues = {
-            "janeiro": "01",
-            "fevereiro": "02",
-            "março": "03",
-            "abril": "04",
-            "maio": "05",
-            "junho": "06",
-            "julho": "07",
-            "agosto": "08",
-            "setembro": "09",
-            "outubro": "10",
-            "novembro": "11",
-            "dezembro": "12"
-        }
-
-    numero_mes = meses_portugues.get(mes)
-    if not numero_mes:
-        return jsonify({"error": "Mês inválido"}), 400
-
-    #mes_formatado = f"{numero_mes}-2026"
-    mes_formatado = f"2026-{numero_mes}-01"
-
-    meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
-             'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
+    mes_formatado = f"{mes}-01"
 
     tem_conjuge = gasto_bp.gasto_service.tem_conjuge(usuario)
 
-    #  ISSO É O PRINCIPAL AGORA
     receitas_lista = gasto_bp.gasto_service.listar_receitas(usuario, mes_formatado, isCasal)
 
     receitas_agrupadas = agrupar_receitas(receitas_lista)
 
     total_receitas = sum(r[2] for r in receitas_lista)
 
-    agrupado = defaultdict(list)
-
-    for r in receitas_lista:
-        agrupado[r[1]].append(r)
-
     return render_template('receitas.html',
                            usuario=usuario,
                            temConjuge=tem_conjuge,
                            isCasal=isCasal,
-                           meses=meses,
                            mes_atual=mes,
                            receitas_lista=receitas_lista,
                            total_receitas=total_receitas,

@@ -4,9 +4,20 @@ var barChart = null;
 
 let periodoAtual = 'mesatual';
 
-// Controle de exibição do saldo (olho de mostrar/ocultar)
-let saldoOculto = false;
-let saldoAtualFormatado = 'R$ 0,00';
+// Controle de exibição do saldo (olho de mostrar/ocultar) — esconde TODOS
+// os valores totalizadores da home, não só o saldo: o card fixo "Saldo
+// total" (resumo do mês, não muda com os chips de período), Receitas e
+// Gastos do mesmo card, e o total do período selecionado (que aparece
+// tanto embaixo do saldo quanto no centro do donut).
+// respeita a preferência "Ocultar valores ao abrir" (tela de Configurações)
+let saldoOculto = localStorage.getItem('ocultarValoresPadrao') === 'S';
+let saldoAtualFormatado = 'R$ 0,00';       // card "Saldo total" (fixo do mês/mês anterior)
+let totalReceitasFormatado = '0,00';       // card "Visão geral do mês" — Receitas
+let totalGastosFormatado = '0,00';         // card "Visão geral do mês" — Gastos
+let totalPeriodoFormatado = '0,00';        // total do período selecionado nos chips (Hoje/Semana/etc.) — sem "R$ "
+
+const MASCARA_VALOR = '••••';
+const MASCARA_SALDO = 'R$ ••••••';
 
 function filtrarGastosBtn(periodo) {
 
@@ -55,9 +66,12 @@ function gerarGradienteFatia(ctx, corBase) {
         w * 0.38, h * 0.34, raio * 0.05,
         w * 0.5, h * 0.5, raio
     );
-    grad.addColorStop(0, ajustarCor(corBase, 0.35));
-    grad.addColorStop(0.55, corBase);
-    grad.addColorStop(1, ajustarCor(corBase, -0.22));
+    // contraste mais forte entre o brilho (canto superior esquerdo) e a
+    // sombra (borda) do que antes — o efeito de volume/3D era sutil
+    // demais pra "sobressair da tela" como pedido
+    grad.addColorStop(0, ajustarCor(corBase, 0.5));
+    grad.addColorStop(0.5, corBase);
+    grad.addColorStop(1, ajustarCor(corBase, -0.35));
     return grad;
 }
 
@@ -77,10 +91,12 @@ const donutSombraPlugin = {
 
         ctx.save();
         ctx.beginPath();
-        ctx.ellipse(cx, cy + raioExterno * 0.14, raioExterno * 0.94, raioExterno * 0.8, 0, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(3, 7, 18, 0.5)';
+        // sombra mais funda e mais deslocada — reforça a sensação de que o
+        // donut está "flutuando" sobre o card, não colado nele
+        ctx.ellipse(cx, cy + raioExterno * 0.2, raioExterno * 0.96, raioExterno * 0.82, 0, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(3, 7, 18, 0.62)';
         try {
-            ctx.filter = 'blur(12px)';
+            ctx.filter = 'blur(18px)';
         } catch (e) { /* navegadores sem suporte a filter em canvas ignoram a sombra */ }
         ctx.fill();
         ctx.restore();
@@ -125,15 +141,22 @@ const iconesCategorias = {
   'Telefonia': 'smartphone'
 };
 
-// Atualiza o "Saldo total" (card de cima) e o valor central do donut,
-// respeitando o estado de oculto/visível.
-function renderSaldoTotal() {
-  const el = document.getElementById('saldo-total');
-  const elCenter = document.getElementById('donut-center-saldo');
-  const texto = saldoOculto ? 'R$ ••••••' : saldoAtualFormatado;
+// Atualiza todos os valores totalizadores da home de uma vez (Saldo total
+// fixo do mês, Receitas, Gastos e o total do período selecionado — que
+// aparece tanto no card do saldo quanto no centro do donut), respeitando
+// o estado de oculto/visível do olhinho.
+function renderValoresHome() {
+  const elSaldo = document.getElementById('saldo-total');
+  const elDonut = document.getElementById('donut-center-saldo');
+  const elReceitas = document.getElementById('total-receitas');
+  const elGastos = document.getElementById('total-gastos');
+  const elPeriodo = document.getElementById('valor-total');
 
-  if (el) el.textContent = texto;
-  if (elCenter) elCenter.textContent = texto;
+  if (elSaldo) elSaldo.textContent = saldoOculto ? MASCARA_SALDO : saldoAtualFormatado;
+  if (elDonut) elDonut.textContent = saldoOculto ? MASCARA_SALDO : ('R$ ' + totalPeriodoFormatado);
+  if (elReceitas) elReceitas.textContent = saldoOculto ? MASCARA_VALOR : totalReceitasFormatado;
+  if (elGastos) elGastos.textContent = saldoOculto ? MASCARA_VALOR : totalGastosFormatado;
+  if (elPeriodo) elPeriodo.textContent = saldoOculto ? MASCARA_VALOR : totalPeriodoFormatado;
 }
 
 // Monta a lista de categorias com barra de progresso (baseada nos
@@ -197,6 +220,12 @@ function filtrarGastos(periodo, isCasal) {
             total.style.display = "none";
 
             renderCategorias([], []);
+
+            totalPeriodoFormatado = (0).toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            renderValoresHome();
         }
         else {
             total.style.display = "block";
@@ -218,66 +247,62 @@ function filtrarGastos(periodo, isCasal) {
 
             renderCategorias(categorias, valores);
 
-            // Calcula e mostra o total
+            // Total do PERÍODO SELECIONADO (chip clicado: Hoje/Ontem/Semana/etc.)
+            // — aparece embaixo do saldo e no centro do donut, e muda sempre
+            // que um chip diferente é clicado, já que é exatamente o que o
+            // donut está mostrando.
             let totalGasto = valores.reduce((acc, val) => acc + parseFloat(val || 0), 0);
-
-            periodo = periodo == 'mesanterior'
-                ? 'mesanterior'
-                : 'mesatual';
-
-            // buscar receitas do backend
-            fetch(`/total_saldo_mes?periodo=${periodo}&isCasal=${isCasal}`)
-                .then(res => res.json())
-                .then(data => {
-
-                    let totalReceitas = parseFloat(data.total_receitas || 0);
-                    let totalGastos = parseFloat(data.total_gastos || 0);
-
-                    // Atualiza gastos
-                    document.getElementById("total-gastos").innerText =
-                        totalGastos.toLocaleString('pt-BR', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                        });
-
-                    document.getElementById("total-receitas").innerText =
-                        totalReceitas.toLocaleString('pt-BR', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                        });
-
-                    let saldo = totalReceitas - totalGastos; // total do mês
-
-                    saldoAtualFormatado = 'R$ ' + saldo.toLocaleString('pt-BR', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
-
-                    renderSaldoTotal();
-
-                    const corSaldo = saldo >= 0 ? '#22c55e' : '#fb923c';
-                    const saldoEl = document.getElementById("saldo-total");
-                    const donutCenterEl = document.getElementById("donut-center-saldo");
-
-                    if (saldoEl) saldoEl.style.color = corSaldo;
-                    if (donutCenterEl) donutCenterEl.style.color = corSaldo;
-                });
-
-            let totalFormatado = totalGasto.toLocaleString('pt-BR', {
+            totalPeriodoFormatado = totalGasto.toLocaleString('pt-BR', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
-            document.getElementById("valor-total").innerText = totalFormatado;
-
-            let mesSelecionado = document.getElementById("resumo-titulo");
-            if (mesSelecionado) {
-                mesSelecionado.innerText =
-                    periodo == 'mesanterior'
-                        ? 'Resumo do mês anterior'
-                        : 'Visão geral do mês';
-            }
+            renderValoresHome();
         }
     });
+
+    // "Resumo mensal" (card "Saldo total" + Receitas/Gastos) é uma
+    // informação separada do donut/total do período: só muda quando o
+    // usuário escolhe Mês ou Mês Anterior, e permanece igual enquanto ele
+    // clica em Hoje/Ontem/Semana/Semana Anterior — daí o gate abaixo.
+    if (periodo === 'mesatual' || periodo === 'mesanterior') {
+        fetch(`/total_saldo_mes?periodo=${periodo}&isCasal=${isCasal}`)
+            .then(res => res.json())
+            .then(data => {
+
+                let totalReceitas = parseFloat(data.total_receitas || 0);
+                let totalGastos = parseFloat(data.total_gastos || 0);
+
+                totalGastosFormatado = totalGastos.toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                totalReceitasFormatado = totalReceitas.toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+
+                let saldo = totalReceitas - totalGastos; // total do mês (fixo)
+
+                saldoAtualFormatado = 'R$ ' + saldo.toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+
+                renderValoresHome();
+
+                const corSaldo = saldo >= 0 ? '#22c55e' : '#fb923c';
+                const saldoEl = document.getElementById("saldo-total");
+                if (saldoEl) saldoEl.style.color = corSaldo;
+            });
+
+        let mesSelecionado = document.getElementById("resumo-titulo");
+        if (mesSelecionado) {
+            mesSelecionado.innerText =
+                periodo == 'mesanterior'
+                    ? 'Resumo do mês anterior'
+                    : 'Visão geral do mês';
+        }
+    }
 }
 
 function filtrarGastosMensais(isCasal) {
@@ -374,10 +399,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 backgroundColor: coresIniciais.map(cor => gerarGradienteFatia(ctxDonut2d, cor)),
                 borderColor: dnaCard,
-                borderWidth: 3,
+                borderWidth: 4,
                 borderRadius: 6,
-                spacing: 3,
-                hoverOffset: 10,
+                spacing: 4,
+                hoverOffset: 14,
                 hoverBorderColor: dnaCard
             }]
         },
@@ -516,14 +541,20 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('user-icon').textContent = 'person';
     }
 
-    // botão de ocultar/mostrar o saldo total
+    // botão de ocultar/mostrar o saldo total — reflete de cara se
+    // "Ocultar valores ao abrir" estiver marcado nas Configurações
     const btnToggleSaldo = document.getElementById('toggle-saldo');
     if (btnToggleSaldo) {
+        if (saldoOculto) {
+            const iconInicial = document.getElementById('toggle-saldo-icon');
+            if (iconInicial) iconInicial.textContent = 'visibility_off';
+        }
+
         btnToggleSaldo.addEventListener('click', function () {
             saldoOculto = !saldoOculto;
             const icon = document.getElementById('toggle-saldo-icon');
             if (icon) icon.textContent = saldoOculto ? 'visibility_off' : 'visibility';
-            renderSaldoTotal();
+            renderValoresHome();
         });
     }
 

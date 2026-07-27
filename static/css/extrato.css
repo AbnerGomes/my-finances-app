@@ -416,7 +416,7 @@ font-size: 11px;
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
-  padding: calc(112px + env(safe-area-inset-top)) 14px calc(140px + env(safe-area-inset-bottom));
+  padding: calc(78px + env(safe-area-inset-top)) 14px calc(140px + env(safe-area-inset-bottom));
   background: var(--dna-bg);
   color: var(--dna-text);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -544,6 +544,14 @@ body {
 
   white-space: nowrap;
   z-index: 1;
+
+  /* sem teto de largura, uma categoria longa (ex.: "Entretenimento e
+     Lazer") passa das bordas do card centralizado em cima — o card cresce
+     mais que a tela e arrasta rodapé/ícones fixos junto. max-width +
+     ellipsis garante que o badge nunca ultrapassa o card. */
+  max-width: calc(100% - 24px);
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   /* cor neutra padrão — categorias sem uma cor própria abaixo (ex.:
      categorias criadas pelo usuário) caem aqui automaticamente */

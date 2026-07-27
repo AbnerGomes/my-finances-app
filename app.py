@@ -11,6 +11,7 @@ from routes.routes import init_routes
 
 from service.despesa_service import DespesaService
 from service.admin_service import AdminService
+from service.whatsapp_service import WhatsappService
 
 app = Flask(__name__)
 
@@ -44,11 +45,12 @@ def cache_busted_url_for():
 gasto_service = GastoService()
 despesa_service = DespesaService()
 admin_service = AdminService()
+whatsapp_service = WhatsappService()
 #create_db() # chamar antes do flask iniciar
 
 # Configura rotas
 #configure_routes(app, gasto_service)
-init_routes(app, gasto_service,despesa_service,admin_service),#regitra com blueprint
+init_routes(app, gasto_service,despesa_service,admin_service,whatsapp_service),#regitra com blueprint
 
 if __name__ == '__main__':
     #create_db()  # Cria o banco e a tabela ao iniciar o app

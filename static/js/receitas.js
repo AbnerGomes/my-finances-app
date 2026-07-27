@@ -1,5 +1,16 @@
 console.log("JS RECEITAS CARREGOU");
 
+// navega pro mês escolhido no seletor de mês/ano (mesmo padrão do filtro
+// de mês de despesas.js)
+function filtrarReceitasPorMes() {
+  const mes = document.getElementById("filtroMesReceitas").value;
+  const modoAtual = (typeof getModoSalvo === 'function') ? getModoSalvo() : 'N';
+
+  if (mes) {
+    window.location.href = `/receitas?mes=${mes}&isCasal=${modoAtual}`;
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
 
   const modal = document.getElementById("modal");
@@ -17,6 +28,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const pickerReceita = (typeof criarSeletorDeDataUnica === 'function')
     ? criarSeletorDeDataUnica('receita-data-btn', 'receita-data-texto', 'receita-data', new Date())
     : null;
+
+  // filtro de mês do topo — mesmo seletor de mês/ano de despesas.html;
+  // filtra assim que um mês é escolhido (recarrega a página, como o
+  // <select> nativo fazia antes)
+  if (typeof criarSeletorDeMes === 'function') {
+    criarSeletorDeMes(
+      'filtroMesReceitasBtn',
+      'filtroMesReceitasTexto',
+      'filtroMesReceitas',
+      document.getElementById('filtroMesReceitas')?.value,
+      () => filtrarReceitasPorMes()
+    );
+  }
 
   // ================= ABRIR MODAL =================
   addBtn.addEventListener("click", () => {

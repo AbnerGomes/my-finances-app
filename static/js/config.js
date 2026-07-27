@@ -19,4 +19,14 @@ document.addEventListener('DOMContentLoaded', function () {
     // a tela normal de Configurações abria
     const modal = document.getElementById('modal-delecao-ok');
     if (modal) modal.style.display = 'block';
+
+    // "Ocultar valores ao abrir" — preferência lida pela home (scripts.js)
+    // pra já abrir com o olhinho fechado, quando marcada
+    const chkOcultar = document.getElementById('chk-ocultar-valores-padrao');
+    if (chkOcultar) {
+        chkOcultar.checked = localStorage.getItem('ocultarValoresPadrao') === 'S';
+        chkOcultar.addEventListener('change', function () {
+            localStorage.setItem('ocultarValoresPadrao', chkOcultar.checked ? 'S' : 'N');
+        });
+    }
 });

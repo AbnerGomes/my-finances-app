@@ -131,6 +131,74 @@ cursor: pointer;
 filter: brightness(1.08);
 }
 
+/* Seletor de tema (tela de Configurações) — mesmas opções do dropdown de
+   perfil, só que como swatches visuais em vez de itens de menu */
+.option-tema {
+  align-items: center;
+}
+
+.tema-swatches {
+  display: flex;
+  gap: 10px;
+}
+
+.tema-swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--dna-border);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.tema-swatch:hover,
+.tema-swatch:focus-visible {
+  transform: scale(1.12);
+  border-color: var(--dna-text-dim);
+  outline: none;
+}
+
+.tema-swatch-blue { background: linear-gradient(135deg, #93c5fd, #3b82f6); }
+.tema-swatch-ocean { background: linear-gradient(135deg, #7fe9e5, #22c1c3); }
+.tema-swatch-dark { background: linear-gradient(135deg, #cbd5e1, #64748b); }
+.tema-swatch-orange { background: linear-gradient(135deg, #fdba74, #fb923c); }
+.tema-swatch-pink { background: linear-gradient(135deg, #fbcfe8, #f472b6); }
+
+/* Card "Vincular WhatsApp" (tela de Configurações) */
+.whatsapp-hint {
+  font-size: 11px;
+  color: var(--dna-text-dim);
+  margin: 4px 0 10px;
+  line-height: 1.4;
+}
+
+.whatsapp-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.whatsapp-input-row input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.whatsapp-btn-salvar {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  color: #fff;
+  border: none;
+  padding: 0 16px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.whatsapp-btn-salvar:hover {
+  filter: brightness(1.08);
+}
+
 /* Responsivo (mobile first) */
 @media (max-width: 400px) {
 .modal-content {
