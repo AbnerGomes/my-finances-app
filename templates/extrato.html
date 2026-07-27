@@ -502,10 +502,48 @@
     <div class="modal-content" style="background-color: #e96960;">
       <span class="mensalista" id="fechar-modal-mensalista">&times;</span>
       <h4 style="text-align: center; color: #f5f5f5;">Assinatura de mensalista vencida!</h4>
-      <h4 style="text-align: center; color: #f5f5f5;">Contate o administrador.</h4>  
-      <button type="submit" id="confirmar-ok" class="btn-ok" style="margin-top: 12px;">OK</button>  
+      <h4 style="text-align: center; color: #f5f5f5;">Contate o administrador.</h4>
+      <button type="submit" id="confirmar-ok" class="btn-ok" style="margin-top: 12px;">OK</button>
     </div>
   </div>
+
+<!-- Bottom sheet: filtro de Período (opções rápidas + intervalo personalizado) -->
+<div id="sheet-periodo" class="sheet-overlay">
+  <div class="sheet-periodo-conteudo">
+    <div class="sheet-handle"></div>
+
+    <h3 class="sheet-titulo">Período</h3>
+
+    <div class="sheet-periodo-rapido">
+      <button type="button" class="periodo-rapido-btn" data-dias="7">7 Dias</button>
+      <button type="button" class="periodo-rapido-btn" data-dias="15">15 Dias</button>
+      <button type="button" class="periodo-rapido-btn" data-dias="30">30 Dias</button>
+      <button type="button" class="periodo-rapido-btn" data-dias="90">90 Dias</button>
+    </div>
+
+    <div class="sheet-periodo-personalizar">
+      <h4>Personalizar período</h4>
+      <p class="sheet-periodo-aviso">Você só pode consultar períodos de até 2 anos</p>
+
+      <label for="periodo-data-inicial-btn">Data inicial</label>
+      <button type="button" id="periodo-data-inicial-btn" class="periodo-data-input-btn">
+        <span id="periodo-data-inicial-texto">Selecionar</span>
+        <span class="material-icons">calendar_month</span>
+      </button>
+      <input type="hidden" id="periodo-data-inicial">
+
+      <label for="periodo-data-final-btn">Data final</label>
+      <button type="button" id="periodo-data-final-btn" class="periodo-data-input-btn">
+        <span id="periodo-data-final-texto">Selecionar</span>
+        <span class="material-icons">calendar_month</span>
+      </button>
+      <input type="hidden" id="periodo-data-final">
+    </div>
+
+    <button type="button" id="btn-filtrar-periodo" class="sheet-btn-filtrar">Filtrar</button>
+    <button type="button" id="btn-limpar-periodo" class="sheet-btn-limpar">Limpar filtro</button>
+  </div>
+</div>
 
 </body>
 </html>

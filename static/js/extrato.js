@@ -17,41 +17,108 @@ document.addEventListener('DOMContentLoaded', function () {
     const startDate = parseDate(dataInicioStr) || primeiroDiaMes;
     const endDate = parseDate(dataFimStr) || hoje;
 
-    // Atualiza visualmente o texto no botão (o botão em si vira o "anchor"
-    // do Litepicker, mas o texto fica num span filho pra não perder o ícone).
-    // Formato curto (sem ano, "01/07 a 24/07") pra caber no espaço da
-    // pílula ao lado de "Ordenar"/"Categoria" — o intervalo completo (com
-    // ano) fica disponível no title, pra quem passar o mouse/segurar o dedo.
+    // Atualiza visualmente o texto no botão "Período" (abre o bottom
+    // sheet — ver mais abaixo). Formato curto (sem ano, "01/07 a 24/07")
+    // pra caber no espaço da pílula ao lado de "Ordenar"/"Categoria" — o
+    // intervalo completo (com ano) fica disponível no title, pra quem
+    // passar o mouse/segurar o dedo.
     const pad2 = (n) => String(n).padStart(2, '0');
     const curtoDate = (d) => `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}`;
-    const curtoLitepicker = (d) => d.format('DD/MM');
+    const formatarISO = (d) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 
     const pickerInput = document.getElementById('periodo-picker');
     const pickerTexto = document.getElementById('periodo-picker-texto');
     pickerTexto.textContent = `${curtoDate(startDate)} a ${curtoDate(endDate)}`;
     pickerInput.title = `${startDate.toLocaleDateString()} até ${endDate.toLocaleDateString()}`;
 
-    // Inicializa o picker
-    const picker = new Litepicker({
-        element: pickerInput,
-        singleMode: false,
-        numberOfMonths: 1,
-        numberOfColumns: 1,
-        format: "DD/MM/YYYY",
-        lang: "pt-BR",
-        startDate: startDate,
-        endDate: endDate,
-        autoApply: true,
-        setup: (picker) => {
-            picker.on('selected', (startDate, endDate) => {
-                document.querySelector('input[name="data_inicio"]').value = startDate.format('YYYY-MM-DD');
-                document.querySelector('input[name="data_fim"]').value = endDate.format('YYYY-MM-DD');
-                pickerTexto.textContent = `${curtoLitepicker(startDate)} a ${curtoLitepicker(endDate)}`;
-                pickerInput.title = `${startDate.format('DD/MM/YYYY')} até ${endDate.format('DD/MM/YYYY')}`;
-                submeterFiltroExtrato();
-            });
-        }
+    // ================= BOTTOM SHEET "PERÍODO" =================
+    // Substitui o antigo calendário de intervalo (Litepicker range) por
+    // um sheet com atalhos (7/15/30/90 dias) + intervalo personalizado,
+    // no mesmo padrão visual de apps de banco.
+    const sheetPeriodo = document.getElementById('sheet-periodo');
+
+    const abrirSheetPeriodo = () => sheetPeriodo?.classList.add('show');
+    const fecharSheetPeriodo = () => sheetPeriodo?.classList.remove('show');
+
+    if (pickerInput && sheetPeriodo) {
+        pickerInput.addEventListener('click', abrirSheetPeriodo);
+
+        // fecha ao clicar no fundo escuro (fora do conteúdo do sheet)
+        sheetPeriodo.addEventListener('click', (e) => {
+            if (e.target === sheetPeriodo) fecharSheetPeriodo();
+        });
+    }
+
+    const aplicarPeriodo = (dataInicio, dataFim, textoBotao) => {
+        document.getElementById('data_inicio').value = formatarISO(dataInicio);
+        document.getElementById('data_fim').value = formatarISO(dataFim);
+        pickerTexto.textContent = textoBotao;
+        pickerInput.title = `${dataInicio.toLocaleDateString()} até ${dataFim.toLocaleDateString()}`;
+        fecharSheetPeriodo();
+        submeterFiltroExtrato();
+    };
+
+    // atalhos "7 Dias" / "15 Dias" / "30 Dias" / "90 Dias" — aplica na hora
+    document.querySelectorAll('.periodo-rapido-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const dias = Number(btn.dataset.dias);
+            const fim = new Date();
+            const inicio = new Date();
+            inicio.setDate(inicio.getDate() - (dias - 1));
+            aplicarPeriodo(inicio, fim, `${curtoDate(inicio)} a ${curtoDate(fim)}`);
+        });
     });
+
+    // intervalo personalizado — mesmo seletor de data único usado no
+    // resto do app (criarSeletorDeDataUnica, em comum.js)
+    const pickerDataInicial = criarSeletorDeDataUnica(
+        'periodo-data-inicial-btn', 'periodo-data-inicial-texto', 'periodo-data-inicial', startDate
+    );
+    const pickerDataFinal = criarSeletorDeDataUnica(
+        'periodo-data-final-btn', 'periodo-data-final-texto', 'periodo-data-final', endDate
+    );
+
+    const DOIS_ANOS_EM_MS = 2 * 365 * 24 * 60 * 60 * 1000;
+
+    const btnFiltrarPeriodo = document.getElementById('btn-filtrar-periodo');
+    if (btnFiltrarPeriodo) {
+        btnFiltrarPeriodo.addEventListener('click', () => {
+            const iniStr = document.getElementById('periodo-data-inicial').value;
+            const fimStr = document.getElementById('periodo-data-final').value;
+
+            if (!iniStr || !fimStr) {
+                showToast('Selecione a data inicial e a data final', false);
+                return;
+            }
+
+            const inicio = parseDate(iniStr);
+            const fim = parseDate(fimStr);
+
+            if (inicio > fim) {
+                showToast('A data inicial não pode ser depois da data final', false);
+                return;
+            }
+
+            if (fim - inicio > DOIS_ANOS_EM_MS) {
+                showToast('Você só pode consultar períodos de até 2 anos', false);
+                return;
+            }
+
+            aplicarPeriodo(inicio, fim, `${curtoDate(inicio)} a ${curtoDate(fim)}`);
+        });
+    }
+
+    const btnLimparPeriodo = document.getElementById('btn-limpar-periodo');
+    if (btnLimparPeriodo) {
+        btnLimparPeriodo.addEventListener('click', () => {
+            // limpa os dois campos — o backend já cai de volta no padrão
+            // (primeiro dia do mês até hoje) quando vêm vazios
+            document.getElementById('data_inicio').value = '';
+            document.getElementById('data_fim').value = '';
+            fecharSheetPeriodo();
+            submeterFiltroExtrato();
+        });
+    }
 
     //validacao icone de casal
 

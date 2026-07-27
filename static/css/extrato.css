@@ -1030,3 +1030,183 @@ body {
 .litepicker .button-cancel {
   color: var(--dna-text-dim) !important;
 }
+
+/* ============================================================
+   Bottom sheet do filtro de "Período" — opções rápidas (7/15/30/90
+   dias) + intervalo personalizado. Sobe de baixo pra cima (diferente
+   dos .modal centralizados do resto do app), ancorado no rodapé da
+   tela como nos apps de banco.
+============================================================ */
+.sheet-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.65);
+  z-index: 1300;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.sheet-overlay.show {
+  display: flex;
+}
+
+.sheet-periodo-conteudo {
+  width: 100%;
+  max-width: 480px;
+  max-height: 88vh;
+  overflow-y: auto;
+  background: var(--dna-card);
+  border: 1px solid var(--dna-border);
+  border-bottom: none;
+  border-radius: 22px 22px 0 0;
+  padding: 10px 18px calc(20px + env(safe-area-inset-bottom));
+  box-shadow: 0 -14px 40px rgba(3, 7, 18, 0.5);
+  animation: sheetSlideUp 0.25s ease-out;
+}
+
+@keyframes sheetSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.sheet-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--dna-border);
+  margin: 6px auto 14px;
+}
+
+.sheet-titulo {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--dna-text);
+}
+
+.sheet-periodo-rapido {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+.periodo-rapido-btn {
+  flex: 1;
+  min-width: 72px;
+  padding: 10px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--dna-border);
+  background: var(--dna-card-soft);
+  color: var(--dna-text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.periodo-rapido-btn:hover,
+.periodo-rapido-btn.active {
+  border-color: var(--primary);
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  color: #fff;
+}
+
+.sheet-periodo-personalizar h4 {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dna-text);
+}
+
+.sheet-periodo-aviso {
+  margin: 0 0 16px;
+  font-size: 12px;
+  color: var(--dna-text-dim);
+}
+
+.sheet-periodo-personalizar label {
+  display: block;
+  font-size: 12px;
+  color: var(--dna-text-dim);
+  margin-bottom: 6px;
+}
+
+.periodo-data-input-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid var(--dna-border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  color: var(--dna-text);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.periodo-data-input-btn:hover,
+.periodo-data-input-btn:focus-visible {
+  border-color: var(--primary);
+  outline: none;
+}
+
+/* mesmo motivo do .filtro-periodo-btn/.filtro-mes-pill-btn: o Litepicker
+   (criarSeletorDeDataUnica) abre comparando o alvo do clique com o
+   próprio botão por igualdade estrita — sem isso, clicar no ícone/texto
+   em vez de "cair" no botão faz o calendário nunca abrir */
+.periodo-data-input-btn * {
+  pointer-events: none;
+}
+
+.periodo-data-input-btn .material-icons {
+  font-size: 18px;
+  color: var(--dna-text-dim);
+  flex-shrink: 0;
+}
+
+.periodo-data-input-btn span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sheet-btn-filtrar {
+  width: 100%;
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  color: #fff;
+  border: none;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 999px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.sheet-btn-filtrar:hover {
+  filter: brightness(1.08);
+}
+
+.sheet-btn-limpar {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--dna-text-dim);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  padding: 14px 0 6px;
+  cursor: pointer;
+}
+
+.sheet-btn-limpar:hover {
+  color: var(--dna-text);
+}
