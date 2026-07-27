@@ -172,10 +172,15 @@ function renderCategorias(categorias, valores) {
 
   const total = valores.reduce((acc, v) => acc + parseFloat(v || 0), 0) || 1;
 
+  // maior gasto primeiro — categorias/valores são arrays paralelos (mesmo
+  // índice = mesma categoria), então ordena os pares juntos por valor
+  const pares = categorias
+    .map((cat, i) => ({ cat, valor: parseFloat(valores[i] || 0) }))
+    .sort((a, b) => b.valor - a.valor);
+
   let html = '';
 
-  categorias.forEach((cat, i) => {
-    const valor = parseFloat(valores[i] || 0);
+  pares.forEach(({ cat, valor }) => {
     const pct = Math.min(Math.round((valor / total) * 100), 100);
     const cor = coresCategorias[cat] || '#8A93B8';
     const icone = iconesCategorias[cat] || 'category';
