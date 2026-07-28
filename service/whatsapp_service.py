@@ -9,8 +9,15 @@ class WhatsappService:
     @staticmethod
     def _normalizar(telefone):
         # guarda só dígitos (DDI+DDD+número), sem '+', espaços ou traços —
-        # mesmo formato que a Meta manda no campo "from" do webhook
-        return ''.join(ch for ch in telefone if ch.isdigit())
+        # mesmo formato que a Meta manda no campo "from" do webhook.
+        # A Meta SEMPRE manda com o código do país (55) na frente; se o
+        # usuário digitou só DDD+número (10 ou 11 dígitos) na tela de
+        # Configurações, sem o "55", o número nunca bateria com o que
+        # chega no webhook — então completa automaticamente aqui.
+        digitos = ''.join(ch for ch in telefone if ch.isdigit())
+        if len(digitos) in (10, 11) and not digitos.startswith('55'):
+            digitos = '55' + digitos
+        return digitos
 
     def vincular_telefone(self, telefone, usuario_nome):
         telefone = self._normalizar(telefone)
