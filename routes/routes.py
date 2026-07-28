@@ -848,6 +848,18 @@ def whatsapp_receber():
         entrada = dados['entry'][0]['changes'][0]['value']
         mensagens = entrada.get('messages')
 
+        # atualizações de status (enviado/entregue/lido/falhou) de mensagens
+        # que ESTE app mandou — loga pra dar pra ver no log do Render
+        # enquanto se investiga um problema de entrega
+        status_atualizacoes = entrada.get('statuses')
+        if status_atualizacoes:
+            for s in status_atualizacoes:
+                print(
+                    "STATUS WHATSAPP:", s.get('status'),
+                    "| destinatario:", s.get('recipient_id'),
+                    "| erro:", s.get('errors')
+                )
+
         if not mensagens:
             # não é uma mensagem nova (ex: confirmação de entrega/leitura) — ignora
             return jsonify(status='ignorado'), 200
