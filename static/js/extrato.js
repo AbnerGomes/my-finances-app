@@ -387,12 +387,12 @@ document.addEventListener('click', function (event) {
     // Fechar o modal quando clicar no botão de fechar ou fora do modal
     const fecharModal = document.getElementById('fechar-modal');
     const fecharModalok = document.getElementById('fechar-modal-cadastro');
-    
+
     if (event.target === fecharModal) {
       const modal = document.getElementById('modal-editar');
       modal.style.display = 'none';
     }
-  
+
     if (event.target === fecharModalok) {
       const modal = document.getElementById('modal-cadastrar');
       modal.style.display = 'none';
@@ -403,7 +403,15 @@ document.addEventListener('click', function (event) {
     if (event.target === modal || event.target === modal_cad) {
       modal.style.display = 'none';
     }
-  }    
+
+    // modal de confirmação de exclusão — fecha no X ou clicando fora dele
+    // (antes só existia o botão "OK", sem jeito de desistir da exclusão)
+    const modalExcluir = document.getElementById('modal-confirmar-exclusao');
+    const fecharModalExcluir = document.getElementById('fechar-modal-excluir');
+    if (modalExcluir && (event.target === fecharModalExcluir || event.target === modalExcluir)) {
+      modalExcluir.style.display = 'none';
+    }
+  }
 
   });
   

@@ -299,9 +299,16 @@
       <p><strong>Valor:</strong> R$ {{ despesa[2] }}</p>
       <p><strong>Categoria:</strong> {{ despesa[0] }}</p>
       <p><strong>Status:</strong> {{ despesa[4] }}</p>
-      <p><strong>Data Pagamento:</strong> 
-        {{ despesa[8] if despesa[8] else 'Não pago' }}
+      <p><strong>Data Pagamento:</strong>
+        {{ despesa[8] if despesa[8] else '—' }}
       </p>
+
+      {% if despesa[9] %}
+      <button type="button" class="btn-replicar-despesa" data-id="{{ despesa[6] }}">
+        <span class="material-icons">content_copy</span>
+        Replicar para o mês seguinte
+      </button>
+      {% endif %}
     </div>
 
   </div>

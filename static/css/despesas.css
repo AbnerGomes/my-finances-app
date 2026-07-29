@@ -571,6 +571,33 @@ form input[type="radio"] {
   margin-top: 8px;
 }
 
+.btn-replicar-despesa {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px;
+  border: 1px solid var(--dna-border);
+  border-radius: 10px;
+  background: var(--dna-card-soft);
+  color: var(--primary-light);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.btn-replicar-despesa:hover {
+  border-color: var(--primary);
+  background: var(--dna-card);
+}
+
+.btn-replicar-despesa .material-icons {
+  font-size: 15px;
+}
+
 .btn-float {
   position: fixed;
   bottom: 92px;

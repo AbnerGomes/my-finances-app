@@ -545,6 +545,25 @@ def atualizar_status():
         return jsonify({'erro': 'Você só pode alterar o status das suas próprias despesas.'}), 403
 
 
+@despesa_bp.route('/replicar_despesa', methods=['POST'])
+def replicar_despesa():
+    if 'usuario' not in session:
+        return jsonify({'erro': 'Você precisa estar logado.'}), 401
+
+    data = request.get_json()
+    id_despesa = data.get('id_despesa')
+
+    if not id_despesa:
+        return jsonify({'erro': 'Dados incompletos'}), 400
+
+    sucesso = despesa_bp.despesa_service.replicar_despesa_mes_seguinte(id_despesa, session['usuario'])
+
+    if sucesso:
+        return jsonify({'mensagem': 'Despesa replicada para o mês seguinte'})
+    else:
+        return jsonify({'erro': 'Você só pode replicar suas próprias despesas.'}), 403
+
+
 
 @despesa_bp.route('/cadastrar_despesa', methods=['POST','GET'])
 def cadastrar_despesa():

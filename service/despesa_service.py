@@ -170,6 +170,48 @@ class DespesaService:
         conn.close()
         return sucesso
 
+    def replicar_despesa_mes_seguinte(self, id_despesa, usuario):
+        # copia uma despesa existente pro mês seguinte, sempre como
+        # Pendente (mesmo que a original já esteja Paga) — pra não
+        # precisar digitar de novo uma despesa fixa/recorrente todo mês.
+        # Não passa status/data_pagamento no INSERT de propósito: cai no
+        # default da tabela (Pendente/sem data), igual toda despesa nova.
+        usuario_email = self.get_usuario_by_name(usuario)
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "SELECT despesa, valor, categoria, tipo_despesa, mes_ano FROM despesas WHERE id = %s AND usuario = %s",
+            (id_despesa, usuario_email)
+        )
+        original = cursor.fetchone()
+
+        if not original:
+            conn.close()
+            return False
+
+        despesa, valor, categoria, tipo_despesa, mes_ano = original
+        ano_str, mes_str = mes_ano.split('-')[:2]
+        ano, mes = int(ano_str), int(mes_str)
+
+        if mes == 12:
+            ano += 1
+            mes = 1
+        else:
+            mes += 1
+
+        mes_ano_seguinte = f"{ano}-{mes:02d}"
+
+        cursor.execute('''
+            INSERT INTO Despesas (despesa, valor, mes_ano, categoria, usuario, tipo_despesa)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        ''', (despesa, valor, mes_ano_seguinte, categoria, usuario_email, tipo_despesa))
+
+        conn.commit()
+        conn.close()
+        return True
+
     def get_categorias_disponiveis(self, usuario, isCasal='N'):
         usuario = self.get_usuario_by_name(usuario)
 

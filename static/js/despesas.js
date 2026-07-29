@@ -226,6 +226,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
   });
 
+  // ================= REPLICAR PARA O MÊS SEGUINTE =================
+  // copia a despesa (descrição/valor/categoria/tipo) pro mês seguinte,
+  // sempre como Pendente — pra não precisar digitar de novo uma despesa
+  // fixa/recorrente todo mês
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".btn-replicar-despesa");
+    if (!btn) return;
+
+    // não deixa o clique borbulhar pro card e fechar o detalhe que
+    // acabou de ser usado pra clicar no botão
+    e.stopPropagation();
+
+    const id = btn.dataset.id;
+    btn.disabled = true;
+
+    fetch("/replicar_despesa", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id_despesa: id })
+    })
+      .then(res => res.json().then(corpo => ({ ok: res.ok, corpo })))
+      .then(({ ok, corpo }) => {
+        showToast(ok ? (corpo.mensagem || "Despesa replicada para o mês seguinte!") : (corpo.erro || "Erro ao replicar despesa"), ok);
+      })
+      .catch(() => showToast("Erro de conexão", false))
+      .finally(() => { btn.disabled = false; });
+  });
+
   // ================= ORDENAR =================
   configurarDropdown('ordenar-despesas-btn', 'painelOrdenarDespesas', (opcao) => {
     aplicarOrdenacaoDespesas(opcao.dataset.ordenar);

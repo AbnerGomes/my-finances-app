@@ -203,25 +203,17 @@
       <button class="period-chip" onclick="filtrarGastosBtn('mesanterior')">Mês Ant</button>
     </div>
 
-    <!-- card: saldo total -->
+    <!-- card: resumo do mês (saldo + receitas + gastos) — fixo, só muda
+         quando os chips "Mês"/"Mês Ant" são selecionados, nunca com
+         Hoje/Ontem/Semana (essas afetam só o card do gráfico abaixo) -->
     <div class="home-card card-saldo">
       <div class="saldo-header">
-        <span class="label-muted">Saldo total</span>
+        <span class="label-muted" id="resumo-titulo">Visão geral do mês</span>
         <button type="button" id="toggle-saldo" class="icon-btn" aria-label="Ocultar saldo">
           <span class="material-icons" id="toggle-saldo-icon">visibility</span>
         </button>
       </div>
       <div class="saldo-valor" id="saldo-total">R$ 0,00</div>
-      <div id="total" class="saldo-periodo">
-        Total gasto no período selecionado: R$ <span id="valor-total">0,00</span>
-      </div>
-    </div>
-
-    <!-- card: visão geral do mês (receitas x despesas + donut) -->
-    <div class="home-card card-visao">
-      <div class="home-card-header-row">
-        <span class="home-card-title" id="resumo-titulo">Visão geral do mês</span>
-      </div>
 
       <div class="receitas-despesas-row">
         <div class="rd-item">
@@ -233,6 +225,14 @@
           <div id="total-gastos" class="valor despesa">0,00</div>
         </div>
       </div>
+    </div>
+
+    <!-- card: gastos por categoria no período selecionado (donut + total)
+         — os dois mudam juntos conforme os chips de período lá em cima -->
+    <div class="home-card card-visao">
+      <div class="home-card-header-row">
+        <span class="home-card-title">Gastos por categoria</span>
+      </div>
 
       <div id="mensagem" style="display: none;"></div>
 
@@ -242,6 +242,10 @@
           <div class="donut-center-valor" id="donut-center-saldo">R$ 0,00</div>
           <div class="donut-center-label" id="donut-center-label">Total do período</div>
         </div>
+      </div>
+
+      <div id="total" class="saldo-periodo">
+        Total gasto no período selecionado: R$ <span id="valor-total">0,00</span>
       </div>
     </div>
 
