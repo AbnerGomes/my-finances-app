@@ -65,18 +65,6 @@
     })();
   </script>
 
-  {% if precisaAssinar %}
-  <!-- Bloqueio de teste grátis expirado — não é fechável (sem X, sem
-       clique fora), só sai clicando em "Ver planos" -->
-  <div class="bloqueio-overlay">
-    <div class="bloqueio-card">
-      <span class="material-icons bloqueio-icone">lock</span>
-      <h3>Seu período de teste terminou</h3>
-      <p>Assine um dos nossos planos para continuar usando o Dois no Azul sem interrupções.</p>
-      <a href="{{ url_for('gasto.planos') }}" class="botao-salvar">Ver planos</a>
-    </div>
-  </div>
-  {% endif %}
 
   <div class="header-bar center">
     <div class="logo-text">
@@ -147,6 +135,20 @@
       </div>
       {% endif %}
     {% endwith %}
+
+    {% if precisaAssinar %}
+    <!-- Aviso de teste grátis encerrado — não bloqueia a tela, só avisa.
+         Consultar e ver dados continua liberado; quem trava é o backend
+         nas rotas de cadastro/edição de gasto, despesa e receita. -->
+    <div class="aviso-plano">
+      <span class="material-icons aviso-plano-icone">lock</span>
+      <div class="aviso-plano-texto">
+        <strong>Seu período de teste terminou.</strong>
+        Você ainda pode consultar tudo normalmente, mas para cadastrar ou editar gastos, despesas e receitas é preciso assinar um plano.
+      </div>
+      <a href="{{ url_for('gasto.planos') }}" class="aviso-plano-btn">Ver planos</a>
+    </div>
+    {% endif %}
 
     <!-- topo: título + sino (decorativo por enquanto, sem notificações reais ainda) -->
     <div class="home-topbar">

@@ -206,7 +206,10 @@ document.addEventListener("DOMContentLoaded", () => {
         showToast(id ? "Receita atualizada!" : "Receita criada!");
         location.reload();
       } else {
-        showToast("Erro ao salvar", false);
+        // mostra o motivo real quando o backend manda um (ex.: teste
+        // grátis encerrado), em vez de um "erro ao salvar" genérico
+        const corpo = await response.json().catch(() => null);
+        showToast(corpo?.erro || "Erro ao salvar", false);
       }
 
     } catch {

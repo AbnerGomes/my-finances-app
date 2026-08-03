@@ -1153,51 +1153,48 @@ body.dna-page .chart-container-bar {
   }
 }
 
-/* bloqueio de teste grátis expirado — acima até dos modais normais
-   (z-index:1100), e sem X/clique-fora pra fechar de propósito */
-.bloqueio-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1150;
-  background: rgba(3, 7, 18, 0.85);
+/* aviso de teste grátis encerrado — cartão comum no fluxo da página, NÃO
+   bloqueia nada (ver/consultar continua liberado; só cadastro/edição de
+   gasto/despesa/receita é barrado, no backend de cada rota) */
+.aviso-plano {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 24px;
+  gap: 12px;
+  background: linear-gradient(160deg, var(--dna-card), rgba(251, 146, 60, 0.12));
+  border: 1px solid rgba(251, 146, 60, 0.35);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
 }
 
-.bloqueio-card {
-  background: var(--dna-card);
-  border: 1px solid var(--dna-border);
-  border-radius: 20px;
-  padding: 28px 24px;
-  max-width: 320px;
-  width: 100%;
-  text-align: center;
-  box-shadow: 0 20px 45px rgba(3, 7, 18, 0.55);
-}
-
-.bloqueio-icone {
-  font-size: 40px;
+.aviso-plano-icone {
+  font-size: 26px;
   color: var(--dna-orange);
-  margin-bottom: 12px;
+  flex-shrink: 0;
 }
 
-.bloqueio-card h3 {
-  margin: 0 0 10px;
-  color: var(--dna-text);
-  font-size: 18px;
-}
-
-.bloqueio-card p {
+.aviso-plano-texto {
+  flex: 1;
+  font-size: 12px;
   color: var(--dna-text-dim);
-  font-size: 13px;
-  margin: 0 0 20px;
+  line-height: 1.4;
 }
 
-.bloqueio-card .botao-salvar {
-  display: inline-block;
+.aviso-plano-texto strong {
+  display: block;
+  color: var(--dna-text);
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.aviso-plano-btn {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  color: #fff;
   text-decoration: none;
-  width: 100%;
-  box-sizing: border-box;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
 }

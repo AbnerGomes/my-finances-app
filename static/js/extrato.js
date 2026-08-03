@@ -481,10 +481,17 @@ function quickAddGasto(descricao, valor, categoria) {
       categoria: categoria
     })
   })
-  .then(res => res.json())
-  .then(() => {
+  .then(res => res.json().then(corpo => ({ ok: res.ok, corpo })))
+  .then(({ ok, corpo }) => {
+    // antes disparava "Gasto adicionado" mesmo quando o backend recusava
+    // (ex.: teste grátis encerrado) — precisa checar se realmente deu certo
+    if (!ok) {
+      showToast(corpo.erro || "Erro ao adicionar", false);
+      return;
+    }
+
     showToast("Gasto adicionado 🚀");
-    
+
     // opcional: recarregar lista
     setTimeout(() => {
       location.reload();

@@ -133,6 +133,42 @@
       transform: scale(0.98);
     }
 
+    .plano-btn-link {
+      display: block;
+      box-sizing: border-box;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .aviso-navegador {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(160deg, var(--dna-card), rgba(251, 146, 60, 0.12));
+      border: 1px solid rgba(251, 146, 60, 0.35);
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+
+    .aviso-navegador .material-icons {
+      font-size: 26px;
+      color: var(--dna-orange);
+      flex-shrink: 0;
+    }
+
+    .aviso-navegador p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--dna-text-dim);
+      line-height: 1.4;
+    }
+
+    .aviso-navegador strong {
+      color: var(--dna-text);
+      word-break: break-all;
+    }
+
     .planos-rodape {
       text-align: center;
       margin-top: 8px;
@@ -201,6 +237,16 @@
       <p>Seu período de teste gratuito terminou. Continue aproveitando o Dois no Azul.</p>
     </div>
 
+    {% if dentroDoApp %}
+    <!-- comprar de dentro do app viola a política de pagamentos da Play
+         Store (processador externo dentro de um app Android) — só o
+         navegador comum pode seguir pro checkout -->
+    <div class="aviso-navegador">
+      <span class="material-icons">open_in_browser</span>
+      <p>Para assinar um plano, abra <strong>{{ request.url_root }}planos</strong> pelo navegador do seu celular ou computador (fora do app).</p>
+    </div>
+    {% endif %}
+
     <div class="plano-card">
       <div class="plano-nome">Plano Mensal</div>
       <div class="plano-preco">R$ 9,90 <span>/ mês</span></div>
@@ -209,7 +255,9 @@
         <li><span class="material-icons">check_circle</span> Modo Casal (conta compartilhada)</li>
         <li><span class="material-icons">check_circle</span> Exportação em Excel e PDF</li>
       </ul>
-      <button type="button" class="plano-btn" onclick="escolherPlano('mensal')">Assinar plano mensal</button>
+      {% if not dentroDoApp %}
+      <a href="{{ url_for('gasto.assinar_plano', tipo='mensal') }}" class="plano-btn plano-btn-link">Assinar plano mensal</a>
+      {% endif %}
     </div>
 
     <div class="plano-card destaque">
@@ -222,7 +270,9 @@
         <li><span class="material-icons">check_circle</span> Preço fixo garantido por 12 meses</li>
         <li><span class="material-icons">check_circle</span> Melhor custo-benefício</li>
       </ul>
-      <button type="button" class="plano-btn" onclick="escolherPlano('anual')">Assinar plano anual</button>
+      {% if not dentroDoApp %}
+      <a href="{{ url_for('gasto.assinar_plano', tipo='anual') }}" class="plano-btn plano-btn-link">Assinar plano anual</a>
+      {% endif %}
     </div>
 
     <div class="planos-rodape">
@@ -234,18 +284,5 @@
   <div id="toast" class="toast"></div>
 
   <script src="{{ url_for('static', filename='js/comum.js') }}" defer></script>
-  <script>
-    // TODO: quando o link de pagamento seguro estiver pronto, troque esta
-    // função por um redirect real pra checkout do plano escolhido
-    // ("mensal" ou "anual"). Por enquanto é só um placeholder visual.
-    function escolherPlano(tipo) {
-      const toast = document.getElementById('toast');
-      if (!toast) return;
-      toast.textContent = 'Pagamento em breve! Ainda estamos configurando essa etapa.';
-      toast.style.background = 'var(--dna-card-soft)';
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2500);
-    }
-  </script>
 </body>
 </html>

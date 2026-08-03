@@ -449,23 +449,41 @@ class GastoService:
         return (datetime.now().date() - resultado[0]).days
 
     def tem_assinatura_ativa(self, usuario):
-        # Por enquanto não existe pagamento de verdade integrado — qualquer
-        # linha 'pago' já registrada na tabela mensalidade (em qualquer mês,
-        # por email ou por nome — há registros antigos nos dois formatos)
-        # conta como assinatura ativa "pra sempre", até o pagamento real
-        # ser conectado.
-        usuario_email = self.get_usuario_by_name(usuario)
+        # Pagamento real via Mercado Pago (ver pagamento_service.py):
+        # cada compra grava uma linha 'pago' com o mês da compra e o tipo
+        # do plano. 'vitalicio' (concedido manualmente, sem mexer aqui)
+        # vale pra sempre; 'mensal'/'anual' expiram ~31/~366 dias depois
+        # do mês em que foram comprados — por email OU por nome, já que
+        # há registros antigos gravados dos dois jeitos.
+        resultado_email = self.get_usuario_by_name(usuario)
+        usuario_email = resultado_email[0] if resultado_email else None
 
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT 1 FROM mensalidade WHERE status = 'pago' AND (usuario = %s OR usuario = %s) LIMIT 1",
+            "SELECT mes_ano, tipo_plano FROM mensalidade WHERE status = 'pago' AND usuario IN (%s, %s)",
             (usuario, usuario_email)
         )
-        resultado = cursor.fetchone()
+        linhas = cursor.fetchall()
         conn.close()
 
-        return resultado is not None
+        hoje = datetime.now().date()
+
+        for mes_ano, tipo_plano in linhas:
+            if tipo_plano == 'vitalicio':
+                return True
+
+            try:
+                ano, mes = (int(p) for p in mes_ano.split('-')[:2])
+                inicio = datetime(ano, mes, 1).date()
+            except (ValueError, AttributeError, TypeError):
+                continue
+
+            dias_validade = 366 if tipo_plano == 'anual' else 31
+            if (hoje - inicio).days <= dias_validade:
+                return True
+
+        return False
 
     def precisa_assinar(self, usuario):
         if self.dias_de_conta(usuario) <= 7:

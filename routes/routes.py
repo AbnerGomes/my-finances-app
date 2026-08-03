@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, session, redirect, url_for, request, flash,jsonify, send_file, request, Response, current_app
 import os
+import json
 from service.gasto_service import GastoService
 from io import BytesIO
 import pandas as pd
@@ -19,6 +20,8 @@ from collections import defaultdict
 from service.despesa_service import DespesaService
 
 from service.admin_service import AdminService
+
+from service import pagamento_service
 
 from service.categorias import CATEGORIAS_PADRAO
 
@@ -66,6 +69,29 @@ def validar_token_exportacao(token, max_age=600):
         return _serializer_exportacao().loads(token, max_age=max_age)
     except (BadSignature, SignatureExpired):
         return None
+
+# ============================================================
+# Teste grátis expirado sem assinatura: bloqueia só CADASTRO/EDIÇÃO de
+# gasto, despesa e receita — consultar, listar e excluir continuam
+# liberados em qualquer plano (ver `precisa_assinar` em gasto_service).
+# ============================================================
+MENSAGEM_BLOQUEIO_PLANO = 'Seu período de teste terminou. Assine um plano para continuar cadastrando.'
+
+def bloqueado_para_cadastro(usuario):
+    return gasto_bp.gasto_service.precisa_assinar(usuario)
+
+# ============================================================
+# Compra de plano (Mercado Pago Checkout Pro): só a Play Store pode
+# vender assinatura de dentro de um app Android — vender por um
+# processador externo enquanto o app está aberto no WebView viola a
+# política de pagamentos do Google (é o mesmo caso que derrubou o
+# Fortnite da Play Store). Por isso o botão de comprar só aparece pra
+# quem está acessando pelo navegador comum, nunca de dentro do app
+# empacotado — reconhecido pelo sufixo próprio no User-Agent
+# (flutter_app/lib/main.dart).
+# ============================================================
+def veio_do_app_wrapper():
+    return 'DoisNoAzulApp' in request.headers.get('User-Agent', '')
 
 #####ROTAS#####
 
@@ -168,13 +194,17 @@ def cadastrar_gasto():
 
         if 'usuario' not in session:
             flash('Você precisa estar logado para adicionar um gasto.')
-            return redirect(url_for('gasto.login')) 
+            return redirect(url_for('gasto.login'))
+
+        if bloqueado_para_cadastro(session['usuario']):
+            flash(MENSAGEM_BLOQUEIO_PLANO, 'danger')
+            return redirect(url_for('gasto.extrato'))
 
         gasto = request.form['gasto']
         valor = request.form['valor']
-        data = request.form['data'] 
+        data = request.form['data']
         categoria = request.form['categoria']
-        
+
         usuario = session['usuario']
 
         # Salvar o gasto no banco
@@ -198,6 +228,9 @@ def cadastrar_gasto_rapido():
 
     if 'usuario' not in session:
         return jsonify({'erro': 'Não autenticado'}), 401
+
+    if bloqueado_para_cadastro(session['usuario']):
+        return jsonify({'erro': MENSAGEM_BLOQUEIO_PLANO}), 403
 
     data = request.get_json()
 
@@ -378,7 +411,78 @@ def planos():
     if 'usuario' not in session:
         return redirect(url_for('gasto.login'))
 
-    return render_template("planos.html")
+    return render_template("planos.html", dentroDoApp=veio_do_app_wrapper())
+
+
+@gasto_bp.route('/assinar_plano/<tipo>')
+def assinar_plano(tipo):
+    if 'usuario' not in session:
+        return redirect(url_for('gasto.login'))
+
+    # comprar só é permitido pelo navegador comum — ver veio_do_app_wrapper()
+    if veio_do_app_wrapper():
+        flash('Para assinar um plano, abra o Dois no Azul pelo navegador do seu celular ou computador.', 'danger')
+        return redirect(url_for('gasto.planos'))
+
+    resultado = gasto_bp.gasto_service.get_usuario_by_name(session['usuario'])
+    usuario_email = resultado[0] if resultado else None
+
+    if not usuario_email:
+        flash('Não foi possível identificar sua conta.', 'danger')
+        return redirect(url_for('gasto.planos'))
+
+    base_url = request.url_root.rstrip('/')
+    preferencia = pagamento_service.criar_preferencia_pagamento(tipo, usuario_email, base_url)
+
+    if not preferencia or 'init_point' not in preferencia:
+        flash('Não foi possível iniciar o pagamento agora. Tente novamente em instantes.', 'danger')
+        return redirect(url_for('gasto.planos'))
+
+    return redirect(preferencia['init_point'])
+
+
+@gasto_bp.route('/pagamento/retorno')
+def pagamento_retorno():
+    # pra onde o Mercado Pago manda o navegador de volta depois do
+    # checkout — a ativação de verdade acontece no webhook (mais abaixo),
+    # que é chamado servidor-a-servidor e não depende do usuário
+    # completar esse redirecionamento de volta.
+    status = request.args.get('status')
+
+    mensagens = {
+        'sucesso': ('Pagamento aprovado! Seu plano já deve estar ativo em instantes.', 'success'),
+        'pendente': ('Pagamento pendente — assim que for aprovado, seu plano é ativado automaticamente.', 'warning'),
+        'falha': ('Pagamento não foi concluído. Você pode tentar novamente quando quiser.', 'danger'),
+    }
+    mensagem, categoria = mensagens.get(status, ('Retorno do pagamento recebido.', 'info'))
+    flash(mensagem, categoria)
+
+    return redirect(url_for('gasto.index'))
+
+
+@gasto_bp.route('/webhook/mercadopago', methods=['POST'])
+def webhook_mercadopago():
+    dados = request.get_json(silent=True) or {}
+    payment_id = (dados.get('data') or {}).get('id') or request.args.get('id') or request.args.get('data.id')
+
+    if not payment_id:
+        return '', 200
+
+    try:
+        pagamento = pagamento_service.buscar_pagamento(payment_id)
+
+        if pagamento and pagamento.get('status') == 'approved':
+            referencia = json.loads(pagamento.get('external_reference') or '{}')
+            usuario_email = referencia.get('usuario')
+            tipo_plano = referencia.get('plano')
+
+            if usuario_email and tipo_plano:
+                pagamento_service.ativar_assinatura(usuario_email, tipo_plano)
+    except Exception as e:
+        print('Erro processando webhook Mercado Pago:', e)
+
+    # sempre 200 — senão o Mercado Pago fica reenviando o mesmo evento
+    return '', 200
 
 
 @gasto_bp.route('/cadastrar_conjuge', methods=['POST'])
@@ -416,7 +520,11 @@ def editar_gasto():
 
     if 'usuario' not in session:
         flash('Você precisa estar logado para adicionar um gasto.')
-        return redirect(url_for('gasto.login')) 
+        return redirect(url_for('gasto.login'))
+
+    if bloqueado_para_cadastro(session['usuario']):
+        flash(MENSAGEM_BLOQUEIO_PLANO, 'danger')
+        return redirect(url_for('gasto.extrato'))
 
     gasto = request.form['gasto']
     valor = request.form['valor']
@@ -550,6 +658,9 @@ def replicar_despesa():
     if 'usuario' not in session:
         return jsonify({'erro': 'Você precisa estar logado.'}), 401
 
+    if bloqueado_para_cadastro(session['usuario']):
+        return jsonify({'erro': MENSAGEM_BLOQUEIO_PLANO}), 403
+
     data = request.get_json()
     id_despesa = data.get('id_despesa')
 
@@ -571,7 +682,11 @@ def cadastrar_despesa():
     #if request.method == 'POST':
     if 'usuario' not in session:
         flash('Você precisa estar logado para adicionar um gasto.')
-        return redirect(url_for('gasto.login')) 
+        return redirect(url_for('gasto.login'))
+
+    if bloqueado_para_cadastro(session['usuario']):
+        flash(MENSAGEM_BLOQUEIO_PLANO, 'danger')
+        return redirect(url_for('despesa.despesas'))
 
     despesa = request.form['despesa']
     valor = request.form['valor']
@@ -610,7 +725,11 @@ def editar_despesa():
 
     if 'usuario' not in session:
         flash('Você precisa estar logado para editar uma despesa.')
-        return redirect(url_for('gasto.login')) 
+        return redirect(url_for('gasto.login'))
+
+    if bloqueado_para_cadastro(session['usuario']):
+        flash(MENSAGEM_BLOQUEIO_PLANO, 'danger')
+        return redirect(url_for('despesa.despesas'))
 
     despesa = request.form['despesa']
     valor = request.form['valor']
@@ -992,8 +1111,12 @@ def receitas():
 def salvar_receita():
 
     usuario = session['usuario']
+
+    if bloqueado_para_cadastro(usuario):
+        return jsonify({'erro': MENSAGEM_BLOQUEIO_PLANO}), 403
+
     data = request.get_json()
-    
+
     origem = data.get("receita")
     valor = data.get("valor")
 
@@ -1093,6 +1216,10 @@ def deletar_receita():
 @gasto_bp.route('/editar_receita', methods=['POST'], strict_slashes=False)
 def editar_receita():
     usuario = session['usuario']
+
+    if bloqueado_para_cadastro(usuario):
+        return jsonify({'erro': MENSAGEM_BLOQUEIO_PLANO}), 403
+
     data = request.get_json()
 
     id_receita = data.get("id")
