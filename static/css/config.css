@@ -175,12 +175,19 @@ filter: brightness(1.08);
 
 .whatsapp-input-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
 .whatsapp-input-row input {
   flex: 1;
+  min-width: 120px;
   margin-bottom: 0;
+}
+
+.whatsapp-input-row input[readonly] {
+  color: var(--dna-text-dim);
+  cursor: not-allowed;
 }
 
 .whatsapp-btn-salvar {
@@ -197,6 +204,57 @@ filter: brightness(1.08);
 
 .whatsapp-btn-salvar:hover {
   filter: brightness(1.08);
+}
+
+.whatsapp-btn-salvar:disabled {
+  background: var(--dna-card-soft);
+  color: var(--dna-text-faint);
+  cursor: not-allowed;
+  filter: none;
+}
+
+.whatsapp-btn-editar {
+  background: transparent;
+  color: var(--dna-text);
+  border: 1px solid var(--dna-border);
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.whatsapp-btn-editar:hover {
+  border-color: var(--primary);
+  color: var(--primary-light);
+}
+
+/* botão "falar com o assistente" — verde do WhatsApp, discreto no resto
+   do card mas reconhecível na cor */
+.whatsapp-btn-assistente {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.whatsapp-btn-assistente:hover {
+  background: rgba(34, 197, 94, 0.2);
+}
+
+.whatsapp-btn-assistente .material-icons {
+  font-size: 18px;
 }
 
 /* Responsivo (mobile first) */

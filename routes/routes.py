@@ -121,6 +121,14 @@ def login():
 def voltar_ao_login():
     return render_template('voltar_ao_login.html')
 
+@gasto_bp.route('/logout')
+def logout():
+    # signOut() (comum.js) só navegava pra "/" sem nunca limpar a sessão —
+    # como "/" já redireciona de volta pro index quando há sessão válida,
+    # sair da conta nunca funcionava de verdade, só voltava pra home.
+    session.clear()
+    return redirect(url_for('gasto.login'))
+
 @gasto_bp.route('/login', methods=['POST'])
 def login_post():
 
@@ -930,7 +938,18 @@ def configuracoes():
     tem_conjuge = gasto_bp.gasto_service.tem_conjuge(usuario)
     telefone_whatsapp = whatsapp_bp.whatsapp_service.get_telefone_vinculado(usuario)
 
-    return render_template('configuracoes.html',usuario=usuario,temConjuge=tem_conjuge,telefoneWhatsapp=telefone_whatsapp)
+    # número do bot pra abrir a conversa direto (wa.me) — hoje é o número
+    # de teste da Meta; troque a env var no Render quando migrar pro
+    # número definitivo, sem precisar mexer no código
+    numero_whatsapp_bot = os.environ.get('WHATSAPP_BOT_NUMERO', '15551493833')
+
+    return render_template(
+        'configuracoes.html',
+        usuario=usuario,
+        temConjuge=tem_conjuge,
+        telefoneWhatsapp=telefone_whatsapp,
+        numeroWhatsappBot=numero_whatsapp_bot,
+    )
 
 
 @gasto_bp.route('/configuracoes/whatsapp', methods=['POST'])

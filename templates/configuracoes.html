@@ -129,11 +129,24 @@
           Vincule seu número pra registrar gastos e consultar seus dados conversando com o assistente pelo WhatsApp.
         </p>
         <div class="whatsapp-input-row">
-          <input type="tel" name="telefone" placeholder="Ex: 51995035983 (DDD + número)"
-                 value="{{ telefoneWhatsapp or '' }}">
-          <button type="submit" class="whatsapp-btn-salvar">Salvar</button>
+          <input type="tel" name="telefone" id="whatsapp-telefone-input"
+                 placeholder="Ex: 51995035983 (DDD + número)"
+                 value="{{ telefoneWhatsapp or '' }}"
+                 {% if telefoneWhatsapp %}readonly{% endif %}>
+
+          {% if telefoneWhatsapp %}
+          <button type="button" id="whatsapp-btn-editar" class="whatsapp-btn-editar">Editar</button>
+          {% endif %}
+
+          <button type="submit" id="whatsapp-btn-salvar" class="whatsapp-btn-salvar"
+                  {% if telefoneWhatsapp %}disabled{% endif %}>Salvar</button>
         </div>
       </form>
+
+      <a href="https://wa.me/{{ numeroWhatsappBot }}" target="_blank" rel="noopener" class="whatsapp-btn-assistente">
+        <span class="material-icons">smart_toy</span>
+        Falar com o assistente no WhatsApp
+      </a>
     </div>
 
     <div class="danger-card">

@@ -326,7 +326,7 @@ window.onclick = function (event) {
 };
 
 function signOut() {
-  window.location.href = `/`;
+  window.location.href = `/logout`;
 }
 
 function changeTheme(theme) {

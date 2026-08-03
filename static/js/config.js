@@ -29,4 +29,17 @@ document.addEventListener('DOMContentLoaded', function () {
             localStorage.setItem('ocultarValoresPadrao', chkOcultar.checked ? 'S' : 'N');
         });
     }
+
+    // WhatsApp: com um número já salvo, o campo nasce travado e o Salvar
+    // desabilitado — "Editar" libera os dois pra trocar o número
+    const btnEditarWhatsapp = document.getElementById('whatsapp-btn-editar');
+    const inputWhatsapp = document.getElementById('whatsapp-telefone-input');
+    const btnSalvarWhatsapp = document.getElementById('whatsapp-btn-salvar');
+    if (btnEditarWhatsapp && inputWhatsapp && btnSalvarWhatsapp) {
+        btnEditarWhatsapp.addEventListener('click', function () {
+            inputWhatsapp.removeAttribute('readonly');
+            btnSalvarWhatsapp.removeAttribute('disabled');
+            inputWhatsapp.focus();
+        });
+    }
 });
