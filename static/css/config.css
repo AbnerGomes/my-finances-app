@@ -213,23 +213,6 @@ filter: brightness(1.08);
   filter: none;
 }
 
-.whatsapp-btn-editar {
-  background: transparent;
-  color: var(--dna-text);
-  border: 1px solid var(--dna-border);
-  padding: 0 14px;
-  font-size: 12px;
-  font-weight: 700;
-  border-radius: 10px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.whatsapp-btn-editar:hover {
-  border-color: var(--primary);
-  color: var(--primary-light);
-}
-
 /* botão "falar com o assistente" — verde do WhatsApp, discreto no resto
    do card mas reconhecível na cor */
 .whatsapp-btn-assistente {
@@ -255,6 +238,59 @@ filter: brightness(1.08);
 
 .whatsapp-btn-assistente .material-icons {
   font-size: 18px;
+}
+
+/* Card do WhatsApp "em breve" — visível mas travado, enquanto Meta/WAHA
+   não estão prontos pra uso real. Fica meio apagado e com cursor de
+   "não dá pra mexer"; tocar em qualquer parte mostra um aviso (config.js) */
+.whatsapp-em-breve {
+  position: relative;
+  opacity: 0.55;
+  cursor: not-allowed;
+  user-select: none;
+}
+
+.whatsapp-em-breve .whatsapp-input-row input,
+.whatsapp-em-breve .whatsapp-btn-salvar,
+.whatsapp-em-breve .whatsapp-btn-assistente {
+  pointer-events: none;
+}
+
+.whatsapp-em-breve-selo {
+  background: var(--dna-card-soft);
+  color: var(--dna-text-dim);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* Toast (configuracoes.html não tinha um ainda) */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(160px + env(safe-area-inset-bottom));
+  transform: translateX(-50%) translateY(20px);
+  background: var(--dna-bg-alt);
+  border: 1px solid var(--dna-border);
+  color: var(--dna-text);
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 10px 24px rgba(3, 7, 18, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 1200;
+  max-width: calc(100vw - 40px);
+  text-align: center;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* Responsivo (mobile first) */

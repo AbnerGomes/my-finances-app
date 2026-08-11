@@ -28,6 +28,7 @@ from service.categorias import CATEGORIAS_PADRAO
 from service.whatsapp_service import WhatsappService
 from service.whatsapp_client import enviar_mensagem_whatsapp
 from service.claude_agent_service import responder_mensagem
+from service.whatsapp_waha_client import enviar_mensagem_whatsapp_waha
 
 import locale
 
@@ -1045,6 +1046,53 @@ def whatsapp_receber():
         print("Erro processando webhook WhatsApp:", e)
 
     # sempre responde 200 pro Meta não ficar reenviando o mesmo evento
+    return jsonify(status='ok'), 200
+
+
+# ============================================================
+# Bot "à parte" via WAHA — mesmo bot/Claude/banco de cima, só que
+# recebendo mensagens de uma instância WAHA (WhatsApp pessoal, sem
+# precisar de verificação de empresa da Meta) em vez do Cloud API
+# oficial. Não mexe em nada do bloco acima (rotas /webhook/whatsapp
+# oficiais continuam do jeito que estavam). Ver WAHA_SETUP.md.
+# ============================================================
+@whatsapp_bp.route('/webhook/whatsapp-waha', methods=['POST'])
+def whatsapp_waha_receber():
+    dados = request.get_json(silent=True) or {}
+
+    try:
+        if dados.get('event') != 'message':
+            return jsonify(status='ignorado'), 200
+
+        payload = dados.get('payload') or {}
+
+        # ignora mensagens que o PRÓPRIO bot mandou (senão ele responde
+        # a si mesmo em loop)
+        if payload.get('fromMe'):
+            return jsonify(status='ignorado'), 200
+
+        telefone_remetente = payload.get('from', '')  # ex: '5551995035983@c.us'
+        texto = (payload.get('body') or '').strip()
+
+        if not telefone_remetente or not texto:
+            return jsonify(status='ignorado'), 200
+
+        usuario_nome = whatsapp_bp.whatsapp_service.get_usuario_por_telefone(telefone_remetente)
+
+        if not usuario_nome:
+            enviar_mensagem_whatsapp_waha(
+                telefone_remetente,
+                "Esse número ainda não está vinculado a nenhuma conta do Dois no Azul. "
+                "Entra no app, vai em Configurações e cadastra seu WhatsApp por lá."
+            )
+            return jsonify(status='numero_nao_vinculado'), 200
+
+        resposta_texto = responder_mensagem(texto, usuario_nome)
+        enviar_mensagem_whatsapp_waha(telefone_remetente, resposta_texto)
+
+    except Exception as e:
+        print("Erro processando webhook WAHA:", e)
+
     return jsonify(status='ok'), 200
 
 

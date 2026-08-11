@@ -30,16 +30,27 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // WhatsApp: com um número já salvo, o campo nasce travado e o Salvar
-    // desabilitado — "Editar" libera os dois pra trocar o número
-    const btnEditarWhatsapp = document.getElementById('whatsapp-btn-editar');
-    const inputWhatsapp = document.getElementById('whatsapp-telefone-input');
-    const btnSalvarWhatsapp = document.getElementById('whatsapp-btn-salvar');
-    if (btnEditarWhatsapp && inputWhatsapp && btnSalvarWhatsapp) {
-        btnEditarWhatsapp.addEventListener('click', function () {
-            inputWhatsapp.removeAttribute('readonly');
-            btnSalvarWhatsapp.removeAttribute('disabled');
-            inputWhatsapp.focus();
+    // WhatsApp: seção ainda em desenvolvimento (nem Meta nem WAHA prontos
+    // pra uso real) — fica visível mas travada; toca e mostra um aviso
+    const cardWhatsappEmBreve = document.getElementById('whatsapp-em-breve');
+    if (cardWhatsappEmBreve) {
+        cardWhatsappEmBreve.addEventListener('click', function () {
+            showToast('Essa funcionalidade está em desenvolvimento — em breve!');
         });
     }
 });
+
+// ================= TOAST =================
+function showToast(msg, success = true) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+
+    toast.textContent = msg;
+    toast.style.background = success ? '#16a34a' : '#dc2626';
+
+    toast.classList.add('show');
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2500);
+}
