@@ -300,11 +300,12 @@ class DespesaService:
         query = "SELECT a.usuario AS conjuge FROM casal c JOIN autenticacao a ON a.usuario = CASE WHEN c.conjuge_1 = %s THEN c.conjuge_2 ELSE c.conjuge_1 END WHERE %s IN (c.conjuge_1, c.conjuge_2);"
         cursor.execute(query, (usuario,usuario))
         resultado = cursor.fetchone()
-        
+        conn.close()  # faltava — essa conexão nunca era devolvida (chamada em quase toda página)
+
         if resultado is None:
             return False
         else:
-            return True    
+            return True
 
     def tem_pendencias_mes_anterior(self, usuario, isCasal):
         usuario = self.get_usuario_by_name(usuario)

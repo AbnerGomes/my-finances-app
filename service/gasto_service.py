@@ -73,20 +73,22 @@ class GastoService:
 
     # Função para salvar o gasto no banco
     def salvar_gasto(self,gasto, valor, data, categoria,usuario):
-        try:
-            usuario = self.get_usuario_by_name(usuario)
+        usuario = self.get_usuario_by_name(usuario)
 
-            conn = get_connection()
+        conn = get_connection()
+        try:
             cursor = conn.cursor()
             cursor.execute('''
                 INSERT INTO Gastos (Gasto, valor_gasto, data, categoria, usuario)
                 VALUES (%s, %s, %s, %s, %s)
             ''', (gasto, valor, data, categoria,usuario))
             conn.commit()
-            conn.close()
             return True
         except Exception as e:
-            return False    
+            conn.rollback()
+            return False
+        finally:
+            conn.close()
 
 
 
@@ -148,7 +150,8 @@ class GastoService:
         return [{'mes_ano': row[0], 'valor': row[1]} for row in dados]
 
     def filtrarGastos(self,periodo,usuario,isCasal):
-        try: 
+        conn = None
+        try:
             if periodo is None:
                 periodo='mesatual'
 
@@ -220,12 +223,17 @@ class GastoService:
                 cursor.execute(query, (usuario, conjuge))
 
             dados = cursor.fetchall()
-            conn.close()
 
             return [{'categoria': row[0], 'valor': row[1]} for row in dados]
         except Exception as e:
             #aqui vem um tratamento para exibir uma mensagem quando nao houver dados para exibir naquele periodo
             return ""
+        finally:
+            # antes só fechava no caminho de sucesso — se desse erro
+            # depois de abrir a conexão, ela vazava (nunca voltava pro
+            # pool)
+            if conn:
+                conn.close()
 
     def extrato_gastos(self,usuario,data_inicial,data_fim,categoria,isCasal):
 
@@ -426,7 +434,8 @@ class GastoService:
         query = "SELECT a.usuario AS conjuge FROM casal c JOIN autenticacao a ON a.usuario = CASE WHEN c.conjuge_1 = %s THEN c.conjuge_2 ELSE c.conjuge_1 END WHERE %s IN (c.conjuge_1, c.conjuge_2);"
         cursor.execute(query, (usuario,usuario))
         resultado = cursor.fetchone()
-        
+        conn.close()  # faltava — essa conexão nunca era devolvida (chamada em quase toda página)
+
         if resultado is None:
             return False
         else:
@@ -544,21 +553,22 @@ class GastoService:
         return resultado
         
     def salvar_receita(self, usuario, mes,origem,valor):
+        id_usuario = self.get_id_usuario_by_name(usuario)
 
+        conn = get_connection()
         try:
-            id_usuario = self.get_id_usuario_by_name(usuario)
-
-            conn = get_connection()
             c = conn.cursor()
-                    
+
             # Insere nova receita
             c.execute("INSERT INTO RECEITAS (id_usuario, data_receita, origem, valor) VALUES (%s, %s, %s, %s)", (id_usuario, mes,origem,valor))
             conn.commit()
-            conn.close()
 
             return True
         except Exception as e:
-            return False         
+            conn.rollback()
+            return False
+        finally:
+            conn.close()
 
     def deletar_receita(self, usuario, id_receita):
         conn = get_connection()
