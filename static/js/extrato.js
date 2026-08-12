@@ -499,6 +499,25 @@ function quickAddGasto(descricao, valor, categoria) {
 
     showToast("Gasto adicionado 🚀");
 
+    // se o nome/valor bater com alguma despesa do mês ainda não paga,
+    // pergunta antes de recarregar (em vez de marcar sozinho — já
+    // causou duplicidade quando o usuário também marcava a despesa
+    // como paga na mão)
+    if (corpo.despesaCorrespondente) {
+      mostrarConfirmacao(
+        `Encontramos a despesa "${corpo.despesaCorrespondente.despesa}" com o mesmo nome e valor, ainda não paga. Quer marcar ela como paga agora?`,
+        () => {
+          fetch('/marcar_despesa_paga', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_despesa: corpo.despesaCorrespondente.id })
+          }).finally(() => location.reload());
+        },
+        { aoCancelar: () => location.reload() }
+      );
+      return;
+    }
+
     // opcional: recarregar lista
     setTimeout(() => {
       location.reload();
@@ -522,4 +541,55 @@ function showToast(msg, success = true) {
     toast.classList.remove("show");
   }, 2500);
 }
+
+// ================= CADASTRAR GASTO (via modal "+") =================
+// era um <form> comum (POST + reload de página inteira) — virou fetch
+// pra poder perguntar, antes de recarregar, se o usuário quer marcar
+// como paga uma despesa com o mesmo nome/valor (em vez de marcar
+// sozinho, que gerava duplicidade quando ele também marcava a despesa
+// como paga na mão)
+document.addEventListener('DOMContentLoaded', () => {
+  const formCadastrar = document.getElementById('form-cadastrar');
+  if (!formCadastrar) return;
+
+  formCadastrar.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    if (bloquearSePlanoExpirado(e)) return;
+
+    try {
+      const resposta = await fetch(formCadastrar.action, {
+        method: 'POST',
+        body: new FormData(formCadastrar),
+      });
+
+      if (!resposta.ok) {
+        const corpo = await resposta.json().catch(() => null);
+        showToast(corpo?.erro || 'Erro ao salvar', false);
+        return;
+      }
+
+      const corpo = await resposta.json();
+
+      if (corpo.despesaCorrespondente) {
+        mostrarConfirmacao(
+          `Encontramos a despesa "${corpo.despesaCorrespondente.despesa}" com o mesmo nome e valor, ainda não paga. Quer marcar ela como paga agora?`,
+          () => {
+            fetch('/marcar_despesa_paga', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id_despesa: corpo.despesaCorrespondente.id }),
+            }).finally(() => { window.location.href = '/extrato'; });
+          },
+          { aoCancelar: () => { window.location.href = '/extrato'; } }
+        );
+        return;
+      }
+
+      window.location.href = '/extrato';
+    } catch {
+      showToast('Erro de conexão', false);
+    }
+  });
+});
 

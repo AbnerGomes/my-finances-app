@@ -101,41 +101,88 @@ class DespesaService:
         # a do cônjuge)
         usuario = self.get_usuario_by_name(usuario)
 
+        # NÃO lança mais gasto automaticamente ao marcar como Pago — isso
+        # duplicava quando o usuário já tinha lançado o gasto na mão (ver
+        # criar_gasto_da_despesa, que só roda se o usuário CONFIRMAR que
+        # quer o gasto, perguntado pelo front depois dessa chamada)
         try:
             conn = get_connection()
             cursor = conn.cursor()
 
+            cursor.execute(
+                "SELECT status, despesa FROM despesas WHERE id = %s AND usuario = %s",
+                (id_despesa, usuario)
+            )
+            atual = cursor.fetchone()
+            if not atual:
+                return {'sucesso': False}
+
+            status_anterior, despesa_nome = atual
+
+            if status_anterior == novo_status:
+                # nada realmente mudou — evita reprocessar (e evita
+                # perguntar de novo se quer lançar gasto toda vez que o
+                # dropdown dispara "change" pro mesmo valor já salvo)
+                return {'sucesso': True, 'virouPago': False}
+
             if novo_status == "Pago":
-                # marcar como paga também lança um gasto correspondente
-                # (mesma categoria/valor), pra já entrar no extrato do mês
                 cursor.execute(
-                    """UPDATE despesas SET status = %s, data_pagamento = CURRENT_DATE
-                       WHERE id = %s AND usuario = %s
-                       RETURNING despesa, valor, categoria""",
+                    "UPDATE despesas SET status = %s, data_pagamento = CURRENT_DATE WHERE id = %s AND usuario = %s",
                     (novo_status, id_despesa, usuario)
                 )
-                resultado = cursor.fetchone()
-                sucesso = resultado is not None
-
-                if sucesso:
-                    despesa_nome, valor, categoria = resultado
-                    cursor.execute(
-                        """INSERT INTO gastos (gasto, valor_gasto, data, categoria, usuario)
-                           VALUES (%s, %s, CURRENT_DATE, %s, %s)""",
-                        (despesa_nome, valor, categoria, usuario)
-                    )
             else:
                 cursor.execute(
                     "UPDATE despesas SET status = %s, data_pagamento = NULL WHERE id = %s AND usuario = %s",
                     (novo_status, id_despesa, usuario)
                 )
-                sucesso = cursor.rowcount > 0
 
+            sucesso = cursor.rowcount > 0
             conn.commit()
-            return sucesso
+
+            virou_pago = sucesso and novo_status == "Pago"
+
+            return {
+                'sucesso': sucesso,
+                'virouPago': virou_pago,
+                'despesa': despesa_nome if virou_pago else None,
+            }
         except Exception as e:
             conn.rollback()
             print(f"Erro ao atualizar status: {e}")
+            return {'sucesso': False}
+        finally:
+            conn.close()
+
+    def criar_gasto_da_despesa(self, id_despesa, usuario):
+        """Lança um gasto correspondente a uma despesa já paga — só roda
+        quando o usuário CONFIRMA (pergunta feita no front depois de
+        marcar a despesa como Pago), pra não duplicar quando ele já
+        tinha lançado o gasto na mão antes."""
+        usuario = self.get_usuario_by_name(usuario)
+
+        conn = get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                """SELECT despesa, valor, categoria, data_pagamento FROM despesas
+                   WHERE id = %s AND usuario = %s AND status = 'Pago'""",
+                (id_despesa, usuario)
+            )
+            resultado = cursor.fetchone()
+            if not resultado:
+                return False
+
+            despesa_nome, valor, categoria, data_pagamento = resultado
+            cursor.execute(
+                """INSERT INTO gastos (gasto, valor_gasto, data, categoria, usuario)
+                   VALUES (%s, %s, %s, %s, %s)""",
+                (despesa_nome, valor, data_pagamento or datetime.now().date(), categoria, usuario)
+            )
+            conn.commit()
+            return True
+        except Exception as e:
+            conn.rollback()
+            print(f"Erro ao criar gasto da despesa: {e}")
             return False
         finally:
             conn.close()
@@ -301,29 +348,61 @@ class DespesaService:
 
         return total #> 0
 
-    def marcar_pago_se_corresponder(self, usuario, nome_gasto, valor, data_gasto):
+    def buscar_despesa_correspondente(self, usuario, nome_gasto, valor, data_gasto):
         # quando o usuário cadastra um gasto avulso cujo nome e valor batem
-        # com uma despesa do mesmo mês, entende que é o pagamento daquela
-        # despesa e marca ela como Paga automaticamente
+        # com uma despesa do mesmo mês ainda não paga, é bem provável que
+        # seja o pagamento daquela despesa — só ACHA (não altera nada),
+        # quem decide marcar como paga é o usuário, confirmando um aviso
+        # no front (evita duplicidade de quando ele já tinha marcado a
+        # despesa como paga por conta própria, ver criar_gasto_da_despesa)
         usuario = self.get_usuario_by_name(usuario)
         mes_ano = data_gasto[:7]  # 'YYYY-MM' a partir de 'YYYY-MM-DD'
 
         try:
             valor_float = float(valor)
         except (TypeError, ValueError):
-            return False
+            return None
 
         conn = get_connection()
         cursor = conn.cursor()
+        # valor é "real" (float de precisão simples) no banco — 123.45
+        # vira 123.44999694824219 de verdade, então "valor = %s" direto
+        # falha silenciosamente pra boa parte dos centavos. Arredondar os
+        # dois lados pra 2 casas antes de comparar contorna isso (o fix
+        # de verdade seria migrar a coluna pra numeric(10,2), mas isso é
+        # uma migração maior, fora do escopo daqui)
         cursor.execute(
-            """UPDATE despesas
-               SET status = 'Pago', data_pagamento = %s
+            """SELECT id, despesa FROM despesas
                WHERE usuario = %s
                AND mes_ano = %s
                AND status != 'Pago'
                AND lower(despesa) = lower(%s)
-               AND valor = %s""",
-            (data_gasto, usuario, mes_ano, nome_gasto, valor_float)
+               AND ROUND(valor::numeric, 2) = ROUND(%s::numeric, 2)
+               LIMIT 1""",
+            (usuario, mes_ano, nome_gasto, valor_float)
+        )
+        resultado = cursor.fetchone()
+        conn.close()
+
+        if not resultado:
+            return None
+
+        return {'id': resultado[0], 'despesa': resultado[1]}
+
+    def marcar_despesa_paga_por_id(self, id_despesa, usuario):
+        # marca uma despesa como paga SEM lançar gasto nenhum — usado
+        # quando o usuário confirma (depois de cadastrar um gasto com o
+        # mesmo nome/valor) que quer marcar a despesa correspondente
+        # como paga; o gasto que gerou essa pergunta já existe, então
+        # não duplica lançando outro
+        usuario = self.get_usuario_by_name(usuario)
+
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            """UPDATE despesas SET status = 'Pago', data_pagamento = CURRENT_DATE
+               WHERE id = %s AND usuario = %s AND status != 'Pago'""",
+            (id_despesa, usuario)
         )
         sucesso = cursor.rowcount > 0
         conn.commit()

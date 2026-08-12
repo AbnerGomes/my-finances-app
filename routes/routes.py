@@ -219,15 +219,12 @@ def cadastrar_gasto():
         # Salvar o gasto no banco
         sucesso = gasto_bp.gasto_service.salvar_gasto(gasto, valor, data, categoria,usuario)
 
-        # se o nome/valor bater com alguma despesa do mesmo mês, marca
-        # ela como paga automaticamente
-        despesa_bp.despesa_service.marcar_pago_se_corresponder(usuario, gasto, valor, data)
+        # se o nome/valor bater com alguma despesa do mesmo mês ainda não
+        # paga, NÃO marca sozinho (gerava duplicidade) — só acha e devolve
+        # pro front perguntar ao usuário se ele quer marcar como paga
+        despesa_correspondente = despesa_bp.despesa_service.buscar_despesa_correspondente(usuario, gasto, valor, data)
 
-        #flash('Gasto cadastrado com sucesso!', 'success')
-
-        return """<script>
-                    window.location.href = '/extrato';
-                </script>"""
+        return jsonify({'sucesso': True, 'despesaCorrespondente': despesa_correspondente})
 
     # return render_template('cadastrar_gasto.html')
     return redirect(url_for('gasto.extrato'))
@@ -253,11 +250,12 @@ def cadastrar_gasto_rapido():
     try:
         gasto_bp.gasto_service.salvar_gasto(descricao, valor, hoje, categoria,usuario)
 
-        # se o nome/valor bater com alguma despesa do mesmo mês, marca
-        # ela como paga automaticamente
-        despesa_bp.despesa_service.marcar_pago_se_corresponder(usuario, descricao, valor, hoje)
+        # se o nome/valor bater com alguma despesa do mesmo mês ainda não
+        # paga, NÃO marca sozinho (gerava duplicidade) — só acha e devolve
+        # pro front perguntar ao usuário se ele quer marcar como paga
+        despesa_correspondente = despesa_bp.despesa_service.buscar_despesa_correspondente(usuario, descricao, valor, hoje)
 
-        return jsonify({'sucesso': True})
+        return jsonify({'sucesso': True, 'despesaCorrespondente': despesa_correspondente})
 
     except Exception as e:
         return jsonify({'erro': 'Falha ao salvar'}), 500
@@ -656,12 +654,59 @@ def atualizar_status():
         return jsonify({'erro': 'Dados incompletos'}), 400
 
     # Chama método da camada service para atualizar no banco
-    sucesso = despesa_bp.despesa_service.atualizar_status(id_despesa, novo_status, session['usuario'])
+    resultado = despesa_bp.despesa_service.atualizar_status(id_despesa, novo_status, session['usuario'])
 
-    if sucesso:
-        return jsonify({'mensagem': 'Status atualizado com sucesso'})
+    if resultado.get('sucesso'):
+        return jsonify({
+            'mensagem': 'Status atualizado com sucesso',
+            # true só quando REALMENTE virou Pago agora (não estava
+            # Pago antes) — é o gatilho pro front perguntar se quer
+            # lançar um gasto correspondente
+            'virouPago': resultado.get('virouPago', False),
+            'despesa': resultado.get('despesa'),
+            'idDespesa': id_despesa,
+        })
     else:
         return jsonify({'erro': 'Você só pode alterar o status das suas próprias despesas.'}), 403
+
+
+@despesa_bp.route('/criar_gasto_da_despesa', methods=['POST'])
+def criar_gasto_da_despesa():
+    if 'usuario' not in session:
+        return jsonify({'erro': 'Você precisa estar logado.'}), 401
+
+    if bloqueado_para_cadastro(session['usuario']):
+        return jsonify({'erro': MENSAGEM_BLOQUEIO_PLANO}), 403
+
+    data = request.get_json()
+    id_despesa = data.get('id_despesa')
+
+    if not id_despesa:
+        return jsonify({'erro': 'Dados incompletos'}), 400
+
+    sucesso = despesa_bp.despesa_service.criar_gasto_da_despesa(id_despesa, session['usuario'])
+
+    if sucesso:
+        return jsonify({'mensagem': 'Gasto lançado com sucesso'})
+    return jsonify({'erro': 'Não foi possível lançar o gasto'}), 400
+
+
+@despesa_bp.route('/marcar_despesa_paga', methods=['POST'])
+def marcar_despesa_paga():
+    if 'usuario' not in session:
+        return jsonify({'erro': 'Você precisa estar logado.'}), 401
+
+    data = request.get_json()
+    id_despesa = data.get('id_despesa')
+
+    if not id_despesa:
+        return jsonify({'erro': 'Dados incompletos'}), 400
+
+    sucesso = despesa_bp.despesa_service.marcar_despesa_paga_por_id(id_despesa, session['usuario'])
+
+    if sucesso:
+        return jsonify({'mensagem': 'Despesa marcada como paga'})
+    return jsonify({'erro': 'Não foi possível marcar a despesa como paga'}), 400
 
 
 @despesa_bp.route('/replicar_despesa', methods=['POST'])

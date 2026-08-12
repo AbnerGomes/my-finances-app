@@ -41,7 +41,30 @@ function atualizarStatus(selectElement) {
       id_despesa: idDespesa,
       novo_status: novoStatus
     })
-  });
+  })
+    .then(res => res.json())
+    .then(corpo => {
+      // só pergunta se REALMENTE virou Pago agora (não estava Pago
+      // antes) — evita ficar perguntando de novo à toa
+      if (corpo.virouPago) {
+        mostrarConfirmacao(
+          `Quer lançar um gasto correspondente à despesa "${corpo.despesa}" que você acabou de marcar como paga?`,
+          () => {
+            fetch('/criar_gasto_da_despesa', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id_despesa: idDespesa })
+            })
+              .then(res => res.json().then(c => ({ ok: res.ok, corpo: c })))
+              .then(({ ok, corpo: c }) => {
+                showToast(ok ? (c.mensagem || 'Gasto lançado!') : (c.erro || 'Erro ao lançar gasto'), ok);
+              })
+              .catch(() => showToast('Erro de conexão', false));
+          }
+        );
+      }
+    })
+    .catch(() => showToast('Erro ao atualizar status', false));
 }
 
 // ================= FILTRO =================

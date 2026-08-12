@@ -389,6 +389,54 @@ function bloquearSePlanoExpirado(e) {
   return true;
 }
 
+// ============================================================
+// Confirmação genérica ("quer marcar essa despesa como paga?", "quer
+// lançar um gasto pra essa despesa paga?") — cria o modal na hora, com
+// estilo próprio (ver .confirmacao-generica-* em comum.css), em vez do
+// confirm() nativo do navegador. Usada em extrato.js/despesas.js.
+// ============================================================
+function mostrarConfirmacao(mensagem, aoConfirmar, opcoes = {}) {
+  const existente = document.getElementById("modal-confirmacao-generica");
+  if (existente) existente.remove();
+
+  const overlay = document.createElement("div");
+  overlay.id = "modal-confirmacao-generica";
+  overlay.className = "confirmacao-generica-overlay";
+  overlay.innerHTML = `
+    <div class="confirmacao-generica-card">
+      <p class="confirmacao-generica-texto"></p>
+      <div class="confirmacao-generica-botoes">
+        <button type="button" class="confirmacao-generica-nao"></button>
+        <button type="button" class="confirmacao-generica-sim"></button>
+      </div>
+    </div>
+  `;
+
+  // texto via textContent (não innerHTML) — mensagem pode conter nome
+  // de gasto/despesa digitado pelo usuário, evita qualquer risco de XSS
+  overlay.querySelector(".confirmacao-generica-texto").textContent = mensagem;
+  overlay.querySelector(".confirmacao-generica-nao").textContent = opcoes.textoCancelar || "Não";
+  overlay.querySelector(".confirmacao-generica-sim").textContent = opcoes.textoConfirmar || "Sim";
+
+  document.body.appendChild(overlay);
+
+  const fechar = () => overlay.remove();
+
+  const cancelar = () => {
+    fechar();
+    if (typeof opcoes.aoCancelar === "function") opcoes.aoCancelar();
+  };
+
+  overlay.querySelector(".confirmacao-generica-nao").addEventListener("click", cancelar);
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) cancelar();
+  });
+  overlay.querySelector(".confirmacao-generica-sim").addEventListener("click", () => {
+    fechar();
+    aoConfirmar();
+  });
+}
+
 function protegerAcoesDeTerceiros() {
   document.querySelectorAll('[data-proprio="false"]').forEach((icone) => {
     if (icone.dataset.bloqueioConfigurado) return;

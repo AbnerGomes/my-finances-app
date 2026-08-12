@@ -1077,3 +1077,79 @@ body.theme-dark {
     opacity: 0.85;
   }
 }
+
+/* ============================================================
+   Confirmação genérica (mostrarConfirmacao, em comum.js) — usada em
+   extrato/despesas/receitas pra perguntar coisas tipo "quer marcar
+   essa despesa como paga?" sem depender do confirm() feio do
+   navegador. Estilo próprio (não usa .modal/.modal-content de cada
+   página, que são inconsistentes entre si) — funciona igual nas 3 telas.
+   ============================================================ */
+.confirmacao-generica-overlay {
+  position: fixed;
+  z-index: 2000;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.confirmacao-generica-card {
+  background: var(--dna-card);
+  color: var(--dna-text);
+  border: 1px solid var(--dna-border);
+  padding: 20px 18px;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 300px;
+  box-shadow: 0 20px 45px rgba(3, 7, 18, 0.55);
+  animation: confirmacaoGenericaAparece 0.2s ease-in-out;
+}
+
+@keyframes confirmacaoGenericaAparece {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.confirmacao-generica-texto {
+  margin: 0 0 18px;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--dna-text);
+}
+
+.confirmacao-generica-botoes {
+  display: flex;
+  gap: 10px;
+}
+
+.confirmacao-generica-botoes button {
+  flex: 1;
+  border: none;
+  padding: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.confirmacao-generica-nao {
+  background: var(--dna-card-soft);
+  color: var(--dna-text-dim);
+}
+
+.confirmacao-generica-nao:hover {
+  color: var(--dna-text);
+}
+
+.confirmacao-generica-sim {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  color: #fff;
+}
+
+.confirmacao-generica-sim:hover {
+  filter: brightness(1.08);
+}

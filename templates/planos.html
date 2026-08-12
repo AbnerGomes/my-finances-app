@@ -140,33 +140,28 @@
       text-decoration: none;
     }
 
-    .aviso-navegador {
+    .plano-btn-icone {
+      font-size: 16px;
+      vertical-align: -3px;
+      margin-right: 4px;
+    }
+
+    .aviso-navegador-nota {
       display: flex;
       align-items: center;
-      gap: 12px;
-      background: linear-gradient(160deg, var(--dna-card), rgba(251, 146, 60, 0.12));
-      border: 1px solid rgba(251, 146, 60, 0.35);
-      border-radius: 16px;
-      padding: 14px 16px;
-      margin-bottom: 16px;
-    }
-
-    .aviso-navegador .material-icons {
-      font-size: 26px;
-      color: var(--dna-orange);
-      flex-shrink: 0;
-    }
-
-    .aviso-navegador p {
-      margin: 0;
-      font-size: 12px;
+      gap: 8px;
+      justify-content: center;
+      margin: 4px 0 8px;
+      font-size: 11px;
       color: var(--dna-text-dim);
       line-height: 1.4;
+      text-align: center;
     }
 
-    .aviso-navegador strong {
-      color: var(--dna-text);
-      word-break: break-all;
+    .aviso-navegador-nota .material-icons {
+      font-size: 15px;
+      color: var(--dna-text-dim);
+      flex-shrink: 0;
     }
 
     .planos-rodape {
@@ -238,13 +233,8 @@
     </div>
 
     {% if dentroDoApp %}
-    <!-- comprar de dentro do app viola a política de pagamentos da Play
-         Store (processador externo dentro de um app Android) — só o
-         navegador comum pode seguir pro checkout -->
-    <div class="aviso-navegador">
-      <span class="material-icons">open_in_browser</span>
-      <p>Para assinar um plano, abra <strong>{{ request.url_root }}planos</strong> pelo navegador do seu celular ou computador (fora do app).</p>
-    </div>
+    {% set url_mensal = request.url_root.rstrip('/') + url_for('gasto.assinar_plano', tipo='mensal') %}
+    {% set url_anual = request.url_root.rstrip('/') + url_for('gasto.assinar_plano', tipo='anual') %}
     {% endif %}
 
     <div class="plano-card">
@@ -256,7 +246,15 @@
         <li><span class="material-icons">check_circle</span> Exportação em Excel e PDF</li>
         <li><span class="material-icons">check_circle</span> Assistente de IA no WhatsApp</li>
       </ul>
-      {% if not dentroDoApp %}
+      {% if dentroDoApp %}
+      <!-- comprar de dentro do app viola a política de pagamentos da Play
+           Store (processador externo num app Android) — esse link usa um
+           esquema customizado que o Flutter intercepta (main.dart) e abre
+           direto no navegador de verdade do aparelho, já na tela certa -->
+      <a href="dnaexterno://abrir?url={{ url_mensal | urlencode }}" class="plano-btn plano-btn-link">
+        <span class="material-icons plano-btn-icone">open_in_browser</span> Assinar plano mensal
+      </a>
+      {% else %}
       <a href="{{ url_for('gasto.assinar_plano', tipo='mensal') }}" class="plano-btn plano-btn-link">Assinar plano mensal</a>
       {% endif %}
     </div>
@@ -267,15 +265,27 @@
       <div class="plano-preco">R$ 49,99 <span>/ ano</span></div>
       <div class="plano-economia">Equivale a R$ 4,17/mês — mais barato que o mensal</div>
       <ul class="plano-lista">
-        <li><span class="material-icons">check_circle</span> Tudo do plano mensal</li>
+        <li><span class="material-icons">check_circle</span> Controle completo de gastos e receitas</li>
+        <li><span class="material-icons">check_circle</span> Modo Casal (conta compartilhada)</li>
+        <li><span class="material-icons">check_circle</span> Exportação em Excel e PDF</li>
         <li><span class="material-icons">check_circle</span> Assistente de IA no WhatsApp</li>
         <li><span class="material-icons">check_circle</span> Preço fixo garantido por 12 meses</li>
-        <li><span class="material-icons">check_circle</span> Melhor custo-benefício</li>
       </ul>
-      {% if not dentroDoApp %}
+      {% if dentroDoApp %}
+      <a href="dnaexterno://abrir?url={{ url_anual | urlencode }}" class="plano-btn plano-btn-link">
+        <span class="material-icons plano-btn-icone">open_in_browser</span> Assinar plano anual
+      </a>
+      {% else %}
       <a href="{{ url_for('gasto.assinar_plano', tipo='anual') }}" class="plano-btn plano-btn-link">Assinar plano anual</a>
       {% endif %}
     </div>
+
+    {% if dentroDoApp %}
+    <p class="aviso-navegador-nota">
+      <span class="material-icons">info</span>
+      Assinaturas são processadas pelo navegador do aparelho — é só tocar em cima, você volta pro app depois de concluir.
+    </p>
+    {% endif %}
 
     <div class="planos-rodape">
       <a href="#" onclick="signOut(); return false;">Sair da conta</a>
