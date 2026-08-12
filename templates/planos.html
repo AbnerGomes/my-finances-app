@@ -113,14 +113,19 @@
     }
 
     .plano-btn {
+      display: block;
       width: 100%;
+      box-sizing: border-box;
       background: linear-gradient(135deg, var(--primary-light), var(--primary));
       color: #fff;
       border: none;
       padding: 12px;
       border-radius: 999px;
       font-size: 14px;
+      font-family: inherit;
       font-weight: 700;
+      text-align: center;
+      text-decoration: none;
       cursor: pointer;
       transition: filter 0.15s ease, transform 0.15s ease;
     }
@@ -131,6 +136,12 @@
 
     .plano-btn:active {
       transform: scale(0.98);
+    }
+
+    .plano-btn:disabled {
+      opacity: 0.7;
+      cursor: default;
+      transform: none;
     }
 
     .plano-btn-link {
@@ -232,11 +243,6 @@
       <p>Seu período de teste gratuito terminou. Continue aproveitando o Dois no Azul.</p>
     </div>
 
-    {% if dentroDoApp %}
-    {% set url_mensal = request.url_root.rstrip('/') + url_for('gasto.assinar_plano', tipo='mensal') %}
-    {% set url_anual = request.url_root.rstrip('/') + url_for('gasto.assinar_plano', tipo='anual') %}
-    {% endif %}
-
     <div class="plano-card">
       <div class="plano-nome">Plano Mensal</div>
       <div class="plano-preco">R$ 7,99 <span>/ mês</span></div>
@@ -248,12 +254,15 @@
       </ul>
       {% if dentroDoApp %}
       <!-- comprar de dentro do app viola a política de pagamentos da Play
-           Store (processador externo num app Android) — esse link usa um
-           esquema customizado que o Flutter intercepta (main.dart) e abre
-           direto no navegador de verdade do aparelho, já na tela certa -->
-      <a href="dnaexterno://abrir?url={{ url_mensal | urlencode }}" class="plano-btn plano-btn-link">
+           Store (processador externo num app Android) — em vez de um link
+           fixo, busca a URL de pagamento JÁ AUTENTICADO aqui dentro do app
+           (fetch em /gerar_checkout) e só then manda o Flutter abrir ela
+           num navegador externo de verdade (esquema "dnaexterno://",
+           interceptado no main.dart) — assim cai direto no checkout do
+           Mercado Pago, sem pedir login de novo no navegador -->
+      <button type="button" class="plano-btn btn-assinar-app" data-tipo="mensal">
         <span class="material-icons plano-btn-icone">open_in_browser</span> Assinar plano mensal
-      </a>
+      </button>
       {% else %}
       <a href="{{ url_for('gasto.assinar_plano', tipo='mensal') }}" class="plano-btn plano-btn-link">Assinar plano mensal</a>
       {% endif %}
@@ -272,9 +281,9 @@
         <li><span class="material-icons">check_circle</span> Preço fixo garantido por 12 meses</li>
       </ul>
       {% if dentroDoApp %}
-      <a href="dnaexterno://abrir?url={{ url_anual | urlencode }}" class="plano-btn plano-btn-link">
+      <button type="button" class="plano-btn btn-assinar-app" data-tipo="anual">
         <span class="material-icons plano-btn-icone">open_in_browser</span> Assinar plano anual
-      </a>
+      </button>
       {% else %}
       <a href="{{ url_for('gasto.assinar_plano', tipo='anual') }}" class="plano-btn plano-btn-link">Assinar plano anual</a>
       {% endif %}
@@ -296,5 +305,43 @@
   <div id="toast" class="toast"></div>
 
   <script src="{{ url_for('static', filename='js/comum.js') }}" defer></script>
+  <script>
+    // Dentro do app: busca a URL de pagamento autenticado (via fetch, com
+    // a sessão do próprio WebView) e só então manda abrir num navegador
+    // externo de verdade — assim cai direto no checkout do Mercado Pago,
+    // sem pedir login de novo (o navegador externo não compartilha
+    // cookie/sessão com o WebView).
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.btn-assinar-app').forEach((botao) => {
+        botao.addEventListener('click', async () => {
+          const tipo = botao.dataset.tipo;
+          const textoOriginal = botao.innerHTML;
+          botao.disabled = true;
+          botao.innerHTML = '<span class="material-icons plano-btn-icone">hourglass_top</span> Preparando pagamento...';
+
+          try {
+            const resposta = await fetch(`/gerar_checkout/${tipo}`, { method: 'POST' });
+            const corpo = await resposta.json();
+
+            if (!resposta.ok || !corpo.checkoutUrl) {
+              if (typeof showToast === 'function') {
+                showToast(corpo.erro || 'Não foi possível iniciar o pagamento agora.', false);
+              }
+              return;
+            }
+
+            window.location.href = 'dnaexterno://abrir?url=' + encodeURIComponent(corpo.checkoutUrl);
+          } catch {
+            if (typeof showToast === 'function') {
+              showToast('Erro de conexão. Tenta de novo.', false);
+            }
+          } finally {
+            botao.disabled = false;
+            botao.innerHTML = textoOriginal;
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>

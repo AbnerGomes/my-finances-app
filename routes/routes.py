@@ -449,6 +449,35 @@ def assinar_plano(tipo):
     return redirect(preferencia['init_point'])
 
 
+@gasto_bp.route('/gerar_checkout/<tipo>', methods=['POST'])
+def gerar_checkout(tipo):
+    # chamado via fetch de DENTRO do app (WebView), autenticado com a
+    # sessão de quem está logado ali — devolve a URL de pagamento pronta
+    # (init_point do Mercado Pago) em vez de redirecionar, porque quem
+    # chama essa rota não vai navegar pra ela: o Flutter (main.dart) pega
+    # essa URL e abre num navegador externo de verdade (dnaexterno://).
+    # Isso evita o problema de abrir o navegador externo direto em
+    # /assinar_plano — o navegador externo não tem a sessão do app (é
+    # outro contexto, cookie não é compartilhado), então cairia na tela
+    # de login em vez de ir direto pro checkout.
+    if 'usuario' not in session:
+        return jsonify({'erro': 'Sessão expirada, entra no app de novo.'}), 401
+
+    resultado = gasto_bp.gasto_service.get_usuario_by_name(session['usuario'])
+    usuario_email = resultado[0] if resultado else None
+
+    if not usuario_email:
+        return jsonify({'erro': 'Não foi possível identificar sua conta.'}), 400
+
+    base_url = request.url_root.rstrip('/')
+    preferencia = pagamento_service.criar_preferencia_pagamento(tipo, usuario_email, base_url)
+
+    if not preferencia or 'init_point' not in preferencia:
+        return jsonify({'erro': 'Não foi possível iniciar o pagamento agora. Tente novamente em instantes.'}), 502
+
+    return jsonify({'checkoutUrl': preferencia['init_point']})
+
+
 @gasto_bp.route('/pagamento/retorno')
 def pagamento_retorno():
     # pra onde o Mercado Pago manda o navegador de volta depois do
