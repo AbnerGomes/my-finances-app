@@ -1059,6 +1059,7 @@ def whatsapp_receber():
 @whatsapp_bp.route('/webhook/whatsapp-waha', methods=['POST'])
 def whatsapp_waha_receber():
     dados = request.get_json(silent=True) or {}
+    print("WEBHOOK WAHA (bruto):", dados)  # diagnóstico temporário — remover depois de confirmar o formato do 'from' com engine GOWS
 
     try:
         if dados.get('event') != 'message':
