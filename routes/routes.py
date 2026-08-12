@@ -944,12 +944,18 @@ def configuracoes():
     # número definitivo, sem precisar mexer no código
     numero_whatsapp_bot = os.environ.get('WHATSAPP_BOT_NUMERO', '15551493833')
 
+    # bot do WhatsApp é benefício de plano pago — mesmo quem ainda está
+    # dentro dos 7 dias de teste grátis (não bloqueado pra cadastro) não
+    # tem acesso, só quem já assinou de verdade
+    tem_plano_ativo = gasto_bp.gasto_service.tem_assinatura_ativa(usuario)
+
     return render_template(
         'configuracoes.html',
         usuario=usuario,
         temConjuge=tem_conjuge,
         telefoneWhatsapp=telefone_whatsapp,
         numeroWhatsappBot=numero_whatsapp_bot,
+        temPlanoAtivo=tem_plano_ativo,
     )
 
 
@@ -959,6 +965,14 @@ def salvar_telefone_whatsapp():
         return redirect(url_for('gasto.login'))
 
     usuario = session['usuario']
+
+    # bot do WhatsApp é benefício de plano pago — bloqueia aqui também
+    # (não só escondendo o formulário na tela) pra ninguém vincular
+    # número direto pela rota sem ter assinatura
+    if not gasto_bp.gasto_service.tem_assinatura_ativa(usuario):
+        flash('Assine um plano pago para vincular seu WhatsApp.', 'danger')
+        return redirect(url_for('gasto.configuracoes'))
+
     telefone = request.form.get('telefone', '').strip()
 
     if telefone:

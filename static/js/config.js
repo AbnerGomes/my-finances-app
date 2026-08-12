@@ -30,12 +30,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // WhatsApp: seção ainda em desenvolvimento (nem Meta nem WAHA prontos
-    // pra uso real) — fica visível mas travada; toca e mostra um aviso
+    // WhatsApp: benefício de plano pago — quem não assinou vê a seção
+    // travada; toca e mostra um aviso em vez de deixar mexer
     const cardWhatsappEmBreve = document.getElementById('whatsapp-em-breve');
     if (cardWhatsappEmBreve) {
         cardWhatsappEmBreve.addEventListener('click', function () {
-            showToast('Essa funcionalidade está em desenvolvimento — em breve!');
+            showToast('Assine um plano pago para vincular seu WhatsApp.');
         });
     }
 });

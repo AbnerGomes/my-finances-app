@@ -117,24 +117,45 @@
       </div>
     </div>
 
-    <!-- Bot do WhatsApp: ainda em desenvolvimento (nem o Meta nem o WAHA
-         estão prontos pra uso real) — a seção fica visível mas travada,
-         com um aviso ao tocar, em vez de deixar tentar usar algo que
-         ainda não funciona -->
-    <div class="settings-card whatsapp-em-breve" id="whatsapp-em-breve"
-         title="Essa funcionalidade está em desenvolvimento">
+    {% if temPlanoAtivo %}
+    <!-- Bot do WhatsApp: benefício de plano pago, liberado -->
+    <div class="settings-card" id="whatsapp-card">
       <div class="option">
         <div class="option-left">
           <span class="material-icons option-icon">chat</span>
           <span class="option-label">WhatsApp</span>
         </div>
-        <span class="whatsapp-em-breve-selo">Em breve</span>
+      </div>
+      <p class="whatsapp-hint">
+        Vincule seu número pra registrar gastos e consultar seus dados conversando com o assistente pelo WhatsApp.
+      </p>
+      <form method="POST" action="{{ url_for('gasto.salvar_telefone_whatsapp') }}" class="whatsapp-input-row">
+        <input type="tel" name="telefone" placeholder="Ex: 51995035983 (DDD + número)" value="{{ telefoneWhatsapp or '' }}">
+        <button type="submit" class="whatsapp-btn-salvar">Salvar</button>
+      </form>
+
+      <a href="https://wa.me/{{ numeroWhatsappBot }}" target="_blank" rel="noopener" class="whatsapp-btn-assistente">
+        <span class="material-icons">smart_toy</span>
+        Falar com o assistente no WhatsApp
+      </a>
+    </div>
+    {% else %}
+    <!-- Bot do WhatsApp: benefício de plano pago — quem não assinou vê a
+         seção travada, com um aviso ao tocar em vez de conseguir mexer -->
+    <div class="settings-card whatsapp-em-breve" id="whatsapp-em-breve"
+         title="Assine um plano pago para vincular seu WhatsApp">
+      <div class="option">
+        <div class="option-left">
+          <span class="material-icons option-icon">chat</span>
+          <span class="option-label">WhatsApp</span>
+        </div>
+        <span class="whatsapp-em-breve-selo">Plano pago</span>
       </div>
       <p class="whatsapp-hint">
         Vincule seu número pra registrar gastos e consultar seus dados conversando com o assistente pelo WhatsApp.
       </p>
       <div class="whatsapp-input-row">
-        <input type="tel" placeholder="Ex: 51995035983 (DDD + número)" value="{{ telefoneWhatsapp or '' }}" disabled>
+        <input type="tel" placeholder="Ex: 51995035983 (DDD + número)" disabled>
         <button type="button" class="whatsapp-btn-salvar" disabled>Salvar</button>
       </div>
 
@@ -143,6 +164,7 @@
         Falar com o assistente no WhatsApp
       </div>
     </div>
+    {% endif %}
 
     <div class="danger-card">
       <div class="settings-footer">
