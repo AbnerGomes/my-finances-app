@@ -1072,24 +1072,41 @@ def whatsapp_waha_receber():
         if payload.get('fromMe'):
             return jsonify(status='ignorado'), 200
 
-        telefone_remetente = payload.get('from', '')  # ex: '5551995035983@c.us'
+        chat_id_resposta = payload.get('from', '')  # pra onde responder — mantém o formato original (pode ser '@lid')
         texto = (payload.get('body') or '').strip()
 
-        if not telefone_remetente or not texto:
+        # com "Addressing Mode" LID (engine GOWS), o "from" vem como um
+        # ID opaco tipo '211961635729457@lid' em vez do número — pra achar
+        # o usuário no banco (que guarda número de telefone, não LID),
+        # usa o número de verdade que fica em _data.Info.SenderAlt
+        # ('555182111050:3@s.whatsapp.net'), descartando o sufixo ':N' de
+        # dispositivo antes do '@'. A resposta continua indo pro chat_id
+        # original (LID), que é o que o WAHA precisa pra entregar certo.
+        telefone_remetente = chat_id_resposta
+        if telefone_remetente.endswith('@lid'):
+            sender_alt = (
+                payload.get('_data', {})
+                .get('Info', {})
+                .get('SenderAlt', '')
+            )
+            if sender_alt:
+                telefone_remetente = sender_alt.split(':')[0]
+
+        if not chat_id_resposta or not texto:
             return jsonify(status='ignorado'), 200
 
         usuario_nome = whatsapp_bp.whatsapp_service.get_usuario_por_telefone(telefone_remetente)
 
         if not usuario_nome:
             enviar_mensagem_whatsapp_waha(
-                telefone_remetente,
+                chat_id_resposta,
                 "Esse número ainda não está vinculado a nenhuma conta do Dois no Azul. "
                 "Entra no app, vai em Configurações e cadastra seu WhatsApp por lá."
             )
             return jsonify(status='numero_nao_vinculado'), 200
 
         resposta_texto = responder_mensagem(texto, usuario_nome)
-        enviar_mensagem_whatsapp_waha(telefone_remetente, resposta_texto)
+        enviar_mensagem_whatsapp_waha(chat_id_resposta, resposta_texto)
 
     except Exception as e:
         print("Erro processando webhook WAHA:", e)

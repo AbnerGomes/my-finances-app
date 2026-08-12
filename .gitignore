@@ -1,0 +1,14 @@
+PAGAMENTO_SETUP.md
+flutter_app/
+.env
+# Python
+__pycache__/
+*.pyc
+
+# Flutter
+build/
+.dart_tool/
+
+# Arquivos zip
+*.zip
+

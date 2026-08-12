@@ -33,10 +33,19 @@ rodar o WAHA também com uma URL pública. Duas opções:
 1. No painel do Render, **New → Web Service**.
 2. Em vez de conectar um repositório Git, escolha **"Deploy an existing
    image from a registry"** e use a imagem `devlikeapro/waha`.
-3. Configure as variáveis de ambiente do próprio WAHA (usuário/senha do
-   dashboard — ver documentação do WAHA pra saber as chaves exatas, mudam
-   entre versões).
-4. Porta: `3000`.
+3. Configure as variáveis de ambiente **do próprio WAHA** (não confundir
+   com as do seu app Flask, lá embaixo na seção 3):
+
+   | Variável | Valor sugerido | Pra quê |
+   |---|---|---|
+   | `WAHA_DASHBOARD_USERNAME` | escolha um usuário | login do dashboard (`/dashboard`) |
+   | `WAHA_DASHBOARD_PASSWORD` | escolha uma senha | senha do dashboard |
+   | `WAHA_API_KEY` | uma chave secreta sua | protege a API — **precisa ser o mesmo valor** que você vai colocar depois em `WAHA_API_KEY` nas variáveis do app Flask (seção 3 abaixo) |
+   | `WHATSAPP_API_PORT` | `3000` | porta que o Render precisa apontar |
+
+   Opcional: `WHATSAPP_DEFAULT_ENGINE=WEBJS` (motor de conexão, pode deixar
+   o padrão) e `TZ=America/Sao_Paulo` (fuso horário do container).
+4. Porta exposta pelo serviço: `3000`.
 5. Depois do deploy, você terá uma URL tipo
    `https://waha-doisnoazul.onrender.com`.
 

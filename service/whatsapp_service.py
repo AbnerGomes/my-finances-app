@@ -19,6 +19,22 @@ class WhatsappService:
             digitos = '55' + digitos
         return digitos
 
+    @staticmethod
+    def _variantes(telefone):
+        """Celular BR pode aparecer com ou sem o '9' extra (norma pós-2012)
+        dependendo de quem manda o número — o WAHA/GOWS, por exemplo, pode
+        reportar o remetente sem o 9 mesmo quando o usuário cadastrou com
+        o 9 (ou vice-versa). Gera as duas formas possíveis pra busca não
+        depender de qual delas foi usada."""
+        base = WhatsappService._normalizar(telefone)
+        variantes = {base}
+        # 55 + DDD(2) + número: com 9 = 13 dígitos, sem 9 = 12 dígitos
+        if len(base) == 13 and base[4] == '9':
+            variantes.add(base[:4] + base[5:])
+        elif len(base) == 12:
+            variantes.add(base[:4] + '9' + base[4:])
+        return list(variantes)
+
     def vincular_telefone(self, telefone, usuario_nome):
         telefone = self._normalizar(telefone)
 
@@ -40,12 +56,12 @@ class WhatsappService:
         conn.close()
 
     def get_usuario_por_telefone(self, telefone):
-        telefone = self._normalizar(telefone)
+        variantes = self._variantes(telefone)
 
         conn = get_connection()
         try:
             cursor = conn.cursor()
-            cursor.execute("SELECT usuario FROM whatsapp_usuarios WHERE telefone = %s", (telefone,))
+            cursor.execute("SELECT usuario FROM whatsapp_usuarios WHERE telefone = ANY(%s)", (variantes,))
             resultado = cursor.fetchone()
             return resultado[0] if resultado else None
         except Exception as e:
