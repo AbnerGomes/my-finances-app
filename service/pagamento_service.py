@@ -9,8 +9,8 @@ from .db_service import get_connection
 # Preços e nomes dos planos oferecidos em /planos (templates/planos.html).
 # Mudar preço aqui não muda o que já foi vendido — só afeta novas compras.
 PLANOS = {
-    'mensal': {'titulo': 'Plano Mensal - Dois no Azul', 'valor': 6.99},
-    'anual': {'titulo': 'Plano Anual - Dois no Azul', 'valor': 49.99},
+    'mensal': {'titulo': 'Plano Mensal - Dois no Azul', 'valor': 7.99},
+    'anual': {'titulo': 'Plano Anual - Dois no Azul', 'valor': 65.99},
 }
 
 
