@@ -240,20 +240,50 @@ filter: brightness(1.08);
   font-size: 18px;
 }
 
-/* Card do WhatsApp "em breve" — visível mas travado, enquanto Meta/WAHA
-   não estão prontos pra uso real. Fica meio apagado e com cursor de
-   "não dá pra mexer"; tocar em qualquer parte mostra um aviso (config.js) */
+/* Card do WhatsApp "em breve"/bloqueado — visível mas travado (Meta/WAHA
+   ainda não prontos, ou usuário sem plano pago). Antes usava um opacity
+   geral no card inteiro, que somado ao cinza padrão de <input disabled>
+   do navegador deixava tudo — título, selo, texto — quase ilegível
+   (viravam uma barra cinza sem contraste nenhum). Agora cada parte tem
+   o seu próprio nível de contraste: título/selo continuam legíveis, só
+   o campo/botão realmente "travados" ficam com uma pegada mais discreta
+   (borda tracejada em vez de cinza chapado) — dá pra entender que está
+   bloqueado sem parecer quebrado. Tocar em qualquer parte mostra um
+   aviso (config.js). */
 .whatsapp-em-breve {
   position: relative;
-  opacity: 0.55;
   cursor: not-allowed;
   user-select: none;
+}
+
+.whatsapp-em-breve .whatsapp-hint {
+  opacity: 0.8;
 }
 
 .whatsapp-em-breve .whatsapp-input-row input,
 .whatsapp-em-breve .whatsapp-btn-salvar,
 .whatsapp-em-breve .whatsapp-btn-assistente {
   pointer-events: none;
+}
+
+.whatsapp-em-breve .whatsapp-input-row input:disabled {
+  background: var(--dna-card-soft);
+  border: 1px dashed var(--dna-border);
+  color: var(--dna-text-dim);
+  opacity: 1;
+}
+
+.whatsapp-em-breve .whatsapp-input-row input:disabled::placeholder {
+  color: var(--dna-text-dim);
+  opacity: 1;
+}
+
+.whatsapp-em-breve .whatsapp-btn-salvar:disabled {
+  opacity: 1;
+}
+
+.whatsapp-em-breve .whatsapp-btn-assistente {
+  opacity: 0.7;
 }
 
 .whatsapp-em-breve-selo {
