@@ -293,6 +293,24 @@ filter: brightness(1.08);
   transform: translateX(-50%) translateY(0);
 }
 
+/* Aviso de contato/suporte, rodapé de Configurações */
+.contato-suporte {
+  text-align: center;
+  font-size: 11px;
+  color: var(--dna-text-faint, var(--dna-text-dim));
+  margin: 20px 0 4px;
+  line-height: 1.5;
+}
+
+.contato-suporte a {
+  color: var(--dna-text-dim);
+  text-decoration: underline;
+}
+
+.contato-suporte a:hover {
+  color: var(--dna-text);
+}
+
 /* Responsivo (mobile first) */
 @media (max-width: 400px) {
 .modal-content {
