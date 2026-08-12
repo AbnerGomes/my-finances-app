@@ -29,7 +29,7 @@
   <script src="{{ url_for('static', filename='js/receitas.js') }}" defer></script>
 </head>
 
-<body data-is-casal="{{ isCasal }}" data-tem-conjuge="{{ 'true' if temConjuge else 'false' }}">
+<body data-is-casal="{{ isCasal }}" data-tem-conjuge="{{ 'true' if temConjuge else 'false' }}" data-bloqueado-cadastro="{{ 'true' if bloqueadoParaCadastro else 'false' }}">
 
   <!-- HEADER -->
   <div class="header-bar center">

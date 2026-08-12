@@ -102,6 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
     btnAdd.addEventListener("click", (e) => {
       e.stopPropagation();
 
+      if (bloquearSePlanoExpirado(e)) return;
+
       // fetch('/valida_mensalista')
       //   .then(res => res.json())
       //   .then(dados => {
@@ -130,10 +132,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 👉 EDITAR
   document.querySelectorAll(".edit-icon").forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", (e) => {
       // despesa de outra pessoa (modo Casal) — nem abre o modal de
       // edição; quem barra e avisa é o protegerAcoesDeTerceiros (comum.js)
       if (btn.dataset.proprio === "false") return;
+
+      if (bloquearSePlanoExpirado(e)) return;
 
       definirCategoriaSelecionada('editar', btn.dataset.categoria);
       document.getElementById('editar-descricao').value = btn.dataset.descricao;

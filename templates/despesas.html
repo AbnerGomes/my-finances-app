@@ -23,7 +23,7 @@
     <script src="{{ url_for('static', filename='js/comum.js') }}" defer></script>
     <title>Quadro de Despesas Mensais </title>
 </head>
-<body class="dna-page" data-is-casal="{{ isCasal }}" data-tem-conjuge="{{ 'true' if temConjuge else 'false' }}">
+<body class="dna-page" data-is-casal="{{ isCasal }}" data-tem-conjuge="{{ 'true' if temConjuge else 'false' }}" data-bloqueado-cadastro="{{ 'true' if bloqueadoParaCadastro else 'false' }}">
 
   <div class="header-bar center">
     <div class="logo-text">

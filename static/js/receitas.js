@@ -43,7 +43,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ================= ABRIR MODAL =================
-  addBtn.addEventListener("click", () => {
+  addBtn.addEventListener("click", (e) => {
+    if (bloquearSePlanoExpirado(e)) return;
+
     idInput.value = "";
     descInput.value = "";
     valorInput.value = "";
@@ -59,6 +61,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // receita de outra pessoa (modo Casal) — nem abre o modal de
       // edição; quem barra e avisa é o protegerAcoesDeTerceiros (comum.js)
       if (e.target.dataset.proprio === "false") return;
+
+      if (bloquearSePlanoExpirado(e)) return;
 
       modal.style.display = "flex";
 

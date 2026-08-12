@@ -345,7 +345,8 @@ def extrato():
         categorias=categorias,
         categorias_completas=categorias_completas,
         acoes=acoes,
-        token_exportacao=gerar_token_exportacao(usuario)
+        token_exportacao=gerar_token_exportacao(usuario),
+        bloqueadoParaCadastro=bloqueado_para_cadastro(usuario)
     )
 
 
@@ -638,7 +639,8 @@ def despesas():
         temConjuge=tem_conjuge,
         somaDespesas=soma_despesas,
         temPendencias=tem_pendencias,
-        categorias_completas=categorias_completas
+        categorias_completas=categorias_completas,
+        bloqueadoParaCadastro=bloqueado_para_cadastro(usuario)
     )
 
 @despesa_bp.route('/atualizar_status', methods=['POST'])
@@ -1202,7 +1204,8 @@ def receitas():
                            mes_atual=mes,
                            receitas_lista=receitas_lista,
                            total_receitas=total_receitas,
-                           receitas_agrupadas=receitas_agrupadas
+                           receitas_agrupadas=receitas_agrupadas,
+                           bloqueadoParaCadastro=bloqueado_para_cadastro(usuario)
                            )
 
 @gasto_bp.route('/salvar_receita', methods=['POST'], strict_slashes=False)

@@ -363,6 +363,32 @@ const MENSAGENS_BLOQUEIO = {
   receitas: "Você só pode editar/excluir suas próprias receitas",
 };
 
+// ============================================================
+// Teste grátis expirado sem plano pago: cadastro/edição de gasto,
+// despesa e receita ficam bloqueados (consultar/listar/excluir
+// continuam liberados — ver bloqueado_para_cadastro() no routes.py).
+// A tela já sabe disso de cara via data-bloqueado-cadastro no <body>
+// (extrato.html/despesas.html/receitas.html), então o aviso aparece
+// no clique do "+"/editar, ANTES de abrir qualquer modal — em vez de
+// deixar preencher tudo pra só rejeitar depois do "Salvar".
+// ============================================================
+const MENSAGEM_BLOQUEIO_PLANO = "Seu período de teste terminou. Assine um plano para continuar cadastrando.";
+
+function bloquearSePlanoExpirado(e) {
+  if (document.body.dataset.bloqueadoCadastro !== "true") return false;
+
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  if (typeof showToast === "function") {
+    showToast(MENSAGEM_BLOQUEIO_PLANO, false);
+  }
+
+  return true;
+}
+
 function protegerAcoesDeTerceiros() {
   document.querySelectorAll('[data-proprio="false"]').forEach((icone) => {
     if (icone.dataset.bloqueioConfigurado) return;

@@ -289,8 +289,11 @@ document.addEventListener('click', function (event) {
     const btn = event.target.closest('.btn-adicionar');
 
     if (btn) {
-      document.getElementById('modal-cadastrar').style.display = 'block';
       event.preventDefault(); // evita comportamento padrão do botão/link
+
+      if (bloquearSePlanoExpirado(event)) return;
+
+      document.getElementById('modal-cadastrar').style.display = 'block';
       
       //comentado temporariamente para testes  
       // fetch('/valida_mensalista')
@@ -322,6 +325,8 @@ document.addEventListener('click', function (event) {
       // gasto de outra pessoa (modo Casal) — nem abre o modal de
       // edição; quem barra e avisa é o protegerAcoesDeTerceiros (comum.js)
       if (event.target.getAttribute('data-proprio') === 'false') return;
+
+      if (bloquearSePlanoExpirado(event)) return;
 
       const data = event.target.getAttribute('data-data');
       const categoria = event.target.getAttribute('data-categoria');
@@ -469,6 +474,8 @@ form.addEventListener('submit', function(e) {
 
 //add gasto rapido
 function quickAddGasto(descricao, valor, categoria) {
+
+  if (bloquearSePlanoExpirado()) return;
 
   fetch('/cadastrar_gasto_rapido', {
     method: 'POST',
