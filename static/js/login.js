@@ -87,3 +87,30 @@
 
 
 })(jQuery);
+
+// ================= TOAST (mensagens flash: ex. senha errada) =================
+function showToast(msg, success = true) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+
+    toast.textContent = msg;
+    toast.style.background = success ? '#16a34a' : '#dc2626';
+
+    toast.classList.add('show');
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2500);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const mensagens = window.MENSAGENS_FLASH || [];
+
+    // mostra uma de cada vez, com um respiro entre elas (raro ter mais
+    // de uma no login, mas não quebra se acontecer)
+    mensagens.forEach(function ([categoria, texto], i) {
+        setTimeout(() => {
+            showToast(texto, categoria !== 'danger');
+        }, i * 2800);
+    });
+});

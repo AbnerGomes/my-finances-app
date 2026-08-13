@@ -467,3 +467,33 @@ iframe {
 .alert-info {
   background-color: #2196F3; /* azul claro */
 }
+
+/* Toast (substitui o antigo .alert fixo no topo — ex: senha errada no
+   login). Mesmo padrão visual usado no resto do app (Configurações,
+   Planos, etc.): aparece embaixo e some sozinho, em vez de ficar preso
+   na tela até a próxima navegação. */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(30px + env(safe-area-inset-bottom));
+  transform: translateX(-50%) translateY(20px);
+  background: #1b2550;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: #f5f7ff;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 10px 24px rgba(3, 7, 18, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 1200;
+  max-width: calc(100vw - 40px);
+  text-align: center;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}

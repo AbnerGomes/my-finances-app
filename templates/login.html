@@ -38,11 +38,11 @@
 
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
-    {% for category, message in messages %}
-      <div class="alert alert-{{ category }}">
-        {{ message }}
-      </div>
-    {% endfor %}
+  <script>
+    // exibido como toast (login.js) — some sozinho, em vez de ficar fixo
+    // na tela como um <div class="alert"> estático
+    window.MENSAGENS_FLASH = {{ messages | tojson }};
+  </script>
   {% endif %}
 {% endwith %}
 
@@ -104,6 +104,8 @@
 
 
 	<div id="dropDownSelect1"></div>
+
+	<div id="toast" class="toast"></div>
 
 	<script>
 	  window.dataLayer = window.dataLayer || [];
