@@ -235,6 +235,110 @@ class GastoService:
             if conn:
                 conn.close()
 
+    def consultar_gastos_bot(self, usuario, periodo, escopo='proprio'):
+        """Usado pelo assistente do WhatsApp (claude_agent_service.py).
+        Diferente de filtrarGastos (que só soma por categoria e sempre
+        combina usuário+cônjuge quando isCasal='S'), aqui:
+        - devolve os gastos INDIVIDUAIS (com descrição, não só a soma),
+          pra o assistente poder responder citando o nome de cada gasto;
+        - `escopo` decide de quem são os gastos, com fidelidade ao que
+          foi perguntado: 'proprio' (só o usuário), 'conjuge' (só o
+          cônjuge — nunca misturado com o do usuário) ou 'ambos'
+          (os dois combinados).
+        Devolve None se escopo='conjuge' mas o usuário não tem cônjuge
+        vinculado (quem chama decide como avisar disso)."""
+        conn = None
+        try:
+            usuario_email = self.get_usuario_by_name(usuario)
+
+            conn = get_connection()
+            cursor = conn.cursor()
+
+            hoje = datetime.now().date()
+            inicio = fim = None
+
+            if periodo == 'ontem':
+                inicio = fim = hoje - timedelta(days=1)
+            elif periodo == 'hoje':
+                inicio = fim = hoje
+            elif periodo == 'semanaatual':
+                domingo_semana_atual = hoje - timedelta(days=hoje.weekday() + 1) if hoje.weekday() != 6 else hoje
+                inicio = domingo_semana_atual
+                fim = hoje
+            elif periodo == 'semanapassada':
+                domingo_semana_atual = hoje - timedelta(days=hoje.weekday() + 1) if hoje.weekday() != 6 else hoje
+                domingo_passado = domingo_semana_atual - timedelta(days=7)
+                sabado_passado = domingo_passado + timedelta(days=6)
+                inicio = domingo_passado
+                fim = sabado_passado
+            elif periodo == 'mesatual':
+                inicio = hoje.replace(day=1)
+                fim = hoje
+            elif periodo == 'mesanterior':
+                primeiro_dia_mes_atual = hoje.replace(day=1)
+                ultimo_dia_mes_anterior = primeiro_dia_mes_atual - timedelta(days=1)
+                inicio = ultimo_dia_mes_anterior.replace(day=1)
+                fim = ultimo_dia_mes_anterior
+            # periodo == 'geral' (ou qualquer outro valor): sem filtro de data
+
+            # acha o cônjuge (email), se tiver — precisa tanto pro escopo
+            # 'conjuge' quanto pro 'ambos'
+            conjuge_email = None
+            query_conjuge = "SELECT a.usuario AS conjuge FROM casal c JOIN autenticacao a ON a.usuario = CASE WHEN c.conjuge_1 = %s THEN c.conjuge_2 ELSE c.conjuge_1 END WHERE %s IN (c.conjuge_1, c.conjuge_2);"
+            cursor.execute(query_conjuge, (usuario_email, usuario_email))
+            resultado_conjuge = cursor.fetchone()
+            if resultado_conjuge:
+                conjuge_email = resultado_conjuge[0]
+
+            if escopo == 'conjuge':
+                if not conjuge_email:
+                    return None
+                usuarios_filtro = (conjuge_email, conjuge_email)
+            elif escopo == 'ambos':
+                usuarios_filtro = (usuario_email, conjuge_email or usuario_email)
+            else:  # 'proprio' (padrão)
+                usuarios_filtro = (usuario_email, usuario_email)
+
+            if inicio and fim:
+                query = """
+                    SELECT g.gasto, g.valor_gasto, g.categoria, TO_CHAR(g.data, 'DD/MM/YYYY') AS data_formatada, u.nome
+                    FROM gastos g
+                    INNER JOIN usuarios u ON g.usuario = u.email
+                    WHERE g.usuario IN (%s, %s) AND g.data BETWEEN %s AND %s
+                    ORDER BY g.data DESC, g.id DESC
+                    LIMIT 80
+                """
+                cursor.execute(query, (usuarios_filtro[0], usuarios_filtro[1], inicio, fim))
+            else:
+                query = """
+                    SELECT g.gasto, g.valor_gasto, g.categoria, TO_CHAR(g.data, 'DD/MM/YYYY') AS data_formatada, u.nome
+                    FROM gastos g
+                    INNER JOIN usuarios u ON g.usuario = u.email
+                    WHERE g.usuario IN (%s, %s)
+                    ORDER BY g.data DESC, g.id DESC
+                    LIMIT 80
+                """
+                cursor.execute(query, usuarios_filtro)
+
+            linhas = cursor.fetchall()
+
+            return [
+                {
+                    'descricao': gasto,
+                    'valor': float(valor or 0),
+                    'categoria': categoria,
+                    'data': data_formatada,
+                    'de': nome,
+                }
+                for gasto, valor, categoria, data_formatada, nome in linhas
+            ]
+        except Exception as e:
+            print("Erro em consultar_gastos_bot:", e)
+            return []
+        finally:
+            if conn:
+                conn.close()
+
     def extrato_gastos(self,usuario,data_inicial,data_fim,categoria,isCasal):
 
         usuario = self.get_usuario_by_name(usuario)

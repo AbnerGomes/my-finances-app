@@ -48,11 +48,15 @@ TOOLS = [
     {
         "name": "consultar_gastos_periodo",
         "description": (
-            "Consulta o total gasto e o detalhamento por categoria em um período. Use para perguntas "
-            "como 'quanto gastei hoje', 'quanto gastei ontem', 'quanto gastei esse mês', "
-            "'qual categoria eu mais gasto' ou 'quanto gastei com X'. Também use pra perguntas sobre "
-            "os gastos do cônjuge/parceiro(a) ou do casal (ex: 'quanto minha esposa gastou hoje', "
-            "'quanto gastamos esse mês' — nesse caso marque incluir_conjuge)."
+            "Consulta os gastos em um período: total, valor por categoria, e a lista de cada gasto "
+            "individual (com a descrição/nome de cada um e de quem é). Use para perguntas como "
+            "'quanto gastei hoje', 'quanto gastei esse mês', 'qual categoria eu mais gasto', "
+            "'quanto gastei com X', ou sobre o cônjuge/casal (ex: 'quanto a Ana gastou', 'quanto "
+            "gastamos'). IMPORTANTE: escolha o parâmetro 'escopo' com fidelidade ao que foi "
+            "perguntado — se perguntaram só pelo cônjuge (pelo nome dele/dela, ou 'meu marido/minha "
+            "esposa'), use 'conjuge' e responda SÓ sobre ele, sem misturar com os gastos do usuário. "
+            "Se perguntaram pelos dois juntos ('nós', 'a gente', 'gastamos'), use 'ambos'. Se "
+            "perguntaram só pelo usuário ('eu', 'meu'), use 'proprio'."
         ),
         "input_schema": {
             "type": "object",
@@ -70,14 +74,13 @@ TOOLS = [
                     "type": "string",
                     "description": "Opcional. Preencha se o usuário perguntar sobre uma categoria específica (ex: 'Ifood'), pra filtrar o resultado.",
                 },
-                "incluir_conjuge": {
-                    "type": "boolean",
+                "escopo": {
+                    "type": "string",
+                    "enum": ["proprio", "conjuge", "ambos"],
                     "description": (
-                        "true se o usuário perguntar sobre o cônjuge/parceiro(a)/casal (ex: 'gastos da "
-                        "minha esposa', 'quanto gastamos', 'gastos de casa'). Nesse caso o resultado "
-                        "vem combinado (usuário + cônjuge) — é assim que o Modo Casal do app funciona, "
-                        "não dá pra ver só o do cônjuge isolado. false (padrão) pra só os gastos "
-                        "próprios do usuário."
+                        "'proprio' (padrão) = só os gastos do próprio usuário. 'conjuge' = só os "
+                        "gastos do cônjuge/parceiro(a), isolados (NUNCA inclui os do usuário). "
+                        "'ambos' = os dois combinados (é assim que o Modo Casal do app funciona)."
                     ),
                 },
             },
@@ -101,38 +104,76 @@ def _executar_tool(nome_tool, tool_input, usuario_nome, gasto_service):
 
     if nome_tool == "consultar_gastos_periodo":
         periodo = tool_input["periodo"]
-        periodo_query = None if periodo == "geral" else periodo
-        is_casal = "S" if tool_input.get("incluir_conjuge") else "N"
-        linhas = gasto_service.filtrarGastos(periodo_query, usuario_nome, is_casal) or []
+        escopo = tool_input.get("escopo", "proprio")
+        if escopo not in ("proprio", "conjuge", "ambos"):
+            escopo = "proprio"
+
+        itens = gasto_service.consultar_gastos_bot(usuario_nome, periodo, escopo)
+
+        if itens is None:
+            # escopo='conjuge' pedido, mas o usuário não tem cônjuge vinculado
+            return {"erro": "Esse usuário não tem cônjuge/parceiro(a) vinculado ainda."}
 
         categoria_filtro = tool_input.get("categoria")
         if categoria_filtro:
-            linhas = [
-                l for l in linhas
-                if l["categoria"].strip().lower() == categoria_filtro.strip().lower()
+            itens = [
+                i for i in itens
+                if i["categoria"].strip().lower() == categoria_filtro.strip().lower()
             ]
 
-        total = sum(float(l["valor"] or 0) for l in linhas)
+        total = sum(i["valor"] for i in itens)
+        por_categoria = {}
+        for i in itens:
+            por_categoria[i["categoria"]] = por_categoria.get(i["categoria"], 0) + i["valor"]
+
         return {
+            "escopo": escopo,  # confirma pra Claude de quem é esse resultado
             "total": round(total, 2),
             "por_categoria": [
-                {"categoria": l["categoria"], "valor": round(float(l["valor"] or 0), 2)}
-                for l in linhas
+                {"categoria": c, "valor": round(v, 2)} for c, v in por_categoria.items()
             ],
-            # avisa a Claude se o total veio combinado (usuário + cônjuge)
-            # ou só do próprio usuário, pra ela deixar isso claro na resposta
-            "incluiuConjuge": is_casal == "S",
+            # gastos individuais (com nome/descrição e de quem é) — pra Claude
+            # poder citar o gasto específico quando fizer sentido, em vez de
+            # só dar o total
+            "itens": [
+                {"descricao": i["descricao"], "valor": round(i["valor"], 2), "categoria": i["categoria"], "data": i["data"], "de": i["de"]}
+                for i in itens
+            ],
         }
 
     return {"erro": f"tool desconhecida: {nome_tool}"}
+
+
+# Se a chamada pra API da Claude falhar por qualquer motivo (sem crédito,
+# rate limit, instabilidade, chave inválida, etc.), quem está do outro
+# lado do WhatsApp não pode ver um erro técnico — melhor uma mensagem
+# educada dizendo que o assistente está temporariamente fora, sem
+# expor detalhe nenhum de infraestrutura.
+MENSAGEM_ASSISTENTE_INDISPONIVEL = (
+    "O assistente está em manutenção temporária 🛠️ — mas você pode continuar "
+    "usando o app normalmente. Em caso de dúvidas, entre em contato com o "
+    "administrador pela tela de Configurações do app."
+)
 
 
 def responder_mensagem(mensagem_usuario, usuario_nome, gasto_service=None):
     """Recebe o texto de uma mensagem de WhatsApp já vinculada a uma conta
     (usuario_nome = mesmo valor de session['usuario']/autenticacao.nome),
     roda o loop de tool-use da Claude e devolve o texto de resposta final
-    a ser enviado de volta pelo WhatsApp."""
+    a ser enviado de volta pelo WhatsApp.
 
+    Qualquer falha (API da Claude sem crédito, erro de rede, etc.) é
+    tratada aqui dentro — nunca propaga pra quem chamou, pra sempre poder
+    mandar uma resposta de volta pro WhatsApp em vez de deixar o usuário
+    sem resposta nenhuma."""
+    try:
+        return _responder_mensagem(mensagem_usuario, usuario_nome, gasto_service)
+    except Exception as e:
+        print("Erro ao chamar a API da Claude (assistente WhatsApp):", e)
+        return MENSAGEM_ASSISTENTE_INDISPONIVEL
+
+
+def _responder_mensagem(mensagem_usuario, usuario_nome, gasto_service=None):
     gasto_service = gasto_service or GastoService()
     client = anthropic.Anthropic()  # lê ANTHROPIC_API_KEY do ambiente
 
@@ -141,10 +182,11 @@ def responder_mensagem(mensagem_usuario, usuario_nome, gasto_service=None):
     hoje = date.today().isoformat()
 
     aviso_conjuge = (
-        "O usuário TEM um cônjuge/parceiro(a) vinculado (Modo Casal ativo). Se ele perguntar sobre "
-        "gastos do cônjuge, do casal, ou 'quanto gastamos', use consultar_gastos_periodo com "
-        "incluir_conjuge=true — o resultado vem combinado (os dois juntos, não dá pra separar só o "
-        "do cônjuge)."
+        "O usuário TEM um cônjuge/parceiro(a) vinculado (Modo Casal ativo). Ao consultar gastos, "
+        "escolha o escopo com fidelidade: perguntou só pelo cônjuge (pelo nome dele/dela, ou 'meu "
+        "marido'/'minha esposa' sem se incluir) → escopo='conjuge', e fale SÓ dele/dela na resposta, "
+        "nunca misture com os gastos do usuário. Perguntou pelos dois ('nós', 'a gente', 'gastamos') "
+        "→ escopo='ambos'. Perguntou só por si mesmo ('eu', 'meu') → escopo='proprio'."
         if tem_conjuge else
         "O usuário NÃO tem cônjuge/parceiro(a) vinculado ainda. Se ele perguntar sobre gastos do "
         "cônjuge/casal, avise que precisa vincular um cônjuge em Configurações → Modo Casal primeiro."
@@ -157,6 +199,12 @@ def responder_mensagem(mensagem_usuario, usuario_nome, gasto_service=None):
         f"{aviso_conjuge}\n"
         f"Ao registrar um gasto, reaproveite uma categoria existente da lista acima sempre que fizer "
         f"sentido; só use uma categoria nova se nenhuma existente encaixar.\n"
+        f"Ao responder sobre gastos consultados, seja específico: cite a descrição/nome de cada gasto "
+        f"relevante (não só o total) quando o período tiver poucos itens (ex.: 'hoje') ou quando o "
+        f"usuário perguntar sobre algo específico. Em respostas sobre o cônjuge ou 'ambos', use o "
+        f"campo 'de' de cada item pra saber de quem é cada gasto e atribuir corretamente (ex.: 'Ana "
+        f"gastou R$ 7,99 com Café da manhã'). Pra períodos longos com muitos itens, resuma por "
+        f"categoria em vez de listar tudo.\n"
         f"Responda sempre em português, de forma curta e direta — é uma conversa de WhatsApp, não um "
         f"relatório. Valores monetários: escreva em reais com vírgula, ex: R$ 45,90."
     )
