@@ -1,26 +1,21 @@
-# Recuperação de senha por e-mail (Gmail SMTP)
+# Recuperação de senha por e-mail (Resend)
 
 A tela "Esqueci minha senha" manda um código de 6 dígitos por e-mail
-(válido por 15 minutos) usando o seu próprio Gmail (`abwgomes@gmail.com`)
-como remetente, via SMTP — não precisa de nenhuma biblioteca nova nem
-conta em outro serviço.
+(válido por 15 minutos), usando a API do **Resend** (envio via HTTPS).
 
-## 1. Gerar uma "Senha de app" no Google
+> ⚠️ **Por que não Gmail SMTP direto**: foi a primeira tentativa, mas o
+> Render bloqueia conexão SMTP de saída (porta 587/465) nas contas —
+> confirmado em produção com o erro `[Errno 101] Network is
+> unreachable`. A API do Resend evita isso porque roda sobre HTTPS
+> normal (porta 443), que não é bloqueada.
 
-O Gmail **não aceita mais a senha normal da conta** pra login via SMTP
-por outros programas — precisa de uma "Senha de app" (App Password),
-específica pra isso.
+## 1. Criar conta no Resend
 
-1. Sua conta Google precisa ter a **verificação em duas etapas (2FA)
-   ativada** — se ainda não tiver, ative primeiro em
-   [myaccount.google.com/security](https://myaccount.google.com/security).
-2. Acesse [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
-   (ou: Conta Google → Segurança → Verificação em duas etapas → Senhas de app,
-   lá embaixo da página).
-3. Dê um nome pra identificar (ex: "Dois no Azul") e clique em **Criar**.
-4. O Google mostra uma senha de 16 caracteres (tipo `abcd efgh ijkl mnop`) —
-   **copia ela na hora**, só aparece uma vez. Pode remover os espaços ou
-   deixar, tanto faz.
+1. Acesse [resend.com](https://resend.com) e crie uma conta (gratuita,
+   sem cartão de crédito — 3.000 e-mails/mês, 100/dia).
+2. No painel, vá em **API Keys** → **Create API Key**. Dá um nome (ex:
+   "Dois no Azul") e copia a chave gerada (começa com `re_`) — só
+   aparece uma vez.
 
 ## 2. Configurar no Render
 
@@ -28,30 +23,41 @@ No painel do Render, no seu app principal → **Environment**, adiciona:
 
 | Variável | Valor |
 |---|---|
-| `GMAIL_USER` | `abwgomes@gmail.com` (o e-mail que vai aparecer como remetente) |
-| `GMAIL_APP_PASSWORD` | a senha de 16 caracteres gerada no passo 1 |
+| `RESEND_API_KEY` | a chave gerada no passo 1 (`re_...`) |
+| `RESEND_FROM` | opcional — ver limitação abaixo antes de mudar o padrão |
 
-Salva e espera o redeploy automático (ou clica em "Manual Deploy").
+Salva e espera o redeploy (ou clica em "Manual Deploy").
 
-Se quiser testar localmente também, adiciona as mesmas duas variáveis no
-seu `.env`.
+## 3. ⚠️ Limitação importante: domínio de envio
 
-## 3. Testar
+**Sem verificar um domínio próprio no Resend**, o remetente só pode ser
+`onboarding@resend.dev` (o padrão já configurado no código) — e o
+Resend só entrega e-mails pro **próprio endereço que você usou pra criar
+a conta** nesse modo. Ou seja: **funciona pra você testar**, mas
+**não funciona pra outros usuários reais** pedirem recuperação de senha
+ainda.
+
+Pra liberar o envio pra qualquer usuário, é preciso:
+
+1. Ter um domínio próprio (ex: `doisnoazul.com.br` — se não tiver
+   ainda, precisaria registrar um).
+2. No Resend, ir em **Domains** → **Add Domain**, colocar o domínio.
+3. Adicionar os registros DNS (SPF, DKIM) que o Resend mostrar, no
+   painel de onde o domínio foi registrado.
+4. Esperar o Resend verificar (geralmente minutos, pode levar até 24h).
+5. Trocar a variável `RESEND_FROM` pra algo como
+   `Dois no Azul <naoresponda@doisnoazul.com.br>`.
+
+**Se você não tem domínio ainda**, dá pra deixar assim mesmo por
+enquanto (funcionando só pra você testar) e resolver o domínio depois,
+sem pressa — nenhum código precisa mudar, só a variável de ambiente.
+
+## 4. Testar
 
 1. Na tela de login, clica em "Esqueci minha senha".
-2. Digita um e-mail que já tem conta no app.
-3. Deve chegar um e-mail com um código de 6 dígitos em alguns segundos
-   (confere a caixa de spam também, principalmente nos primeiros testes).
-4. Digita o código + a nova senha na tela seguinte.
+2. Digita o e-mail que você usou pra criar a conta Resend (por causa da
+   limitação acima).
+3. Deve chegar o código em alguns segundos (confere spam também).
 
-Se **não** configurar essas variáveis, o app não trava — só não envia o
-e-mail (fica logado no Render: `GMAIL_USER/GMAIL_APP_PASSWORD não
-configurados`), então dá pra fazer o deploy da funcionalidade mesmo antes
-de configurar isso, e ligar depois.
-
-## Limites do Gmail
-
-Conta Gmail pessoal tem um limite de ~500 e-mails/dia via SMTP — bem
-acima do que uma recuperação de senha de um app pequeno deveria gerar.
-Se um dia isso crescer muito, vale migrar pra um serviço transacional
-(Resend, SendGrid, etc.), mas pra agora não tem necessidade.
+Sem `RESEND_API_KEY` configurada, o app não trava — só não envia o
+e-mail (fica logado no Render: `RESEND_API_KEY não configurado`).
