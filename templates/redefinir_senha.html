@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-	<title>Recuperar senha — Dois no Azul</title>
+	<title>Redefinir senha — Dois no Azul</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
@@ -25,29 +25,53 @@
 				  {% endif %}
 				{% endwith %}
 
-				<form method="POST" action="{{ url_for('gasto.esqueci') }}" class="login100-form validate-form">
+				<form method="POST" action="{{ url_for('gasto.redefinir_senha') }}" class="login100-form validate-form">
 					<span class="login100-form-title p-b-26">
-						Esqueceu a senha?
+						Digite o código
 					</span>
 					<span class="login100-form-title p-b-48" style="font-size: 13px; font-weight: 400; opacity: 0.75; text-align: center;">
-						Informe seu e-mail cadastrado — vamos te mandar um código de recuperação.
+						Enviamos um código de 6 dígitos pro seu e-mail. Ele vale por 15 minutos.
 					</span>
 
-					<div class="wrap-input100 validate-input" data-validate="Um email válido deve conter: algumacoisa@algumaoutracoisa.c">
-						<input class="input100" type="text" name="email" value="{{ email or '' }}">
-						<span class="focus-input100" data-placeholder="Email"></span>
+					<input type="hidden" name="email" value="{{ email or '' }}">
+
+					<div class="wrap-input100 validate-input" data-validate="Informe o código">
+						<input class="input100" type="text" name="codigo" maxlength="6" inputmode="numeric" autocomplete="one-time-code">
+						<span class="focus-input100" data-placeholder="Código de 6 dígitos"></span>
+					</div>
+
+					<div class="wrap-input100 validate-input" data-validate="Informe a nova senha">
+						<span class="btn-show-pass">
+							<i class="zmdi zmdi-eye"></i>
+						</span>
+						<input class="input100" type="password" name="nova_senha">
+						<span class="focus-input100" data-placeholder="Nova senha"></span>
+					</div>
+
+					<div class="wrap-input100 validate-input" data-validate="Confirme a nova senha">
+						<span class="btn-show-pass">
+							<i class="zmdi zmdi-eye"></i>
+						</span>
+						<input class="input100" type="password" name="confirmar_senha">
+						<span class="focus-input100" data-placeholder="Confirmar nova senha"></span>
 					</div>
 
 					<div class="container-login100-form-btn">
 						<div class="wrap-login100-form-btn">
 							<div class="login100-form-bgbtn"></div>
 							<button class="login100-form-btn" type="submit">
-								Enviar código
+								Redefinir senha
 							</button>
 						</div>
 					</div>
 
 					<div class="text-center" style="margin-top: 16px;">
+						<a class="txt2" href="{{ url_for('gasto.esqueci') }}">
+							Não recebeu? Pedir novo código
+						</a>
+					</div>
+					<br>
+					<div class="text-center">
 						<a class="txt2" href="{{ url_for('gasto.login') }}">
 							Voltar pro login
 						</a>

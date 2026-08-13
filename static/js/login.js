@@ -68,21 +68,20 @@
     
     /*==================================================================
     [ Show pass ]*/
-    var showPass = 0;
+    // era controlado por uma variável global única (showPass) — funcionava
+    // enquanto só existia 1 campo de senha na tela (login), mas quebrava
+    // com 2 campos (nova senha + confirmar, na tela de redefinir senha):
+    // clicar no olhinho de um campo bagunçava o estado do outro. Agora
+    // cada campo controla o próprio estado, olhando o próprio tipo atual.
     $('.btn-show-pass').on('click', function(){
-        if(showPass == 0) {
-            $(this).next('input').attr('type','text');
-            $(this).find('i').removeClass('zmdi-eye');
-            $(this).find('i').addClass('zmdi-eye-off');
-            showPass = 1;
+        var input = $(this).next('input');
+        if (input.attr('type') === 'password') {
+            input.attr('type', 'text');
+            $(this).find('i').removeClass('zmdi-eye').addClass('zmdi-eye-off');
+        } else {
+            input.attr('type', 'password');
+            $(this).find('i').removeClass('zmdi-eye-off').addClass('zmdi-eye');
         }
-        else {
-            $(this).next('input').attr('type','password');
-            $(this).find('i').addClass('zmdi-eye');
-            $(this).find('i').removeClass('zmdi-eye-off');
-            showPass = 0;
-        }
-        
     });
 
 

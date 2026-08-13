@@ -30,6 +30,8 @@ from service.whatsapp_client import enviar_mensagem_whatsapp
 from service.claude_agent_service import responder_mensagem
 from service.whatsapp_waha_client import enviar_mensagem_whatsapp_waha
 from service import tutorial_service
+from service import email_service
+from service import recuperacao_senha_service
 
 import locale
 
@@ -428,7 +430,67 @@ def cadastro():
 
 @gasto_bp.route('/esqueci', methods=['GET', 'POST'])
 def esqueci():
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+
+        if email and recuperacao_senha_service.email_existe(email):
+            codigo = recuperacao_senha_service.gerar_codigo(email)
+            email_service.enviar_email(
+                email,
+                'Código de recuperação — Dois no Azul',
+                f'Seu código de recuperação de senha é: {codigo}\n\n'
+                f'Ele vale por {recuperacao_senha_service.VALIDADE_MINUTOS} minutos. '
+                f'Se você não pediu isso, pode ignorar este e-mail.',
+                corpo_html=(
+                    f'<p>Seu código de recuperação de senha do <strong>Dois no Azul</strong> é:</p>'
+                    f'<p style="font-size:28px; font-weight:700; letter-spacing:4px;">{codigo}</p>'
+                    f'<p>Ele vale por {recuperacao_senha_service.VALIDADE_MINUTOS} minutos. '
+                    f'Se você não pediu isso, pode ignorar este e-mail.</p>'
+                ),
+            )
+
+        # mesma mensagem independente do e-mail existir ou não — evita
+        # que alguém use essa tela pra descobrir quais e-mails têm conta
+        flash('Se esse e-mail estiver cadastrado, você vai receber um código em instantes.', 'success')
+        return redirect(url_for('gasto.redefinir_senha', email=email))
+
     return render_template("esqueci.html")
+
+
+@gasto_bp.route('/redefinir_senha', methods=['GET', 'POST'])
+def redefinir_senha():
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+        codigo = request.form.get('codigo', '').strip()
+        nova_senha = request.form.get('nova_senha', '')
+        confirmar_senha = request.form.get('confirmar_senha', '')
+
+        if not email or not codigo or not nova_senha:
+            flash('Preencha todos os campos.', 'danger')
+            return redirect(url_for('gasto.redefinir_senha', email=email))
+
+        if nova_senha != confirmar_senha:
+            flash('As senhas não coincidem.', 'danger')
+            return redirect(url_for('gasto.redefinir_senha', email=email))
+
+        if len(nova_senha) < 6:
+            flash('A senha precisa ter pelo menos 6 caracteres.', 'danger')
+            return redirect(url_for('gasto.redefinir_senha', email=email))
+
+        id_codigo = recuperacao_senha_service.verificar_codigo(email, codigo)
+
+        if not id_codigo:
+            flash('Código inválido ou expirado. Peça um novo código.', 'danger')
+            return redirect(url_for('gasto.redefinir_senha', email=email))
+
+        recuperacao_senha_service.redefinir_senha(email, nova_senha)
+        recuperacao_senha_service.marcar_codigo_usado(id_codigo)
+
+        flash('Senha alterada com sucesso! Faça login com a nova senha.', 'success')
+        return redirect(url_for('gasto.login'))
+
+    email = request.args.get('email', '')
+    return render_template("redefinir_senha.html", email=email)
 
 
 @gasto_bp.route('/politica-privacidade')
