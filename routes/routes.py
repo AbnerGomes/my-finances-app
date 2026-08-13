@@ -1159,6 +1159,19 @@ def whatsapp_waha_receber():
             return jsonify(status='ignorado'), 200
 
         chat_id_resposta = payload.get('from', '')  # pra onde responder — mantém o formato original (pode ser '@lid')
+
+        # Status/Stories de contatos (e broadcast lists em geral) chegam
+        # como "message" também, com from = "status@broadcast" (ou
+        # "...@broadcast") — não são conversa nenhuma. BUG REAL já
+        # confirmado: sem esse filtro, o bot tratava isso como "número
+        # desconhecido" e respondia... pro próprio endereço de Status,
+        # postando a resposta como Status visível pra todos os contatos
+        # (aconteceu logo após reconectar o celular, que resincroniza
+        # Status recentes).
+        if chat_id_resposta.endswith('@broadcast'):
+            print("WEBHOOK WAHA: ignorado evento de broadcast/status, from =", chat_id_resposta)
+            return jsonify(status='ignorado'), 200
+
         texto = (payload.get('body') or '').strip()
 
         # com "Addressing Mode" LID (engine GOWS), o "from" vem como um
