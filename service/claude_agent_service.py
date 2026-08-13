@@ -50,7 +50,9 @@ TOOLS = [
         "description": (
             "Consulta o total gasto e o detalhamento por categoria em um período. Use para perguntas "
             "como 'quanto gastei hoje', 'quanto gastei ontem', 'quanto gastei esse mês', "
-            "'qual categoria eu mais gasto' ou 'quanto gastei com X'."
+            "'qual categoria eu mais gasto' ou 'quanto gastei com X'. Também use pra perguntas sobre "
+            "os gastos do cônjuge/parceiro(a) ou do casal (ex: 'quanto minha esposa gastou hoje', "
+            "'quanto gastamos esse mês' — nesse caso marque incluir_conjuge)."
         ),
         "input_schema": {
             "type": "object",
@@ -67,6 +69,16 @@ TOOLS = [
                 "categoria": {
                     "type": "string",
                     "description": "Opcional. Preencha se o usuário perguntar sobre uma categoria específica (ex: 'Ifood'), pra filtrar o resultado.",
+                },
+                "incluir_conjuge": {
+                    "type": "boolean",
+                    "description": (
+                        "true se o usuário perguntar sobre o cônjuge/parceiro(a)/casal (ex: 'gastos da "
+                        "minha esposa', 'quanto gastamos', 'gastos de casa'). Nesse caso o resultado "
+                        "vem combinado (usuário + cônjuge) — é assim que o Modo Casal do app funciona, "
+                        "não dá pra ver só o do cônjuge isolado. false (padrão) pra só os gastos "
+                        "próprios do usuário."
+                    ),
                 },
             },
             "required": ["periodo"],
@@ -90,7 +102,8 @@ def _executar_tool(nome_tool, tool_input, usuario_nome, gasto_service):
     if nome_tool == "consultar_gastos_periodo":
         periodo = tool_input["periodo"]
         periodo_query = None if periodo == "geral" else periodo
-        linhas = gasto_service.filtrarGastos(periodo_query, usuario_nome, "N") or []
+        is_casal = "S" if tool_input.get("incluir_conjuge") else "N"
+        linhas = gasto_service.filtrarGastos(periodo_query, usuario_nome, is_casal) or []
 
         categoria_filtro = tool_input.get("categoria")
         if categoria_filtro:
@@ -106,6 +119,9 @@ def _executar_tool(nome_tool, tool_input, usuario_nome, gasto_service):
                 {"categoria": l["categoria"], "valor": round(float(l["valor"] or 0), 2)}
                 for l in linhas
             ],
+            # avisa a Claude se o total veio combinado (usuário + cônjuge)
+            # ou só do próprio usuário, pra ela deixar isso claro na resposta
+            "incluiuConjuge": is_casal == "S",
         }
 
     return {"erro": f"tool desconhecida: {nome_tool}"}
@@ -121,12 +137,24 @@ def responder_mensagem(mensagem_usuario, usuario_nome, gasto_service=None):
     client = anthropic.Anthropic()  # lê ANTHROPIC_API_KEY do ambiente
 
     categorias = gasto_service.get_categorias_completas(usuario_nome, "N")
+    tem_conjuge = gasto_service.tem_conjuge(usuario_nome)
     hoje = date.today().isoformat()
+
+    aviso_conjuge = (
+        "O usuário TEM um cônjuge/parceiro(a) vinculado (Modo Casal ativo). Se ele perguntar sobre "
+        "gastos do cônjuge, do casal, ou 'quanto gastamos', use consultar_gastos_periodo com "
+        "incluir_conjuge=true — o resultado vem combinado (os dois juntos, não dá pra separar só o "
+        "do cônjuge)."
+        if tem_conjuge else
+        "O usuário NÃO tem cônjuge/parceiro(a) vinculado ainda. Se ele perguntar sobre gastos do "
+        "cônjuge/casal, avise que precisa vincular um cônjuge em Configurações → Modo Casal primeiro."
+    )
 
     system_prompt = (
         f"Você é o assistente financeiro do app \"Dois no Azul\", respondendo por WhatsApp.\n"
         f"A data de hoje é {hoje}. O usuário já está autenticado — nunca pergunte quem ele é.\n"
         f"Categorias já usadas por este usuário: {', '.join(categorias) if categorias else '(nenhuma ainda)'}.\n"
+        f"{aviso_conjuge}\n"
         f"Ao registrar um gasto, reaproveite uma categoria existente da lista acima sempre que fizer "
         f"sentido; só use uma categoria nova se nenhuma existente encaixar.\n"
         f"Responda sempre em português, de forma curta e direta — é uma conversa de WhatsApp, não um "
