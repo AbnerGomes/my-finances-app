@@ -653,10 +653,12 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+  // o servidor só manda a dica pra tela quando o usuário ainda não
+  // marcou "não mostrar mais" (tutoriais_vistos no banco — antes era
+  // localStorage, que não persistia de forma confiável dentro do
+  // WebView do app Android e a dica voltava a aparecer toda hora) —
+  // então se o elemento existe no HTML, é pra mostrar
   document.querySelectorAll(".tutorial-dica[data-tutorial]").forEach((dica) => {
-    const chave = `tutorial_visto_${dica.dataset.tutorial}`;
-    if (localStorage.getItem(chave)) return;
-
     dica.classList.add("mostrar");
 
     const fechar = dica.querySelector(".tutorial-dica-fechar");
@@ -668,7 +670,11 @@ document.addEventListener("DOMContentLoaded", () => {
         // fechar sem marcar só esconde por agora, e a dica volta a
         // aparecer da próxima vez que abrir essa tela
         if (naoMostrar && naoMostrar.checked) {
-          localStorage.setItem(chave, "1");
+          fetch("/tutorial/marcar_visto", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ tutorial: dica.dataset.tutorial }),
+          }).catch(() => {});
         }
         dica.classList.remove("mostrar");
       });

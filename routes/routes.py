@@ -29,6 +29,7 @@ from service.whatsapp_service import WhatsappService
 from service.whatsapp_client import enviar_mensagem_whatsapp
 from service.claude_agent_service import responder_mensagem
 from service.whatsapp_waha_client import enviar_mensagem_whatsapp_waha
+from service import tutorial_service
 
 import locale
 
@@ -195,7 +196,28 @@ def index():
     # depois de 7 dias de conta, sem assinatura ativa, bloqueia o uso
     precisa_assinar = gasto_bp.gasto_service.precisa_assinar(usuario)
 
-    return render_template('index.html',usuario=usuario,temConjuge=tem_conjuge,precisaAssinar=precisa_assinar)
+    tutorial_visto = tutorial_service.tutorial_visto(usuario, 'home')
+
+    return render_template('index.html',usuario=usuario,temConjuge=tem_conjuge,precisaAssinar=precisa_assinar,tutorialVisto=tutorial_visto)
+
+
+@gasto_bp.route('/tutorial/marcar_visto', methods=['POST'])
+def marcar_tutorial_visto():
+    # "não mostrar mais" dos tutoriais/dicas (home, despesas, receitas,
+    # extrato) — persiste no banco por usuário+tela, em vez de só
+    # localStorage (não sobrevivia de forma confiável dentro do WebView
+    # do app Android, a dica voltava a aparecer toda hora)
+    if 'usuario' not in session:
+        return jsonify({'erro': 'Você precisa estar logado.'}), 401
+
+    data = request.get_json(silent=True) or {}
+    tutorial = data.get('tutorial')
+
+    if not tutorial:
+        return jsonify({'erro': 'Dados incompletos'}), 400
+
+    tutorial_service.marcar_tutorial_visto(session['usuario'], tutorial)
+    return jsonify({'sucesso': True})
 
 @gasto_bp.route('/cadastrar_gasto', methods=['GET', 'POST'])
 def cadastrar_gasto():
@@ -344,7 +366,8 @@ def extrato():
         categorias_completas=categorias_completas,
         acoes=acoes,
         token_exportacao=gerar_token_exportacao(usuario),
-        bloqueadoParaCadastro=bloqueado_para_cadastro(usuario)
+        bloqueadoParaCadastro=bloqueado_para_cadastro(usuario),
+        tutorialVisto=tutorial_service.tutorial_visto(usuario, 'extrato')
     )
 
 
@@ -667,7 +690,8 @@ def despesas():
         somaDespesas=soma_despesas,
         temPendencias=tem_pendencias,
         categorias_completas=categorias_completas,
-        bloqueadoParaCadastro=bloqueado_para_cadastro(usuario)
+        bloqueadoParaCadastro=bloqueado_para_cadastro(usuario),
+        tutorialVisto=tutorial_service.tutorial_visto(usuario, 'despesas')
     )
 
 @despesa_bp.route('/atualizar_status', methods=['POST'])
@@ -1289,7 +1313,8 @@ def receitas():
                            receitas_lista=receitas_lista,
                            total_receitas=total_receitas,
                            receitas_agrupadas=receitas_agrupadas,
-                           bloqueadoParaCadastro=bloqueado_para_cadastro(usuario)
+                           bloqueadoParaCadastro=bloqueado_para_cadastro(usuario),
+                           tutorialVisto=tutorial_service.tutorial_visto(usuario, 'receitas')
                            )
 
 @gasto_bp.route('/salvar_receita', methods=['POST'], strict_slashes=False)

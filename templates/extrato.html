@@ -116,7 +116,10 @@
 
         <h2 class="page-title">Extrato</h2>
 
-        <!-- dica de tutorial (primeiro acesso) -->
+        {% if not tutorialVisto %}
+        <!-- dica de tutorial (primeiro acesso) — servidor só manda essa
+             dica pra tela quando o usuário ainda não marcou "não mostrar
+             mais" -->
         <div class="tutorial-dica" data-tutorial="extrato">
           <span class="material-icons tutorial-dica-icone">lightbulb</span>
           <div class="tutorial-dica-conteudo">
@@ -134,6 +137,7 @@
             <span class="material-icons">close</span>
           </button>
         </div>
+        {% endif %}
 
         <div class="filtro-container">
 

@@ -123,7 +123,10 @@
   </div>
   {% endif %}
 
-  <!-- dica de tutorial (primeiro acesso) -->
+  {% if not tutorialVisto %}
+  <!-- dica de tutorial (primeiro acesso) — servidor só manda essa dica
+       pra tela quando o usuário ainda não marcou "não mostrar mais"
+       (tutoriais_vistos no banco); se já marcou, nem renderiza -->
   <div class="tutorial-dica" data-tutorial="despesas">
     <span class="material-icons tutorial-dica-icone">lightbulb</span>
     <div class="tutorial-dica-conteudo">
@@ -142,6 +145,7 @@
       <span class="material-icons">close</span>
     </button>
   </div>
+  {% endif %}
 
 <!-- toggle compacto Individual/Casal (separado do bloco de filtros, igual à tela de extrato) -->
 <div class="modo-compacto-wrapper" role="tablist" aria-label="Modo de visualização">

@@ -159,7 +159,9 @@
       <span class="material-icons home-bell" aria-hidden="true">notifications_none</span>
     </div>
 
-    <!-- dica de tutorial (primeiro acesso) -->
+    {% if not tutorialVisto %}
+    <!-- dica de tutorial (primeiro acesso) — servidor só manda essa dica
+         pra tela quando o usuário ainda não marcou "não mostrar mais" -->
     <div class="tutorial-dica" data-tutorial="home">
       <span class="material-icons tutorial-dica-icone">lightbulb</span>
       <div class="tutorial-dica-conteudo">
@@ -177,6 +179,7 @@
         <span class="material-icons">close</span>
       </button>
     </div>
+    {% endif %}
 
     <!-- alternância Individual / Casal -->
     <div class="mode-toggle-row">

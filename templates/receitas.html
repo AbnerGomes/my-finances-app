@@ -119,7 +119,9 @@
       <span class="sub">Controle mensal de entradas</span>
     </div>
 
-    <!-- dica de tutorial (primeiro acesso) -->
+    {% if not tutorialVisto %}
+    <!-- dica de tutorial (primeiro acesso) — servidor só manda essa dica
+         pra tela quando o usuário ainda não marcou "não mostrar mais" -->
     <div class="tutorial-dica" data-tutorial="receitas">
       <span class="material-icons tutorial-dica-icone">lightbulb</span>
       <div class="tutorial-dica-conteudo">
@@ -136,6 +138,7 @@
         <span class="material-icons">close</span>
       </button>
     </div>
+    {% endif %}
 
     <!-- MODO INDIVIDUAL/CASAL (compacto) -->
     <div class="modo-compacto-wrapper" role="tablist" aria-label="Modo de visualização">
