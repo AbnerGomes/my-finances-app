@@ -129,7 +129,7 @@
       <p class="whatsapp-hint">
         Vincule seu número pra registrar gastos e consultar seus dados conversando com o assistente pelo WhatsApp.
       </p>
-      <form method="POST" action="{{ url_for('gasto.salvar_telefone_whatsapp') }}" class="whatsapp-input-row">
+      <form id="form-whatsapp" method="POST" action="{{ url_for('gasto.salvar_telefone_whatsapp') }}" class="whatsapp-input-row">
         <input type="tel" name="telefone" placeholder="Ex: 51995035983 (DDD + número)" value="{{ telefoneWhatsapp or '' }}">
         <button type="submit" class="whatsapp-btn-salvar">Salvar</button>
       </form>

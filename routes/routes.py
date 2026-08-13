@@ -1038,7 +1038,7 @@ def configuracoes():
 @gasto_bp.route('/configuracoes/whatsapp', methods=['POST'])
 def salvar_telefone_whatsapp():
     if 'usuario' not in session:
-        return redirect(url_for('gasto.login'))
+        return jsonify({'erro': 'Você precisa estar logado.'}), 401
 
     usuario = session['usuario']
 
@@ -1046,19 +1046,16 @@ def salvar_telefone_whatsapp():
     # (não só escondendo o formulário na tela) pra ninguém vincular
     # número direto pela rota sem ter assinatura
     if not gasto_bp.gasto_service.tem_assinatura_ativa(usuario):
-        flash('Assine um plano pago para vincular seu WhatsApp.', 'danger')
-        return redirect(url_for('gasto.configuracoes'))
+        return jsonify({'erro': 'Assine um plano pago para vincular seu WhatsApp.'}), 403
 
     telefone = request.form.get('telefone', '').strip()
 
     if telefone:
         whatsapp_bp.whatsapp_service.vincular_telefone(telefone, usuario)
-        flash('WhatsApp vinculado com sucesso!')
+        return jsonify({'mensagem': 'WhatsApp vinculado com sucesso!'})
     else:
         whatsapp_bp.whatsapp_service.desvincular_telefone(usuario)
-        flash('WhatsApp desvinculado.')
-
-    return redirect(url_for('gasto.configuracoes'))
+        return jsonify({'mensagem': 'WhatsApp desvinculado.'})
 
 
 # ============================================================

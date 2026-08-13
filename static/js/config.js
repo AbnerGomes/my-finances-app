@@ -38,6 +38,32 @@ document.addEventListener('DOMContentLoaded', function () {
             showToast('Assine um plano pago para vincular seu WhatsApp.');
         });
     }
+
+    // WhatsApp: quem já tem plano vê o formulário liberado — salvar/
+    // desvincular via fetch (em vez de recarregar a página inteira) só
+    // pra poder mostrar o toast de sucesso, igual ao aviso de bloqueio
+    const formWhatsapp = document.getElementById('form-whatsapp');
+    if (formWhatsapp) {
+        formWhatsapp.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const botao = formWhatsapp.querySelector('.whatsapp-btn-salvar');
+            if (botao) botao.disabled = true;
+
+            try {
+                const resposta = await fetch(formWhatsapp.action, {
+                    method: 'POST',
+                    body: new FormData(formWhatsapp),
+                });
+                const corpo = await resposta.json();
+                showToast(resposta.ok ? corpo.mensagem : (corpo.erro || 'Erro ao salvar'), resposta.ok);
+            } catch {
+                showToast('Erro de conexão. Tenta de novo.', false);
+            } finally {
+                if (botao) botao.disabled = false;
+            }
+        });
+    }
 });
 
 // ================= TOAST =================
