@@ -600,7 +600,12 @@ form input[type="radio"] {
 
 .btn-float {
   position: fixed;
-  bottom: 92px;
+  /* acima do footer-bar fixo, mesmo padrão usado em extrato.css/
+     receitas.css — sem o env(safe-area-inset-bottom), esse botão ficava
+     escondido atrás do rodapé em aparelhos com área de gesto maior
+     (relatado num Galaxy A55; funcionava só por sorte em telas com
+     área de gesto pequena/zero) */
+  bottom: calc(92px + env(safe-area-inset-bottom));
 
   left: 50%;
   transform: translateX(-50%);
