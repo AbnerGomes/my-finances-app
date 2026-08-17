@@ -497,3 +497,19 @@ iframe {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+/* Badge "teste grátis por 7 dias" — tela de login (primeira coisa que
+   a pessoa vê antes de criar conta ou entrar) */
+.badge-teste-gratis {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 24px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(147, 197, 253, 0.15), rgba(59, 130, 246, 0.15));
+  border: 1px solid rgba(147, 197, 253, 0.35);
+  color: #93c5fd;
+  font-size: 12px;
+  font-weight: 700;
+}
