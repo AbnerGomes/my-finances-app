@@ -159,6 +159,16 @@
       <span class="material-icons home-bell" aria-hidden="true">notifications_none</span>
     </div>
 
+    <!-- aviso inteligente (despesas pendentes, meta perto do limite, etc.)
+         — recalculado a cada carregamento (scripts.js), sem persistência
+         de "não mostrar mais" como o tutorial, já que a condição pode
+         deixar de ser verdade a qualquer momento -->
+    <div id="insight-banner" class="insight-banner" style="display: none;">
+      <span class="material-icons insight-banner-icone" id="insight-banner-icone"></span>
+      <div class="insight-banner-texto" id="insight-banner-texto"></div>
+      <a href="#" class="insight-banner-btn" id="insight-banner-btn" style="display: none;"></a>
+    </div>
+
     {% if not tutorialVisto %}
     <!-- dica de tutorial (primeiro acesso) — servidor só manda essa dica
          pra tela quando o usuário ainda não marcou "não mostrar mais" -->
@@ -230,6 +240,15 @@
           <div id="total-gastos" class="valor despesa">0,00</div>
         </div>
       </div>
+
+      <!-- projeção de fechamento do mês (saldo atual menos o que ainda
+           falta pagar de despesas) — só aparece no mês atual, e só
+           quando tem alguma despesa pendente pra considerar (senão é
+           igual ao saldo já mostrado acima, redundante) -->
+      <div id="projecao-mes" class="projecao-mes" style="display: none;">
+        <span class="material-icons projecao-mes-icone" id="projecao-mes-icone">trending_flat</span>
+        <span id="projecao-mes-texto"></span>
+      </div>
     </div>
 
     <!-- card: gastos por categoria no período selecionado (donut + total)
@@ -262,6 +281,41 @@
       </div>
       <div id="categorias-list" class="categorias-list">
         <!-- preenchido dinamicamente pelo scripts.js -->
+      </div>
+    </div>
+
+    <!-- widget compacto/expansível de despesas do mês — de propósito NÃO
+         é um .home-card igual aos outros (feedback: ficava "estranho"
+         competir por espaço com saldo/donut/histórico). Fechado por
+         padrão, mostra um resumo de uma linha; abre pra ver a lista de
+         pendências e o link de metas. SEMPRE o mês atual, independente
+         dos chips de período lá em cima (esses afetam só gastos avulsos,
+         não despesas mensais) -->
+    <button type="button" class="despesas-mes-toggle" id="despesas-mes-toggle" aria-expanded="false">
+      <span class="despesas-mes-icone-wrapper">
+        <span class="material-icons despesas-mes-icone">receipt_long</span>
+      </span>
+      <span class="despesas-mes-titulo">Despesas do mês</span>
+      <span class="despesas-mes-badge" id="despesas-mes-badge">—</span>
+      <span class="material-icons despesas-mes-chevron">expand_more</span>
+    </button>
+    <div class="despesas-mes-conteudo" id="despesas-mes-conteudo">
+      <div class="receitas-despesas-row">
+        <div class="rd-item">
+          <span class="label-muted">Pagas</span>
+          <div id="despesas-pagas" class="valor receita">0/0</div>
+        </div>
+        <div class="rd-item align-right">
+          <span class="label-muted">Pendente</span>
+          <div id="despesas-valor-pendente" class="valor despesa">R$ 0,00</div>
+        </div>
+      </div>
+
+      <div id="despesas-pendentes-lista" class="despesas-pendentes-lista"></div>
+
+      <div class="despesas-mes-acoes">
+        <a href="{{ url_for('despesa.despesas') }}" class="despesas-mes-link">Ver despesas</a>
+        <a href="{{ url_for('despesa.metas') }}" class="despesas-mes-link">Ver minhas metas</a>
       </div>
     </div>
 

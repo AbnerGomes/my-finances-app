@@ -32,6 +32,9 @@ from service.whatsapp_waha_client import enviar_mensagem_whatsapp_waha
 from service import tutorial_service
 from service import email_service
 from service import recuperacao_senha_service
+from service import metas_service
+from service import insights_service
+from service.categorias import icone_categoria
 
 import locale
 
@@ -1309,40 +1312,126 @@ def deletar_usuario():
 
     return render_template('configuracoes_exclusao.html')  
 
-@despesa_bp.route('/metas') 
+@despesa_bp.route('/metas')
 def metas():
-    # Exemplo real com gasto e cálculo do percentual
-    cards = [
-        {
-            "id": 1,
-            "nome": "Ifood",
-            "limite": 300,
-            "gasto": 135,
-            "percentual": min(int((135 / 300) * 100), 100),
-            "imagem_url": "/static/images/ifood.png"
-        },
-        {
-            "id": 2,
-            "nome": "Futebol",
-            "limite": 100,
-            "gasto": 85,
-            "percentual": min(int((85 / 100) * 100), 100),
-            "imagem_url": "/static/images/futebol.png",
-        },
-        {
-            "id": 3,
-            "nome": "Carro",
-            "limite": 800,
-            "gasto": 820,
-            "percentual": min(int((820 / 800) * 100), 100),
-            "imagem_url": "/static/images/carro.png"
-        }
-    ]
+    if 'usuario' not in session:
+        return redirect(url_for('gasto.login'))
 
-    usuario = session.get('usuario', 'Abner Gomes')
-    tem_conjuge = despesa_bp.despesa_service.tem_conjuge(usuario) if session.get('usuario') else False
+    usuario = session['usuario']
+    isCasal = request.args.get('isCasal') or 'N'
 
-    return render_template("metas.html", cards=cards, usuario=usuario, isCasal='N', temConjuge=tem_conjuge)
+    tem_conjuge = despesa_bp.despesa_service.tem_conjuge(usuario)
+    if isCasal == 'S' and not tem_conjuge:
+        isCasal = 'N'
+
+    cards = metas_service.listar_metas(usuario, isCasal)
+    for card in cards:
+        card['icone'] = icone_categoria(card['categoria'])
+
+    categorias_completas = despesa_bp.despesa_service.get_categorias_completas(usuario, isCasal)
+    # só oferece pra criar meta em categorias que ainda não têm uma
+    categorias_ja_com_meta = {c['categoria'] for c in cards}
+    categorias_disponiveis = [c for c in categorias_completas if c not in categorias_ja_com_meta]
+
+    return render_template(
+        "metas.html",
+        cards=cards,
+        usuario=usuario,
+        isCasal=isCasal,
+        temConjuge=tem_conjuge,
+        categoriasDisponiveis=categorias_disponiveis,
+        bloqueadoParaCadastro=bloqueado_para_cadastro(usuario),
+    )
+
+
+@despesa_bp.route('/metas/criar', methods=['POST'])
+def criar_meta():
+    if 'usuario' not in session:
+        return jsonify({'erro': 'Você precisa estar logado.'}), 401
+
+    usuario = session['usuario']
+
+    if bloqueado_para_cadastro(usuario):
+        return jsonify({'erro': MENSAGEM_BLOQUEIO_PLANO}), 403
+
+    data = request.get_json(silent=True) or {}
+    categoria = (data.get('categoria') or '').strip()
+    limite = data.get('limite')
+
+    if not categoria or not limite:
+        return jsonify({'erro': 'Dados incompletos'}), 400
+
+    try:
+        limite = float(limite)
+        if limite <= 0:
+            raise ValueError
+    except (TypeError, ValueError):
+        return jsonify({'erro': 'Informe um limite válido'}), 400
+
+    resultado = metas_service.criar_meta(usuario, categoria, limite)
+
+    if resultado['sucesso']:
+        return jsonify({'mensagem': 'Meta criada com sucesso!'})
+    return jsonify({'erro': resultado['erro']}), 400
+
+
+@despesa_bp.route('/metas/<int:id_meta>/editar', methods=['POST'])
+def editar_meta(id_meta):
+    if 'usuario' not in session:
+        return jsonify({'erro': 'Você precisa estar logado.'}), 401
+
+    usuario = session['usuario']
+
+    if bloqueado_para_cadastro(usuario):
+        return jsonify({'erro': MENSAGEM_BLOQUEIO_PLANO}), 403
+
+    data = request.get_json(silent=True) or {}
+    limite = data.get('limite')
+
+    try:
+        limite = float(limite)
+        if limite <= 0:
+            raise ValueError
+    except (TypeError, ValueError):
+        return jsonify({'erro': 'Informe um limite válido'}), 400
+
+    sucesso = metas_service.editar_meta(usuario, id_meta, limite)
+
+    if sucesso:
+        return jsonify({'mensagem': 'Meta atualizada!'})
+    return jsonify({'erro': 'Não foi possível atualizar essa meta.'}), 400
+
+
+@despesa_bp.route('/metas/<int:id_meta>/excluir', methods=['POST'])
+def excluir_meta(id_meta):
+    # exclusão fica livre em qualquer plano, mesma regra de despesas/gastos/receitas
+    if 'usuario' not in session:
+        return jsonify({'erro': 'Você precisa estar logado.'}), 401
+
+    sucesso = metas_service.excluir_meta(session['usuario'], id_meta)
+
+    if sucesso:
+        return jsonify({'mensagem': 'Meta excluída.'})
+    return jsonify({'erro': 'Não foi possível excluir essa meta.'}), 400
+
+
+@gasto_bp.route('/insights_mes/<isCasal>')
+def insights_mes(isCasal):
+    if 'usuario' not in session:
+        return jsonify({'erro': 'Você precisa estar logado.'}), 401
+
+    usuario = session['usuario']
+
+    resumo = despesa_bp.despesa_service.resumo_mes_atual(usuario, isCasal)
+    pendencias_anteriores = despesa_bp.despesa_service.tem_pendencias_mes_anterior(usuario, isCasal)
+    metas = metas_service.listar_metas(usuario, isCasal)
+    atual = gasto_bp.gasto_service.filtrarGastos('mesatual', usuario, isCasal) or []
+    anterior = gasto_bp.gasto_service.filtrarGastos('mesanterior', usuario, isCasal) or []
+
+    insight = insights_service.calcular_insight(resumo, pendencias_anteriores, metas, atual, anterior)
+    pendentes = despesa_bp.despesa_service.despesas_pendentes_mes_atual(usuario, isCasal)
+
+    return jsonify({'despesas': resumo, 'pendentes': pendentes, 'insight': insight})
 
 
 @gasto_bp.route('/receitas', methods=['GET', 'POST'], strict_slashes=False)
@@ -1547,7 +1636,19 @@ def total_receitas_mes():
     total_receitas = gasto_bp.gasto_service.get_total_receitas_mes(usuario,periodo,isCasal)
     total_gastos = gasto_bp.gasto_service.get_total_gastos_mes(usuario,periodo,isCasal)
 
-    return jsonify({"total_receitas": total_receitas or 0, "total_gastos": total_gastos or 0})
+    # quanto ainda falta pagar de despesas do mês (só faz sentido pro mês
+    # ATUAL — "vai faltar ou sobrar dinheiro" é uma pergunta sobre o
+    # futuro, não sobre um mês anterior já fechado)
+    valor_pendente = 0
+    if periodo == 'mesatual':
+        resumo_despesas = despesa_bp.despesa_service.resumo_mes_atual(usuario, isCasal)
+        valor_pendente = resumo_despesas.get('valor_pendente', 0)
+
+    return jsonify({
+        "total_receitas": total_receitas or 0,
+        "total_gastos": total_gastos or 0,
+        "valor_pendente": valor_pendente,
+    })
 
 
 def agrupar_receitas(receitas):

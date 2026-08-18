@@ -20,6 +20,31 @@ CATEGORIAS_PADRAO = [
 ]
 
 
+# Ícone (Material Icons) por categoria padrão — usado nos cards de Metas
+# em vez de imagem customizada (não existe infra de upload no projeto).
+# Fallback genérico ('label') pra categorias digitadas pelo usuário.
+CATEGORIA_ICONES = {
+    'Alimentação': 'restaurant',
+    'Ifood': 'delivery_dining',
+    'Saúde e Beleza': 'favorite',
+    'Mobilidade': 'directions_car',
+    'Entretenimento e Lazer': 'sports_esports',
+    'Moradia': 'home',
+    'Outros': 'category',
+    'Dívidas': 'credit_card',
+    'Educação': 'school',
+    'Pets': 'pets',
+    'Investimentos': 'trending_up',
+    'Telefonia': 'smartphone',
+}
+
+ICONE_CATEGORIA_PADRAO = 'label'
+
+
+def icone_categoria(categoria):
+    return CATEGORIA_ICONES.get(categoria, ICONE_CATEGORIA_PADRAO)
+
+
 def combinar_categorias(categorias_usuario):
     """Junta a lista padrão com as categorias próprias que o usuário já usou
     (ex.: categorias criadas por ele), sem duplicar e mantendo a ordem

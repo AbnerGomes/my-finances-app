@@ -1,102 +1,150 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Controle de Despesas</title>
+
+  <script>
+    (function () {
+      const tema = localStorage.getItem('theme') || 'blue';
+      document.documentElement.setAttribute('data-theme', tema);
+    })();
+  </script>
+
   <link rel="stylesheet" href="{{ url_for('static', filename='css/metas.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+  <title>Metas — Dois no Azul</title>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="{{ url_for('static', filename='js/comum.js') }}" defer></script>
   <script src="{{ url_for('static', filename='js/metas.js') }}" defer></script>
 </head>
-<body class="metas-page">
+<body class="metas-page dna-page" data-is-casal="{{ isCasal }}" data-tem-conjuge="{{ 'true' if temConjuge else 'false' }}" data-bloqueado-cadastro="{{ 'true' if bloqueadoParaCadastro else 'false' }}">
 
   <div class="header-bar center">
-      <div class="logo-text">
-        <img src="{{ url_for('static', filename='images/fin-dark.png') }}" alt="Logo" class="logo">
-        <span class="company-name">A&A - Finance Dashboard</span>
-      </div>
-
-      <div class="user-info">
-        <div class="dropdown">
-          <div class="dropdown-toggle" onclick="toggleDropdown()">
-            <span id="user-icon" class="material-icons user-icon">person</span>
-            <span id="current-username" class="user-name">{{ usuario.split('@')[0] }}</span>
-            <span class="material-icons dropdown-icon">expand_more</span>
-          </div>
-
-          <div id="dropdown-menu" class="dropdown-menu">
-            <div class="dropdown-item" onclick="changeUser('Casal')">Casal</div>
-            <div class="dropdown-item" onclick="changeUser('{{ usuario.split('@')[0] }}')">{{ usuario.split('@')[0] }}</div>
-          </div>
-        </div>
-      </div>
-
+    <div class="logo-text">
+      <img src="{{ url_for('static', filename='images/fin-dark.png') }}" alt="Logo" class="logo">
+      <span class="company-name">Dois no Azul</span>
     </div>
 
+    <div class="user-info">
+      <div class="dropdown">
+        <div class="dropdown-toggle" onclick="toggleDropdown()">
+          <span class="material-icons user-icon">{% if isCasal == 'N' %}person{% else %}people{% endif %}</span>
+        </div>
+
+        <div id="main-dropdown" class="dropdown-menu">
+          <div class="profile-header">
+            <span id="user-icon" class="material-icons profile-icon">{% if isCasal == 'N' %}person{% else %}people{% endif %}</span>
+            <div id="current-username" class="profile-name">{{ usuario.split('@')[0] | upper }}</div>
+          </div>
+
+          <div class="dropdown-item" onclick="toggleModeDropdown()">
+            Modo
+            <span class="material-icons">expand_more</span>
+          </div>
+
+          <div id="mode-dropdown" class="dropdown-submenu">
+            {% if temConjuge %}
+            <div class="dropdown-item" onclick="changeMode('S')">Casal</div>
+            {% endif %}
+            <div class="dropdown-item" onclick="changeMode('N')">Individual</div>
+          </div>
+
+          <div class="dropdown-item" onclick="signOut()">Sign out</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="metas-wrapper">
-    <h3 class="titulo-pagina">Meus Limites</h3> <!-- TÍTULO ADICIONADO AQUI -->
+    <h3 class="titulo-pagina">Minhas Metas</h3>
 
     <div class="modo-compacto-wrapper" role="tablist" aria-label="Modo de visualização">
-      <button type="button" class="modo-pill-compacta active" data-modo="N" onclick="changeMode('N')">
+      <button type="button" class="modo-pill-compacta {{ 'active' if isCasal != 'S' else '' }}" data-modo="N" onclick="changeMode('N')">
         <span class="material-icons">person</span> Individual
       </button>
       {% if temConjuge %}
-      <button type="button" class="modo-pill-compacta" data-modo="S" onclick="changeMode('S')">
+      <button type="button" class="modo-pill-compacta {{ 'active' if isCasal == 'S' else '' }}" data-modo="S" onclick="changeMode('S')">
         <span class="material-icons">people</span> Casal
       </button>
       {% endif %}
     </div>
 
-    <!-- Cards de exemplo -->
-    <div class="cards-container">
+    <p class="metas-explicacao">
+      Defina um limite de gasto por categoria e acompanhe aqui. O valor
+      considerado é o que você já gastou nessa categoria neste mês
+      {% if isCasal == 'S' %}(somado com seu cônjuge, no Modo Casal){% endif %}.
+    </p>
+
+    {% if cards %}
+    <div class="cards-container" id="cards-container">
       {% for card in cards %}
-      <div class="card">
-        <div class="image-container">
-          <img src="{{ card.imagem_url or '/static/images/padrao.png' }}" class="card-img" onclick="document.getElementById('upload-{{ card.id }}').click();" />
-          <form method="POST" action="/trocar_imagem/{{ card.id }}" enctype="multipart/form-data">
-            <input type="file" id="upload-{{ card.id }}" name="imagem" accept="image/*" style="display: none;" onchange="this.form.submit();" />
-          </form>
+      <div class="card" data-id="{{ card.id }}">
+        <div class="card-acoes">
+          <button type="button" class="card-acao-btn btn-editar-meta" data-id="{{ card.id }}" data-categoria="{{ card.categoria }}" data-limite="{{ card.limite }}" aria-label="Editar meta">
+            <span class="material-icons">edit</span>
+          </button>
+          <button type="button" class="card-acao-btn btn-excluir-meta" data-id="{{ card.id }}" data-categoria="{{ card.categoria }}" aria-label="Excluir meta">
+            <span class="material-icons">delete</span>
+          </button>
+        </div>
+        <div class="card-icone-wrapper">
+          <span class="material-icons card-icone">{{ card.icone }}</span>
         </div>
         <div class="card-info">
-            <h3>{{ card.nome }}</h3>
-
-            <div class="progresso-info">
-                <span>R$ {{ card.gasto }} / R$ {{ card.limite }}</span>
-                <div class="barra-progresso">
-                  <div class="preenchido
-                              {% if card.percentual >= 100 %}
-                                vermelho
-                              {% elif card.percentual >= 80 %}
-                                amarelo
-                              {% else %}
-                                verde
-                              {% endif %}"
-                       style="width: {{ card.percentual if card.percentual <= 100 else 100 }}%;">
-                  </div>
-                </div>
+          <h3>{{ card.categoria }}</h3>
+          <div class="progresso-info">
+            <span>R$ {{ '%.2f'|format(card.gasto_atual) }} / R$ {{ '%.2f'|format(card.limite) }}</span>
+            <div class="barra-progresso">
+              <div class="preenchido {% if card.nivel == 'vermelho' %}vermelho{% elif card.nivel == 'amarelo' %}amarelo{% else %}verde{% endif %}"
+                   style="width: {{ card.percentual if card.percentual <= 100 else 100 }}%;">
               </div>
-
+            </div>
           </div>
         </div>
+      </div>
       {% endfor %}
     </div>
+    {% else %}
+    <div class="metas-vazio">
+      <span class="material-icons">flag</span>
+      <p>Você ainda não tem nenhuma meta. Que tal criar um limite pra uma categoria que você gasta bastante?</p>
+    </div>
+    {% endif %}
 
-    <!-- Botão para abrir o Modal -->
-    <button id="openModalBtn" class="btn-adicionar">Adicionar Card</button>
+    {% if categoriasDisponiveis %}
+    <button id="openModalBtn" class="btn-adicionar">+ Nova meta</button>
+    {% endif %}
   </div>
 
-  <!-- Modal -->
-  <div id="modal" class="modal">
+  <div id="modal-nova-meta" class="modal">
     <div class="modal-content">
       <span id="closeModalBtn" class="close">&times;</span>
-      <h2>Adicionar Novo Card</h2>
-      <form class="novo-card-form" method="POST" action="/adicionar_card">
-        <input type="text" name="nome" placeholder="Nome da despesa" required />
-        <input type="number" name="limite" placeholder="Limite (R$)" required />
-        <button type="submit">Adicionar</button>
+      <h2>Nova meta</h2>
+      <form class="novo-card-form" id="form-nova-meta">
+        <select name="categoria" required>
+          <option value="" disabled selected>Escolha a categoria</option>
+          {% for categoria in categoriasDisponiveis %}
+          <option value="{{ categoria }}">{{ categoria }}</option>
+          {% endfor %}
+        </select>
+        <input type="number" name="limite" step="0.01" min="0.01" placeholder="Limite mensal (R$)" required />
+        <button type="submit">Criar meta</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="modal-editar-meta" class="modal">
+    <div class="modal-content">
+      <span id="closeModalEditarBtn" class="close">&times;</span>
+      <h2>Editar limite — <span id="editar-meta-categoria"></span></h2>
+      <form class="novo-card-form" id="form-editar-meta">
+        <input type="hidden" name="id_meta" id="editar-meta-id">
+        <input type="number" name="limite" step="0.01" min="0.01" placeholder="Novo limite (R$)" required id="editar-meta-limite" />
+        <button type="submit">Salvar</button>
       </form>
     </div>
   </div>
@@ -120,11 +168,11 @@
         <span class="footer-text">Transações</span>
       </button>
     </a>
-    <a href="{{ url_for('despesa.metas') }}">
-        <button class="footer-btn active">
-          <span class="material-icons">payment</span>
-          <span class="footer-text">Limites</span>
-        </button>
+    <a href="{{ url_for('gasto.receitas') }}">
+      <button class="footer-btn">
+        <span class="material-icons">payment</span>
+        <span class="footer-text">Receitas</span>
+      </button>
     </a>
     <a href="{{ url_for('gasto.configuracoes') }}">
       <button class="footer-btn">
@@ -133,5 +181,8 @@
       </button>
     </a>
   </div>
+
+  <div id="toast" class="toast"></div>
+
 </body>
 </html>

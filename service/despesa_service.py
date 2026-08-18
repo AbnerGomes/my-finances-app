@@ -349,6 +349,115 @@ class DespesaService:
 
         return total #> 0
 
+    def resumo_mes_atual(self, usuario, isCasal):
+        """Resumo das despesas do MÊS ATUAL (pagas/pendentes/parciais e os
+        valores) — usado no card novo da home. Mesmo padrão de busca de
+        cônjuge de tem_pendencias_mes_anterior, só que olhando o mês
+        atual (aquele método olha só meses ANTERIORES, de propósito)."""
+        usuario = self.get_usuario_by_name(usuario)
+
+        conn = get_connection()
+        try:
+            cursor = conn.cursor()
+
+            conjuge = ''
+            if isCasal == 'S':
+                query_conjuge = """
+                SELECT a.usuario AS conjuge
+                FROM casal c
+                JOIN autenticacao a
+                ON a.usuario = CASE
+                    WHEN c.conjuge_1 = %s THEN c.conjuge_2
+                    ELSE c.conjuge_1
+                END
+                WHERE %s IN (c.conjuge_1, c.conjuge_2)
+                """
+                cursor.execute(query_conjuge, (usuario, usuario))
+                resultado = cursor.fetchone()
+                if resultado:
+                    conjuge = resultado[0]
+
+            mes_atual = datetime.today().strftime('%Y-%m')
+
+            cursor.execute("""
+                SELECT status, COUNT(1), COALESCE(SUM(valor), 0)
+                FROM despesas
+                WHERE usuario IN (%s, %s) AND mes_ano = %s
+                GROUP BY status
+            """, (usuario, conjuge, mes_atual))
+
+            por_status = {status: (qtd, float(valor)) for status, qtd, valor in cursor.fetchall()}
+
+            pagas_qtd, valor_pago = por_status.get('Pago', (0, 0.0))
+            pendentes_qtd, valor_pendente_puro = por_status.get('Pendente', (0, 0.0))
+            parciais_qtd, valor_parcial = por_status.get('Parcial', (0, 0.0))
+
+            total_qtd = pagas_qtd + pendentes_qtd + parciais_qtd
+
+            return {
+                'total': total_qtd,
+                'pagas': pagas_qtd,
+                'pendentes': pendentes_qtd,
+                'parciais': parciais_qtd,
+                'valor_pago': round(valor_pago, 2),
+                # "pendente" pro usuário = tudo que ainda falta pagar,
+                # incluindo o que já foi pago parcialmente
+                'valor_pendente': round(valor_pendente_puro + valor_parcial, 2),
+            }
+        except Exception as e:
+            print("Erro em resumo_mes_atual:", e)
+            return {'total': 0, 'pagas': 0, 'pendentes': 0, 'parciais': 0, 'valor_pago': 0, 'valor_pendente': 0}
+        finally:
+            conn.close()
+
+    def despesas_pendentes_mes_atual(self, usuario, isCasal, limite=3):
+        """Lista (não só conta) as despesas pendentes/parciais do mês
+        atual — usada no widget expansível da home, pra mostrar direto
+        quais faltam pagar, sem precisar ir até a tela de despesas. Maior
+        valor primeiro (mais impactante no orçamento primeiro)."""
+        usuario = self.get_usuario_by_name(usuario)
+
+        conn = get_connection()
+        try:
+            cursor = conn.cursor()
+
+            conjuge = ''
+            if isCasal == 'S':
+                query_conjuge = """
+                SELECT a.usuario AS conjuge
+                FROM casal c
+                JOIN autenticacao a
+                ON a.usuario = CASE
+                    WHEN c.conjuge_1 = %s THEN c.conjuge_2
+                    ELSE c.conjuge_1
+                END
+                WHERE %s IN (c.conjuge_1, c.conjuge_2)
+                """
+                cursor.execute(query_conjuge, (usuario, usuario))
+                resultado = cursor.fetchone()
+                if resultado:
+                    conjuge = resultado[0]
+
+            mes_atual = datetime.today().strftime('%Y-%m')
+
+            cursor.execute("""
+                SELECT despesa, valor, status
+                FROM despesas
+                WHERE usuario IN (%s, %s) AND mes_ano = %s AND status != 'Pago'
+                ORDER BY valor DESC
+                LIMIT %s
+            """, (usuario, conjuge, mes_atual, limite))
+
+            return [
+                {'despesa': despesa, 'valor': round(float(valor), 2), 'status': status}
+                for despesa, valor, status in cursor.fetchall()
+            ]
+        except Exception as e:
+            print("Erro em despesas_pendentes_mes_atual:", e)
+            return []
+        finally:
+            conn.close()
+
     def buscar_despesa_correspondente(self, usuario, nome_gasto, valor, data_gasto):
         # quando o usuário cadastra um gasto avulso cujo nome e valor batem
         # com uma despesa do mesmo mês ainda não paga, é bem provável que

@@ -854,6 +854,35 @@ body.dna-page .period-chip.active {
   content: "R$ ";
 }
 
+/* projeção de fechamento do mês, dentro do card "Resumo do mês" —
+   pedido de um usuário real: quer saber se "vai faltar ou sobrar
+   dinheiro" considerando as despesas ainda pendentes, não só o saldo
+   do que já foi de fato gasto/recebido até agora */
+.projecao-mes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: -2px;
+  padding-top: 12px;
+  border-top: 1px solid var(--dna-border);
+  font-size: 12px;
+  color: var(--dna-text-dim);
+}
+
+.projecao-mes-icone {
+  font-size: 17px;
+  color: var(--dna-green);
+  flex-shrink: 0;
+}
+
+.projecao-mes--negativa .projecao-mes-icone {
+  color: var(--dna-orange);
+}
+
+.projecao-mes--negativa {
+  color: var(--dna-text);
+}
+
 /* donut com valor central */
 .donut-wrapper {
   position: relative;
@@ -1198,3 +1227,233 @@ body.dna-page .chart-container-bar {
   border-radius: 999px;
   white-space: nowrap;
 }
+
+/* ============================================================
+   Widget "Despesas do mês" (home) — compacto e expansível de
+   propósito (feedback: um .home-card igual aos outros ficava
+   competindo demais por espaço/atenção). Fechado por padrão, mostra
+   só um resumo de uma linha; abre pra ver a lista de pendências.
+   Reaproveita .receitas-despesas-row/.rd-item por dentro, quando
+   aberto, em vez de um componente de grade novo.
+   ============================================================ */
+.despesas-mes-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: linear-gradient(160deg, var(--dna-card), rgba(251, 146, 60, 0.10));
+  border: 1px solid rgba(251, 146, 60, 0.25);
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.despesas-mes-toggle.status-pago {
+  background: linear-gradient(160deg, var(--dna-card), rgba(34, 197, 94, 0.10));
+  border-color: rgba(34, 197, 94, 0.25);
+}
+
+.despesas-mes-icone-wrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(251, 146, 60, 0.15);
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+
+.despesas-mes-toggle.status-pago .despesas-mes-icone-wrapper {
+  background: rgba(34, 197, 94, 0.15);
+}
+
+.despesas-mes-icone {
+  font-size: 17px;
+  color: var(--dna-orange);
+  transition: color 0.2s ease;
+}
+
+.despesas-mes-toggle.status-pago .despesas-mes-icone {
+  color: var(--dna-green);
+}
+
+.despesas-mes-titulo {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dna-text);
+}
+
+.despesas-mes-badge {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  background: rgba(251, 146, 60, 0.18);
+  color: var(--dna-orange);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.despesas-mes-toggle.status-pago .despesas-mes-badge {
+  background: rgba(34, 197, 94, 0.18);
+  color: var(--dna-green);
+}
+
+.despesas-mes-chevron {
+  font-size: 20px;
+  color: var(--dna-text-dim);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.despesas-mes-toggle.aberto .despesas-mes-chevron {
+  transform: rotate(180deg);
+}
+
+.despesas-mes-conteudo {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease;
+  background: var(--dna-card);
+  border: 1px solid var(--dna-border);
+  border-radius: 14px;
+  margin-top: -8px;
+  margin-bottom: 16px;
+}
+
+.despesas-mes-conteudo.aberto {
+  max-height: 400px;
+}
+
+.despesas-mes-conteudo .receitas-despesas-row {
+  padding: 14px 14px 4px;
+}
+
+.despesas-mes-conteudo .valor.despesa {
+  color: var(--dna-orange);
+}
+
+.despesas-pendentes-lista {
+  padding: 4px 14px;
+}
+
+.despesas-pendente-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 0;
+  border-top: 1px solid var(--dna-border);
+  font-size: 12px;
+}
+
+.despesas-pendente-nome {
+  color: var(--dna-text-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.despesas-pendente-valor {
+  color: var(--dna-orange);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.despesas-mes-acoes {
+  display: flex;
+  gap: 16px;
+  padding: 10px 14px 14px;
+}
+
+.despesas-mes-link {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary-light);
+  text-decoration: none;
+}
+
+.despesas-mes-link:hover {
+  text-decoration: underline;
+}
+
+/* ============================================================
+   Insight banner (home) — mesmo formato de .aviso-plano, com
+   variação de cor por nível de severidade. Recalculado a cada
+   carregamento (scripts.js: carregarInsightsMes), sem "não mostrar
+   mais" — a condição que gerou o aviso pode deixar de ser verdade a
+   qualquer momento.
+   ============================================================ */
+.insight-banner {
+  align-items: center;
+  gap: 12px;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  background: var(--dna-card);
+  border: 1px solid var(--dna-border);
+}
+
+.insight-banner-icone {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.insight-banner-texto {
+  flex: 1;
+  font-size: 12px;
+  color: var(--dna-text-dim);
+  line-height: 1.4;
+}
+
+.insight-banner-btn {
+  flex-shrink: 0;
+  color: #fff;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.insight-banner--perigo {
+  background: linear-gradient(160deg, var(--dna-card), rgba(239, 68, 68, 0.14));
+  border-color: rgba(239, 68, 68, 0.35);
+}
+.insight-banner--perigo .insight-banner-icone { color: #ef4444; }
+.insight-banner--perigo .insight-banner-btn { background: linear-gradient(135deg, #f87171, #ef4444); }
+
+.insight-banner--aviso {
+  background: linear-gradient(160deg, var(--dna-card), rgba(251, 146, 60, 0.12));
+  border-color: rgba(251, 146, 60, 0.35);
+}
+.insight-banner--aviso .insight-banner-icone { color: var(--dna-orange); }
+.insight-banner--aviso .insight-banner-btn { background: linear-gradient(135deg, #fdba74, var(--dna-orange)); }
+
+.insight-banner--info {
+  background: linear-gradient(160deg, var(--dna-card), rgba(59, 130, 246, 0.12));
+  border-color: rgba(59, 130, 246, 0.35);
+}
+.insight-banner--info .insight-banner-icone { color: var(--primary-light); }
+.insight-banner--info .insight-banner-btn { background: linear-gradient(135deg, var(--primary-light), var(--primary)); }
+
+.insight-banner--sugestao {
+  background: linear-gradient(160deg, var(--dna-card), rgba(167, 139, 250, 0.14));
+  border-color: rgba(167, 139, 250, 0.35);
+}
+.insight-banner--sugestao .insight-banner-icone { color: #a78bfa; }
+.insight-banner--sugestao .insight-banner-btn { background: linear-gradient(135deg, #c4b5fd, #a78bfa); }
+
+.insight-banner--sucesso {
+  background: linear-gradient(160deg, var(--dna-card), rgba(34, 197, 94, 0.12));
+  border-color: rgba(34, 197, 94, 0.35);
+}
+.insight-banner--sucesso .insight-banner-icone { color: var(--dna-green); }

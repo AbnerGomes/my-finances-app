@@ -86,21 +86,90 @@ body.metas-page {
   transform: translateY(-2px);
 }
 
-.image-container {
+/* ícone da categoria (substitui a imagem customizada — sem infra de
+   upload no projeto, um ícone identifica bem o suficiente) */
+.card-icone-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 0 6px;
+}
+
+.card-icone {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--dna-card-soft);
+  color: var(--primary-light);
+  font-size: 26px;
+}
+
+/* editar/excluir por card — ficam discretos no canto até o hover/toque */
+.card-acoes {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  z-index: 2;
+}
+
+.card {
   position: relative;
 }
 
-.card-img {
-  width: 100%;
-  height: 100px;
-  object-fit: cover;
+.card-acao-btn {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  background: rgba(3, 7, 18, 0.45);
+  color: var(--dna-text-dim);
   cursor: pointer;
-  background: var(--dna-card-soft);
-  transition: 0.25s ease;
 }
 
-.card-img:hover {
-  opacity: 0.8;
+.card-acao-btn .material-icons {
+  font-size: 14px;
+}
+
+.card-acao-btn:hover {
+  color: var(--dna-text);
+}
+
+.btn-excluir-meta:hover {
+  color: var(--danger);
+}
+
+.metas-explicacao {
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--dna-text-dim);
+  line-height: 1.4;
+  margin: 0 0 18px;
+}
+
+.metas-vazio {
+  text-align: center;
+  color: var(--dna-text-dim);
+  padding: 30px 20px;
+}
+
+.metas-vazio .material-icons {
+  font-size: 36px;
+  color: var(--dna-text-faint);
+  margin-bottom: 8px;
+}
+
+.metas-vazio p {
+  font-size: 12.5px;
+  line-height: 1.5;
+  margin: 0;
 }
 
 .card-info {
@@ -231,6 +300,7 @@ body.metas-page {
 }
 
 .novo-card-form input,
+.novo-card-form select,
 .novo-card-form button {
   padding: 10px 12px;
   font-size: 0.95rem;
@@ -238,7 +308,8 @@ body.metas-page {
   border: 1px solid var(--dna-border);
 }
 
-.novo-card-form input {
+.novo-card-form input,
+.novo-card-form select {
   flex: 1 1 100%;
   background: var(--dna-card-soft);
   color: var(--dna-text);
@@ -288,4 +359,31 @@ body.metas-page {
   .cards-container {
     gap: 12px;
   }
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(30px + env(safe-area-inset-bottom));
+  transform: translateX(-50%) translateY(20px);
+  background: var(--dna-bg-alt);
+  border: 1px solid var(--dna-border);
+  color: var(--dna-text);
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 10px 24px rgba(3, 7, 18, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 1200;
+  max-width: calc(100vw - 40px);
+  text-align: center;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }

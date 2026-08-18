@@ -298,6 +298,37 @@ function filtrarGastos(periodo, isCasal) {
                 const corSaldo = saldo >= 0 ? '#22c55e' : '#fb923c';
                 const saldoEl = document.getElementById("saldo-total");
                 if (saldoEl) saldoEl.style.color = corSaldo;
+
+                // projeção de fechamento do mês (feedback de usuário: "vai
+                // faltar ou sobrar dinheiro" considerando o que ainda falta
+                // pagar) — só no mês atual, e só quando tem pendência de
+                // verdade a considerar
+                const projecaoEl = document.getElementById('projecao-mes');
+                const projecaoTexto = document.getElementById('projecao-mes-texto');
+                const projecaoIcone = document.getElementById('projecao-mes-icone');
+                const valorPendente = parseFloat(data.valor_pendente || 0);
+
+                if (projecaoEl && periodo === 'mesatual' && valorPendente > 0) {
+                    const saldoProjetado = saldo - valorPendente;
+                    const valorFormatado = Math.abs(saldoProjetado).toLocaleString('pt-BR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+
+                    projecaoEl.style.display = 'flex';
+                    projecaoEl.classList.toggle('projecao-mes--negativa', saldoProjetado < 0);
+
+                    if (projecaoTexto) {
+                        projecaoTexto.textContent = saldoProjetado < 0
+                            ? `Depois de pagar as pendências, vai faltar R$ ${valorFormatado} este mês`
+                            : `Depois de pagar as pendências, deve sobrar R$ ${valorFormatado} este mês`;
+                    }
+                    if (projecaoIcone) {
+                        projecaoIcone.textContent = saldoProjetado < 0 ? 'trending_down' : 'trending_up';
+                    }
+                } else if (projecaoEl) {
+                    projecaoEl.style.display = 'none';
+                }
             });
 
         let mesSelecionado = document.getElementById("resumo-titulo");
@@ -327,6 +358,102 @@ function filtrarGastosMensais(isCasal) {
             barChart.update();
         }
     });
+}
+
+function carregarInsightsMes(isCasal) {
+    fetch(`/insights_mes/${isCasal}`)
+        .then(res => res.json())
+        .then(dados => {
+            const despesas = dados.despesas || {};
+            const pendentes = dados.pendentes || [];
+
+            const pagasEl = document.getElementById('despesas-pagas');
+            const pendenteEl = document.getElementById('despesas-valor-pendente');
+            const badgeEl = document.getElementById('despesas-mes-badge');
+            const toggleEl = document.getElementById('despesas-mes-toggle');
+            const listaEl = document.getElementById('despesas-pendentes-lista');
+
+            if (pagasEl) pagasEl.textContent = `${despesas.pagas || 0}/${despesas.total || 0}`;
+            if (pendenteEl) {
+                const valor = (despesas.valor_pendente || 0).toFixed(2).replace('.', ',');
+                pendenteEl.textContent = `R$ ${valor}`;
+            }
+
+            // badge curto e colorido (laranja = falta pagar, verde = em dia)
+            // em vez de frase longa quebrando linha
+            const faltam = (despesas.pendentes || 0) + (despesas.parciais || 0);
+            const tudoPago = despesas.total > 0 && faltam === 0;
+
+            if (badgeEl) {
+                badgeEl.textContent = faltam > 0
+                    ? `${faltam} pendente${faltam > 1 ? 's' : ''}`
+                    : (tudoPago ? 'Tudo pago ✓' : 'Sem despesas');
+            }
+            if (toggleEl) {
+                toggleEl.classList.toggle('status-pago', tudoPago);
+                toggleEl.classList.toggle('status-pendente', faltam > 0);
+            }
+
+            // lista das despesas pendentes (já vem ordenada por maior valor,
+            // limitada a poucas linhas no backend)
+            if (listaEl) {
+                listaEl.innerHTML = '';
+                pendentes.forEach((despesa) => {
+                    const linha = document.createElement('div');
+                    linha.className = 'despesas-pendente-item';
+                    const valor = despesa.valor.toFixed(2).replace('.', ',');
+                    linha.innerHTML = `
+                        <span class="despesas-pendente-nome">${despesa.despesa}</span>
+                        <span class="despesas-pendente-valor">R$ ${valor}</span>
+                    `;
+                    listaEl.appendChild(linha);
+                });
+            }
+
+            const banner = document.getElementById('insight-banner');
+            if (!banner) return;
+
+            const insight = dados.insight;
+            if (!insight) {
+                banner.style.display = 'none';
+                return;
+            }
+
+            const icones = {
+                perigo: 'error',
+                aviso: 'warning_amber',
+                info: 'info',
+                sugestao: 'lightbulb',
+                sucesso: 'celebration',
+            };
+
+            const icone = document.getElementById('insight-banner-icone');
+            const texto = document.getElementById('insight-banner-texto');
+            const botao = document.getElementById('insight-banner-btn');
+
+            banner.className = `insight-banner insight-banner--${insight.nivel}`;
+            banner.style.display = 'flex';
+            if (icone) icone.textContent = icones[insight.nivel] || 'info';
+            if (texto) texto.textContent = insight.texto;
+
+            if (botao) {
+                if (insight.acao_label && insight.acao_url) {
+                    let url = insight.acao_url;
+                    if (insight.acao_categoria) {
+                        url += (url.includes('?') ? '&' : '?') + 'categoria=' + encodeURIComponent(insight.acao_categoria);
+                    }
+                    botao.href = url;
+                    botao.textContent = insight.acao_label;
+                    botao.style.display = 'inline-block';
+                } else {
+                    botao.style.display = 'none';
+                }
+            }
+        })
+        .catch(() => {
+            const banner = document.getElementById('insight-banner');
+            if (banner) banner.style.display = 'none';
+        });
 }
 
 function atualizarTemaGraficos() {
@@ -369,6 +496,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     filtrarGastos('mesatual', modoInicial);
     filtrarGastosMensais(modoInicial);
+    carregarInsightsMes(modoInicial);
+
+    // widget de despesas do mês — fechado por padrão, expande ao tocar
+    const despesasToggle = document.getElementById('despesas-mes-toggle');
+    const despesasConteudo = document.getElementById('despesas-mes-conteudo');
+    if (despesasToggle && despesasConteudo) {
+        despesasToggle.addEventListener('click', () => {
+            const abrindo = !despesasConteudo.classList.contains('aberto');
+            despesasConteudo.classList.toggle('aberto', abrindo);
+            despesasToggle.classList.toggle('aberto', abrindo);
+            despesasToggle.setAttribute('aria-expanded', abrindo ? 'true' : 'false');
+        });
+    }
 
     const pillIndividualInit = document.getElementById('pill-individual');
     const pillCasalInit = document.getElementById('pill-casal');
@@ -624,6 +764,7 @@ function changeMode(isCasal) {
 
     filtrarGastos('mesatual', isCasal);
     filtrarGastosMensais(isCasal);
+    carregarInsightsMes(isCasal);
 
     const pillIndividual = document.getElementById('pill-individual');
     const pillCasal = document.getElementById('pill-casal');
