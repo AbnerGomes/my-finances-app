@@ -1110,7 +1110,7 @@ def configuracoes():
     # número do bot pra abrir a conversa direto (wa.me) — hoje é o número
     # de teste da Meta; troque a env var no Render quando migrar pro
     # número definitivo, sem precisar mexer no código
-    numero_whatsapp_bot = os.environ.get('WHATSAPP_BOT_NUMERO', '15551493833')
+    numero_whatsapp_bot = os.environ.get('WHATSAPP_BOT_NUMERO', '5551994261829')
 
     # bot do WhatsApp é benefício de plano pago — mesmo quem ainda está
     # dentro dos 7 dias de teste grátis (não bloqueado pra cadastro) não
