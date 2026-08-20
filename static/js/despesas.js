@@ -118,6 +118,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // filtro de mês do topo — mesmo calendário, filtra assim que um mês é escolhido
   criarSeletorDeMes('filtroMesBtn', 'filtroMesTexto', 'filtroMes', document.getElementById('filtroMes')?.value, () => filtrarPorMes());
 
+  // seletores de data de vencimento (calendário via Litepicker, mesmo
+  // padrão usado em extrato.js/receitas.js pra data única)
+  window._pickerCadastrarVencimento = (typeof criarSeletorDeDataUnica === 'function')
+    ? criarSeletorDeDataUnica('cadastrar-vencimento-btn', 'cadastrar-vencimento-texto', 'cadastrar-vencimento', new Date())
+    : null;
+  window._pickerEditarVencimento = (typeof criarSeletorDeDataUnica === 'function')
+    ? criarSeletorDeDataUnica('editar-vencimento-btn', 'editar-vencimento-texto', 'editar-vencimento', new Date())
+    : null;
+
   // 👉 BOTÃO ADICIONAR (AGORA CORRETO)
   const btnAdd = document.getElementById("addDespesaBtn");
 
@@ -141,6 +150,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const primeiraCategoria = document.getElementById('cadastrar-categoria-painel')?.querySelector('.ordenar-opcao')?.dataset.categoria;
       if (primeiraCategoria) definirCategoriaSelecionada('cadastrar', primeiraCategoria);
       atualizarOpcaoReplicar();
+      // form.reset() limpa o valor do input escondido de vencimento, mas
+      // não o texto visível do botão — reseta os dois pra hoje
+      if (window._pickerCadastrarVencimento) window._pickerCadastrarVencimento.setDate(new Date());
       abrirModal("modal-cadastrar");
     });
   }
@@ -166,6 +178,14 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('editar-descricao').value = btn.dataset.descricao;
       document.getElementById('editar-valor').value = btn.dataset.valor;
       document.getElementById('editar-id').value = btn.dataset.id;
+
+      const vencimento = btn.dataset.vencimento; // 'YYYY-MM-DD' ou vazio (despesa antiga sem vencimento)
+      if (vencimento && window._pickerEditarVencimento) {
+        const [ano, mes, dia] = vencimento.split('-');
+        window._pickerEditarVencimento.setDate(new Date(ano, mes - 1, dia));
+      } else if (window._pickerEditarVencimento) {
+        window._pickerEditarVencimento.setDate(new Date());
+      }
 
       abrirModal("modal-editar");
     });

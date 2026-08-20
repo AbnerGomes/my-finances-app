@@ -150,13 +150,19 @@
     </div>
     {% endif %}
 
-    <!-- topo: título + sino (decorativo por enquanto, sem notificações reais ainda) -->
+    <!-- topo: título + alternância Individual/Casal (no lugar do sino
+         decorativo que tinha aqui antes) -->
     <div class="home-topbar">
       <div>
         <h1 class="home-title">Resumo</h1>
         <p class="home-subtitle">{{ usuario.split('@')[0] }}</p>
       </div>
-      <span class="material-icons home-bell" aria-hidden="true">notifications_none</span>
+      <div class="mode-toggle" role="tablist" aria-label="Modo de visualização">
+        <button type="button" id="pill-individual" class="mode-pill active" onclick="changeMode('N')">Individual</button>
+        {% if temConjuge %}
+        <button type="button" id="pill-casal" class="mode-pill" onclick="changeMode('S')">Casal</button>
+        {% endif %}
+      </div>
     </div>
 
     <!-- aviso inteligente (despesas pendentes, meta perto do limite, etc.)
@@ -191,22 +197,17 @@
     </div>
     {% endif %}
 
-    <!-- alternância Individual / Casal -->
+    {% if not temConjuge %}
+    <!-- o toggle Individual/Casal em si foi pra topbar (substituindo o
+         sino) — aqui fica só o convite pra vincular cônjuge, que só
+         aparece pra quem ainda não tem um -->
     <div class="mode-toggle-row">
-      <div class="mode-toggle" role="tablist" aria-label="Modo de visualização">
-        <button type="button" id="pill-individual" class="mode-pill active" onclick="changeMode('N')">Individual</button>
-        {% if temConjuge %}
-        <button type="button" id="pill-casal" class="mode-pill" onclick="changeMode('S')">Casal</button>
-        {% endif %}
-      </div>
-
-      {% if not temConjuge %}
       <button type="button" class="btn-vincular-conjuge" onclick="abrirModalConjuge()">
         <span class="material-icons">favorite</span>
         Vincular cônjuge
       </button>
-      {% endif %}
     </div>
+    {% endif %}
 
     <!-- filtros de período (funcionalidade original preservada) -->
     <div class="period-container-wrapper" id="period-buttons">
@@ -251,39 +252,6 @@
       </div>
     </div>
 
-    <!-- card: gastos por categoria no período selecionado (donut + total)
-         — os dois mudam juntos conforme os chips de período lá em cima -->
-    <div class="home-card card-visao">
-      <div class="home-card-header-row">
-        <span class="home-card-title">Gastos por categoria</span>
-      </div>
-
-      <div id="mensagem" style="display: none;"></div>
-
-      <div class="donut-wrapper">
-        <canvas id="donutChart"></canvas>
-        <div class="donut-center">
-          <div class="donut-center-valor" id="donut-center-saldo">R$ 0,00</div>
-          <div class="donut-center-label" id="donut-center-label">Total do período</div>
-        </div>
-      </div>
-
-      <div id="total" class="saldo-periodo">
-        Total gasto no período selecionado: R$ <span id="valor-total">0,00</span>
-      </div>
-    </div>
-
-    <!-- card: categorias -->
-    <div class="home-card card-categorias">
-      <div class="home-card-header-row">
-        <span class="home-card-title">Categorias</span>
-        <a href="{{ url_for('gasto.extrato') }}" class="link-ver-todas">Ver todas</a>
-      </div>
-      <div id="categorias-list" class="categorias-list">
-        <!-- preenchido dinamicamente pelo scripts.js -->
-      </div>
-    </div>
-
     <!-- widget compacto/expansível de despesas do mês — de propósito NÃO
          é um .home-card igual aos outros (feedback: ficava "estranho"
          competir por espaço com saldo/donut/histórico). Fechado por
@@ -316,6 +284,39 @@
       <div class="despesas-mes-acoes">
         <a href="{{ url_for('despesa.despesas') }}" class="despesas-mes-link">Ver despesas</a>
         <a href="{{ url_for('despesa.metas') }}" class="despesas-mes-link">Ver minhas metas</a>
+      </div>
+    </div>
+
+    <!-- card: gastos por categoria no período selecionado (donut + total)
+         — os dois mudam juntos conforme os chips de período lá em cima -->
+    <div class="home-card card-visao">
+      <div class="home-card-header-row">
+        <span class="home-card-title">Gastos por categoria</span>
+      </div>
+
+      <div id="mensagem" style="display: none;"></div>
+
+      <div class="donut-wrapper">
+        <canvas id="donutChart"></canvas>
+        <div class="donut-center">
+          <div class="donut-center-valor" id="donut-center-saldo">R$ 0,00</div>
+          <div class="donut-center-label" id="donut-center-label">Total do período</div>
+        </div>
+      </div>
+
+      <div id="total" class="saldo-periodo">
+        Total gasto no período selecionado: R$ <span id="valor-total">0,00</span>
+      </div>
+    </div>
+
+    <!-- card: categorias -->
+    <div class="home-card card-categorias">
+      <div class="home-card-header-row">
+        <span class="home-card-title">Categorias</span>
+        <a href="{{ url_for('gasto.extrato') }}" class="link-ver-todas">Ver todas</a>
+      </div>
+      <div id="categorias-list" class="categorias-list">
+        <!-- preenchido dinamicamente pelo scripts.js -->
       </div>
     </div>
 

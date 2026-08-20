@@ -867,11 +867,12 @@ def cadastrar_despesa():
 
     tipo_despesa = request.form['tipo_despesa']
     data = request.form['mes_ano']
-    
+
     categoria = request.form['categoria']
-    
+    data_vencimento = request.form.get('data_vencimento') or None
+
     usuario = session['usuario']
-    
+
     replicar_ano = request.form.get('replicar_ano') == 'on'
 
     if tipo_despesa == 'Fixa':
@@ -882,11 +883,12 @@ def cadastrar_despesa():
         tipo_despesa = 'E'
 
     # Salvar o gasto no banco (Fixa + "replicar" cria uma linha pro mês
-    # selecionado e mais uma pra cada mês seguinte até dezembro)
+    # selecionado e mais uma pra cada mês seguinte até dezembro, repetindo
+    # o mesmo dia de vencimento em cada mês)
     if tipo_despesa == 'F' and replicar_ano:
-        despesa_bp.despesa_service.salvar_despesa_replicada(despesa, valor, data, categoria, usuario, tipo_despesa)
+        despesa_bp.despesa_service.salvar_despesa_replicada(despesa, valor, data, categoria, usuario, tipo_despesa, data_vencimento)
     else:
-        despesa_bp.despesa_service.salvar_despesa(despesa, valor, data, categoria,usuario,tipo_despesa)
+        despesa_bp.despesa_service.salvar_despesa(despesa, valor, data, categoria,usuario,tipo_despesa, data_vencimento)
     #flash('Despesa cadastrada com sucesso!', 'success')
 
     return redirect(url_for('despesa.despesas'))
@@ -909,10 +911,11 @@ def editar_despesa():
     valor = request.form['valor']
     categoria = request.form['categoria']
     id = request.form['id']
+    data_vencimento = request.form.get('data_vencimento') or None
 
     usuario = session['usuario']
 
-    sucesso = despesa_bp.despesa_service.editar_despesa(despesa,categoria,valor,id,usuario)
+    sucesso = despesa_bp.despesa_service.editar_despesa(despesa,categoria,valor,id,usuario,data_vencimento)
 
     if not sucesso:
         flash('Você só pode editar as suas próprias despesas.', 'danger')

@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import calendar
 from datetime import datetime, timedelta
 from .db_service import get_connection
 from .categorias import combinar_categorias
@@ -22,38 +23,55 @@ class DespesaService:
 
 
     # Função para salvar o gasto no banco
-    def salvar_despesa(self,despesa, valor, data, categoria,usuario,tipo_despesa):
+    def salvar_despesa(self,despesa, valor, data, categoria,usuario,tipo_despesa, data_vencimento=None):
 
         usuario = self.get_usuario_by_name(usuario)
 
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO Despesas (despesa, valor, mes_ano, categoria, usuario,tipo_despesa)
-            VALUES (%s, %s, %s, %s, %s,%s)
-        ''', (despesa, valor, data, categoria,usuario,tipo_despesa))
+            INSERT INTO Despesas (despesa, valor, mes_ano, categoria, usuario,tipo_despesa, data_vencimento)
+            VALUES (%s, %s, %s, %s, %s,%s, %s)
+        ''', (despesa, valor, data, categoria,usuario,tipo_despesa, data_vencimento or None))
         conn.commit()
         conn.close()
 
-    def salvar_despesa_replicada(self, despesa, valor, mes_ano_inicial, categoria, usuario, tipo_despesa):
+    def salvar_despesa_replicada(self, despesa, valor, mes_ano_inicial, categoria, usuario, tipo_despesa, data_vencimento=None):
         # despesa Fixa com "replicar pro resto do ano" marcado: cria uma
         # linha pro mês selecionado e mais uma pra cada mês seguinte até
         # dezembro daquele ano, pra não precisar cadastrar mês a mês.
+        # O vencimento repete o mesmo DIA em cada mês (ex.: 05/08 vira
+        # 05/09, 05/10...); se o dia não existir naquele mês (ex.: dia 31
+        # num mês de 30), usa o último dia válido do mês em vez de estourar.
         usuario = self.get_usuario_by_name(usuario)
 
         ano_str, mes_str = mes_ano_inicial.split('-')
         ano = int(ano_str)
         mes_inicial = int(mes_str)
 
+        dia_vencimento = None
+        if data_vencimento:
+            try:
+                dia_vencimento = datetime.strptime(data_vencimento, '%Y-%m-%d').day
+            except ValueError:
+                dia_vencimento = None
+
         conn = get_connection()
         cursor = conn.cursor()
 
         for mes in range(mes_inicial, 13):
             mes_ano = f"{ano}-{mes:02d}"
+
+            vencimento_mes = None
+            if dia_vencimento:
+                ultimo_dia_mes = calendar.monthrange(ano, mes)[1]
+                dia_ajustado = min(dia_vencimento, ultimo_dia_mes)
+                vencimento_mes = f"{ano}-{mes:02d}-{dia_ajustado:02d}"
+
             cursor.execute('''
-                INSERT INTO Despesas (despesa, valor, mes_ano, categoria, usuario, tipo_despesa)
-                VALUES (%s, %s, %s, %s, %s, %s)
-            ''', (despesa, valor, mes_ano, categoria, usuario, tipo_despesa))
+                INSERT INTO Despesas (despesa, valor, mes_ano, categoria, usuario, tipo_despesa, data_vencimento)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            ''', (despesa, valor, mes_ano, categoria, usuario, tipo_despesa, vencimento_mes))
 
         conn.commit()
         conn.close()
@@ -81,6 +99,8 @@ class DespesaService:
         , case when u.pronome = 'Ele/Dele' then 'H' else 'S' end pronome
         ,data_pagamento
         , case when d.usuario = %s then true else false end eh_proprio
+        , TO_CHAR(data_vencimento, 'DD/MM/YYYY') AS vencimento_formatado
+        , TO_CHAR(data_vencimento, 'YYYY-MM-DD') AS vencimento_iso
         FROM despesas d
         inner join usuarios u on d.usuario = u.email
         WHERE usuario in( %s, %s)
@@ -188,7 +208,7 @@ class DespesaService:
             conn.close()
 
 
-    def editar_despesa(self,despesa,categoria,valor,id,usuario):
+    def editar_despesa(self,despesa,categoria,valor,id,usuario, data_vencimento=None):
         # só permite editar uma despesa que pertença ao próprio usuário
         # logado (senão, no modo casal, dava pra editar a do cônjuge)
         usuario = self.get_usuario_by_name(usuario)
@@ -196,8 +216,8 @@ class DespesaService:
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "update despesas set despesa= %s , categoria = %s, valor = %s WHERE id = %s AND usuario = %s",
-            (despesa,categoria,valor,id,usuario)
+            "update despesas set despesa= %s , categoria = %s, valor = %s, data_vencimento = %s WHERE id = %s AND usuario = %s",
+            (despesa,categoria,valor,data_vencimento or None,id,usuario)
         )
         conn.commit()
         sucesso = cursor.rowcount > 0
@@ -223,13 +243,15 @@ class DespesaService:
         # precisar digitar de novo uma despesa fixa/recorrente todo mês.
         # Não passa status/data_pagamento no INSERT de propósito: cai no
         # default da tabela (Pendente/sem data), igual toda despesa nova.
+        # O vencimento repete o mesmo DIA no mês seguinte (05/08 -> 05/09),
+        # ajustado pro último dia válido se o mês seguinte for mais curto.
         usuario_email = self.get_usuario_by_name(usuario)
 
         conn = get_connection()
         cursor = conn.cursor()
 
         cursor.execute(
-            "SELECT despesa, valor, categoria, tipo_despesa, mes_ano FROM despesas WHERE id = %s AND usuario = %s",
+            "SELECT despesa, valor, categoria, tipo_despesa, mes_ano, data_vencimento FROM despesas WHERE id = %s AND usuario = %s",
             (id_despesa, usuario_email)
         )
         original = cursor.fetchone()
@@ -238,7 +260,7 @@ class DespesaService:
             conn.close()
             return False
 
-        despesa, valor, categoria, tipo_despesa, mes_ano = original
+        despesa, valor, categoria, tipo_despesa, mes_ano, data_vencimento = original
         ano_str, mes_str = mes_ano.split('-')[:2]
         ano, mes = int(ano_str), int(mes_str)
 
@@ -250,10 +272,16 @@ class DespesaService:
 
         mes_ano_seguinte = f"{ano}-{mes:02d}"
 
+        vencimento_seguinte = None
+        if data_vencimento:
+            ultimo_dia_mes = calendar.monthrange(ano, mes)[1]
+            dia_ajustado = min(data_vencimento.day, ultimo_dia_mes)
+            vencimento_seguinte = f"{ano}-{mes:02d}-{dia_ajustado:02d}"
+
         cursor.execute('''
-            INSERT INTO Despesas (despesa, valor, mes_ano, categoria, usuario, tipo_despesa)
-            VALUES (%s, %s, %s, %s, %s, %s)
-        ''', (despesa, valor, mes_ano_seguinte, categoria, usuario_email, tipo_despesa))
+            INSERT INTO Despesas (despesa, valor, mes_ano, categoria, usuario, tipo_despesa, data_vencimento)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        ''', (despesa, valor, mes_ano_seguinte, categoria, usuario_email, tipo_despesa, vencimento_seguinte))
 
         conn.commit()
         conn.close()

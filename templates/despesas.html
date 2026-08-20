@@ -17,7 +17,9 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/despesas.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
     <script src="{{ url_for('static', filename='js/despesas.js') }}" defer></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ url_for('static', filename='js/comum.js') }}" defer></script>
@@ -285,6 +287,7 @@
           data-categoria="{{ despesa[0] }}"
           data-descricao="{{ despesa[1] }}"
           data-valor="{{ despesa[2] }}"
+          data-vencimento="{{ despesa[11] or '' }}"
           data-proprio="{{ 'true' if despesa[9] else 'false' }}"
           data-tipo-bloqueado="despesas">
         </i>
@@ -303,6 +306,9 @@
       <p><strong>Valor:</strong> R$ {{ despesa[2] }}</p>
       <p><strong>Categoria:</strong> {{ despesa[0] }}</p>
       <p><strong>Status:</strong> {{ despesa[4] }}</p>
+      <p><strong>Vencimento:</strong>
+        {{ despesa[10] if despesa[10] else '—' }}
+      </p>
       <p><strong>Data Pagamento:</strong>
         {{ despesa[8] if despesa[8] else '—' }}
       </p>
@@ -355,6 +361,13 @@
 
       <label for="editar-valor">Valor (R$):</label>
       <input type="number" step="0.01" name="valor" id="editar-valor" required>
+
+      <label for="editar-vencimento-btn">Data de vencimento:</label>
+      <button type="button" id="editar-vencimento-btn" class="filtro-mes-pill filtro-mes-pill-btn">
+        <span class="material-icons">event</span>
+        <span id="editar-vencimento-texto">Selecionar data</span>
+      </button>
+      <input type="hidden" name="data_vencimento" id="editar-vencimento" required>
 
       <input type="hidden" id="editar-id" name="id">
 
@@ -438,6 +451,13 @@
 
       <label for="cadastrar-valor">Valor (R$):</label>
       <input type="number" step="0.01" name="valor" id="cadastrar-valor" required>
+
+      <label for="cadastrar-vencimento-btn">Data de vencimento:</label>
+      <button type="button" id="cadastrar-vencimento-btn" class="filtro-mes-pill filtro-mes-pill-btn">
+        <span class="material-icons">event</span>
+        <span id="cadastrar-vencimento-texto">Selecionar data</span>
+      </button>
+      <input type="hidden" name="data_vencimento" id="cadastrar-vencimento" required>
 
       <input type="hidden" id="cadastrar-id" name="id">
 
