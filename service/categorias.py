@@ -25,7 +25,7 @@ CATEGORIAS_PADRAO = [
 # Fallback genérico ('label') pra categorias digitadas pelo usuário.
 CATEGORIA_ICONES = {
     'Alimentação': 'restaurant',
-    'Ifood': 'delivery_dining',
+    'Ifood': 'lunch_dining',
     'Saúde e Beleza': 'favorite',
     'Mobilidade': 'directions_car',
     'Entretenimento e Lazer': 'sports_esports',
