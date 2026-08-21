@@ -498,18 +498,27 @@ iframe {
   transform: translateX(-50%) translateY(0);
 }
 
-/* Badge "teste grátis por 7 dias" — tela de login (primeira coisa que
-   a pessoa vê antes de criar conta ou entrar) */
+/* Rodapé do card de login — só a badge de teste grátis por enquanto */
+.login100-footer {
+  margin-top: 20px;
+}
+
+/* Badge "teste grátis por 7 dias" — agora no rodapé do card, não mais
+   entre "Bem vindo" e o cifrão. Escondida via login.js quando o
+   navegador já foi usado pra logar há mais de 7 dias (ver
+   primeiroAcessoLogadoEm em comum.js) — depois disso a pessoa já
+   assinou ou vai ver o aviso de teste encerrado dentro do próprio app,
+   não faz mais sentido convidar pro teste grátis de novo. */
 .badge-teste-gratis {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin: 0 0 24px;
-  padding: 8px 16px;
+  padding: 10px 20px;
   border-radius: 999px;
   background: linear-gradient(135deg, rgba(147, 197, 253, 0.15), rgba(59, 130, 246, 0.15));
   border: 1px solid rgba(147, 197, 253, 0.35);
   color: #93c5fd;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
+  box-shadow: 0 0 18px 2px rgba(74, 222, 128, 0.28);
 }

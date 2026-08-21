@@ -3,6 +3,21 @@
 // ============================================================
 
 // ============================================================
+// Marca a primeira vez que este navegador carrega uma tela logada —
+// comum.js só é incluído nas páginas pós-login (login.html não carrega
+// ele), então só de rodar aqui já indica "esta pessoa está logada
+// agora". Usado só pela tela de login (login.js), pra saber quando
+// parar de mostrar o selo de "teste grátis 7 dias": depois de uma
+// semana de uso neste navegador, ou a pessoa já assinou ou vai ver o
+// aviso de teste encerrado dentro do próprio app — convidar de novo
+// pro teste grátis não faz mais sentido.
+try {
+  if (!localStorage.getItem('primeiroAcessoLogadoEm')) {
+    localStorage.setItem('primeiroAcessoLogadoEm', Date.now().toString());
+  }
+} catch (e) { /* localStorage indisponível (modo privado etc.) — ignora */ }
+
+// ============================================================
 // Botão de voltar (◄) no cabeçalho, discreto, do lado esquerdo do
 // logo — chama o histórico do navegador. Não aparece na tela inicial
 // (não faz sentido "voltar" da home) nem quando não há pra onde

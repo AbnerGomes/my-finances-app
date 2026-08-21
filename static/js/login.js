@@ -113,3 +113,25 @@ document.addEventListener('DOMContentLoaded', function () {
         }, i * 2800);
     });
 });
+
+// ================= BADGE "TESTE GRÁTIS 7 DIAS" =================
+// Some depois que este navegador já foi usado pra logar há mais de 7
+// dias (marcado em comum.js, que só carrega em telas pós-login) — a
+// essa altura a pessoa já assinou ou vai ver o aviso de teste encerrado
+// dentro do próprio app, então convidar de novo pro teste grátis não
+// faz sentido. Enquanto não houver marca nenhuma (primeiro acesso
+// desse navegador, nunca logou), a badge continua aparecendo normal.
+document.addEventListener('DOMContentLoaded', function () {
+    const badge = document.getElementById('badge-teste-gratis');
+    if (!badge) return;
+
+    try {
+        const primeiroAcesso = localStorage.getItem('primeiroAcessoLogadoEm');
+        if (!primeiroAcesso) return;
+
+        const diasDesdeOPrimeiroAcesso = (Date.now() - Number(primeiroAcesso)) / (1000 * 60 * 60 * 24);
+        if (diasDesdeOPrimeiroAcesso >= 7) {
+            badge.style.display = 'none';
+        }
+    } catch (e) { /* localStorage indisponível (modo privado etc.) — mantém a badge visível */ }
+});
