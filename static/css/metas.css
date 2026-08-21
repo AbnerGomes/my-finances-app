@@ -162,6 +162,10 @@ body.metas-page {
   background: rgba(34, 197, 94, 0.15);
 }
 
+.card-icone-wrapper.perigo {
+  background: rgba(239, 68, 68, 0.15);
+}
+
 .card-icone-wrapper .card-icone {
   font-size: 32px;
   color: var(--primary-light);
@@ -170,6 +174,10 @@ body.metas-page {
 
 .card-icone-wrapper.concluido .card-icone {
   color: var(--dna-green);
+}
+
+.card-icone-wrapper.perigo .card-icone {
+  color: var(--danger);
 }
 
 /* editar/excluir por card — ficam discretos no canto até o hover/toque */
@@ -283,36 +291,38 @@ body.metas-page {
   overflow: hidden;
 }
 
+/* a cor em si vem inline (style="background-color: ...") calculada no
+   backend (metas_service._cor_barra) — é um gradiente de verdade
+   interpolado pelo percentual, não dava pra fazer só com classes fixas
+   de verde/amarelo/vermelho */
 .preenchido {
   height: 100%;
   border-radius: 999px;
-  transition: width 0.3s ease;
+  transition: width 0.3s ease, background-color 0.3s ease;
 }
 
-.preenchido.verde {
-  background: var(--dna-green);
-}
-
-.preenchido.amarelo {
-  background: var(--dna-orange);
-}
-
-.preenchido.vermelho {
-  background: var(--danger);
-}
-
-/* progresso de um objetivo ainda não batido (nível 'progresso') — os
-   demais níveis de objetivo reaproveitam verde/vermelho existentes */
-.preenchido.azul {
-  background: var(--primary-light);
-}
-
-.card-concluido-texto {
-  text-align: center;
+/* rótulo embaixo da barra quando o limite estourou ou o objetivo foi
+   batido este mês — ícone + texto, cor conforme o caso */
+.card-aviso-texto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
   font-size: 11px;
   font-weight: 600;
+  margin: 6px 0 0;
+}
+
+.card-aviso-texto .material-icons {
+  font-size: 14px;
+}
+
+.card-aviso-sucesso {
   color: var(--dna-green);
-  margin: -4px 0 0;
+}
+
+.card-aviso-perigo {
+  color: var(--danger);
 }
 
 /* Botão de adicionar com gradiente do tema */

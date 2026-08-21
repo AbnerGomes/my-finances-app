@@ -102,7 +102,7 @@
             <span class="material-icons">delete</span>
           </button>
         </div>
-        <div class="card-icone-wrapper{% if card.nivel == 'concluido' %} concluido{% endif %}">
+        <div class="card-icone-wrapper{% if card.nivel == 'concluido' %} concluido{% elif card.nivel == 'vermelho' %} perigo{% endif %}">
           <span class="material-icons card-icone">{{ card.icone }}</span>
         </div>
         <div class="card-info">
@@ -111,13 +111,22 @@
           <div class="progresso-info">
             <span>R$ {{ '%.2f'|format(card.gasto_atual) }} / R$ {{ '%.2f'|format(card.limite) }}</span>
             <div class="barra-progresso">
-              <div class="preenchido {% if card.nivel == 'vermelho' %}vermelho{% elif card.nivel == 'amarelo' %}amarelo{% elif card.nivel == 'concluido' %}verde{% elif card.nivel == 'progresso' %}azul{% else %}verde{% endif %}"
-                   style="width: {{ card.percentual if card.percentual <= 100 else 100 }}%;">
-              </div>
+              <!-- cor vem calculada do backend (metas_service._cor_barra) —
+                   gradiente de verdade conforme o percentual, não faixas
+                   fixas: limite vai verde->amarelo->vermelho->vermelho
+                   escuro ao estourar; objetivo vai laranja fraquinho->verde
+                   ao se aproximar da meta -->
+              <div class="preenchido" style="width: {{ card.percentual if card.percentual <= 100 else 100 }}%; background-color: {{ card.cor_barra }};"></div>
             </div>
           </div>
           {% if card.nivel == 'concluido' %}
-          <p class="card-concluido-texto">Objetivo batido este mês! 🎉</p>
+          <p class="card-aviso-texto card-aviso-sucesso">
+            <span class="material-icons">celebration</span> Objetivo batido este mês! 🎉
+          </p>
+          {% elif card.nivel == 'vermelho' %}
+          <p class="card-aviso-texto card-aviso-perigo">
+            <span class="material-icons">error</span> Limite ultrapassado este mês
+          </p>
           {% endif %}
         </div>
       </div>

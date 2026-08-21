@@ -472,11 +472,48 @@ form.addEventListener('submit', function(e) {
 });
 
 
+// ============================================================
+// Antes de salvar um gasto (seja pelo modal "+" ou pela ação rápida),
+// checa se ele vai cruzar um limite/objetivo configurado pra essa
+// categoria (service/metas_service.py) e, se sim, avisa antes de
+// seguir — só chama `prosseguir()` depois que a pessoa confirmar (ou
+// direto, se não houver nada a avisar). Se a checagem falhar (erro de
+// rede etc.) não trava o cadastro por causa disso.
+function formatarMoedaBr(valor) {
+  return Number(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+async function verificarEAvisarLimiteObjetivo(categoria, valor, prosseguir) {
+  const isCasal = document.body.dataset.isCasal || 'N';
+
+  try {
+    const resp = await fetch(`/metas/verificar_transacao?categoria=${encodeURIComponent(categoria || '')}&valor=${encodeURIComponent(valor)}&isCasal=${isCasal}`);
+    if (!resp.ok) { prosseguir(); return; }
+
+    const { aviso } = await resp.json();
+    if (!aviso) { prosseguir(); return; }
+
+    const valorMeta = formatarMoedaBr(aviso.valor_meta);
+    const novoTotal = formatarMoedaBr(aviso.novo_total);
+    const mensagem = aviso.tipo === 'objetivo'
+      ? `Com esta transação você atingiu seu objetivo "${aviso.nome}" de R$ ${valorMeta}, valor após a transação: R$ ${novoTotal}.`
+      : `Com esta transação você ultrapassa o seu limite "${aviso.nome}" de R$ ${valorMeta}, valor após a transação: R$ ${novoTotal}.`;
+
+    mostrarConfirmacao(mensagem, prosseguir, { textoConfirmar: 'OK', apenasConfirmar: true });
+  } catch {
+    prosseguir();
+  }
+}
+
 //add gasto rapido
 function quickAddGasto(descricao, valor, categoria) {
 
   if (bloquearSePlanoExpirado()) return;
 
+  verificarEAvisarLimiteObjetivo(categoria, valor, () => salvarGastoRapido(descricao, valor, categoria));
+}
+
+function salvarGastoRapido(descricao, valor, categoria) {
   fetch('/cadastrar_gasto_rapido', {
     method: 'POST',
     headers: {
@@ -552,11 +589,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const formCadastrar = document.getElementById('form-cadastrar');
   if (!formCadastrar) return;
 
-  formCadastrar.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    if (bloquearSePlanoExpirado(e)) return;
-
+  const salvarGastoDoFormulario = async () => {
     try {
       const resposta = await fetch(formCadastrar.action, {
         method: 'POST',
@@ -590,6 +623,17 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch {
       showToast('Erro de conexão', false);
     }
+  };
+
+  formCadastrar.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    if (bloquearSePlanoExpirado(e)) return;
+
+    const categoria = formCadastrar.querySelector('[name="categoria"]')?.value;
+    const valor = formCadastrar.querySelector('[name="valor"]')?.value;
+
+    verificarEAvisarLimiteObjetivo(categoria, valor, salvarGastoDoFormulario);
   });
 });
 

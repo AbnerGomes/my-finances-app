@@ -415,8 +415,19 @@ function mostrarConfirmacao(mensagem, aoConfirmar, opcoes = {}) {
   // texto via textContent (não innerHTML) — mensagem pode conter nome
   // de gasto/despesa digitado pelo usuário, evita qualquer risco de XSS
   overlay.querySelector(".confirmacao-generica-texto").textContent = mensagem;
-  overlay.querySelector(".confirmacao-generica-nao").textContent = opcoes.textoCancelar || "Não";
   overlay.querySelector(".confirmacao-generica-sim").textContent = opcoes.textoConfirmar || "Sim";
+
+  const botaoNao = overlay.querySelector(".confirmacao-generica-nao");
+
+  // apenasConfirmar: modo "aviso" — só um botão (ex.: "OK"), sem opção
+  // de cancelar/recusar. Usado pra avisos de limite/objetivo batido: a
+  // pessoa só precisa confirmar que viu antes de seguir com o cadastro.
+  if (opcoes.apenasConfirmar) {
+    botaoNao.remove();
+    overlay.querySelector(".confirmacao-generica-botoes").classList.add("apenas-confirmar");
+  } else {
+    botaoNao.textContent = opcoes.textoCancelar || "Não";
+  }
 
   document.body.appendChild(overlay);
 
@@ -427,10 +438,12 @@ function mostrarConfirmacao(mensagem, aoConfirmar, opcoes = {}) {
     if (typeof opcoes.aoCancelar === "function") opcoes.aoCancelar();
   };
 
-  overlay.querySelector(".confirmacao-generica-nao").addEventListener("click", cancelar);
-  overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) cancelar();
-  });
+  if (!opcoes.apenasConfirmar) {
+    botaoNao.addEventListener("click", cancelar);
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) cancelar();
+    });
+  }
   overlay.querySelector(".confirmacao-generica-sim").addEventListener("click", () => {
     fechar();
     aoConfirmar();

@@ -1429,6 +1429,30 @@ def excluir_meta(id_meta):
     return jsonify({'erro': 'Não foi possível excluir essa meta.'}), 400
 
 
+@despesa_bp.route('/metas/verificar_transacao')
+def verificar_transacao_meta():
+    # chamado pelo front ANTES de salvar um gasto, pra avisar se ele vai
+    # cruzar um limite/objetivo — GET só de leitura, sem gate de plano
+    # (não é uma ação de cadastro em si, só uma checagem)
+    if 'usuario' not in session:
+        return jsonify({'erro': 'Você precisa estar logado.'}), 401
+
+    usuario = session['usuario']
+    categoria = (request.args.get('categoria') or '').strip()
+    isCasal = request.args.get('isCasal') or 'N'
+
+    try:
+        valor = float(request.args.get('valor'))
+    except (TypeError, ValueError):
+        return jsonify({'aviso': None})
+
+    if not categoria:
+        return jsonify({'aviso': None})
+
+    aviso = metas_service.verificar_transacao(usuario, categoria, valor, isCasal)
+    return jsonify({'aviso': aviso})
+
+
 @gasto_bp.route('/insights_mes/<isCasal>')
 def insights_mes(isCasal):
     if 'usuario' not in session:

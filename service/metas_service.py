@@ -54,6 +54,49 @@ def _nivel(percentual, tipo='limite'):
     return 'verde'
 
 
+# Cor da barra de progresso: em vez de 3-4 faixas fixas, interpola de
+# verdade entre "paradas" de cor conforme o percentual, pra dar a
+# sensação de transição gradual (o pedido foi literalmente "vai ficando
+# mais próximo da cor X conforme..."). Limite: verde -> amarelo -> vermelho
+# -> vermelho bem escuro quando estoura de vez. Objetivo: o oposto em
+# espírito — laranja fraquinho no começo, esquentando pro verde
+# conforme se aproxima do valor final.
+_CORES_LIMITE = [
+    (0, (34, 197, 94)),     # verde (--dna-green)
+    (80, (250, 204, 21)),   # amarelo
+    (100, (239, 68, 68)),   # vermelho (--danger)
+    (130, (127, 29, 29)),   # vermelho bem escuro — "super vermelho" ao estourar de vez
+]
+
+_CORES_OBJETIVO = [
+    (0, (253, 186, 116)),   # laranja fraquinho
+    (100, (34, 197, 94)),   # verde (--dna-green) ao bater a meta
+]
+
+
+def _interpolar_cor(percentual, paradas):
+    if percentual <= paradas[0][0]:
+        cor = paradas[0][1]
+    elif percentual >= paradas[-1][0]:
+        cor = paradas[-1][1]
+    else:
+        cor = paradas[-1][1]
+        for (p0, c0), (p1, c1) in zip(paradas, paradas[1:]):
+            if p0 <= percentual <= p1:
+                t = (percentual - p0) / (p1 - p0) if p1 != p0 else 0
+                cor = tuple(round(c0[i] + (c1[i] - c0[i]) * t) for i in range(3))
+                break
+
+    return '#{:02x}{:02x}{:02x}'.format(*cor)
+
+
+def _cor_barra(percentual, tipo):
+    percentual = max(0, percentual)
+    if tipo == 'objetivo':
+        return _interpolar_cor(min(percentual, 100), _CORES_OBJETIVO)
+    return _interpolar_cor(min(percentual, 130), _CORES_LIMITE)
+
+
 def gasto_categoria_mes_atual(usuario_nome, categoria, isCasal='N'):
     """Quanto já foi gasto (tabela gastos, não despesas) numa categoria,
     do dia 1 do mês atual até hoje. usuario_nome é o valor de
@@ -124,6 +167,7 @@ def listar_metas(usuario_nome, isCasal='N', tipo=None):
                 'percentual': percentual,
                 'tipo': tipo_meta,
                 'nivel': _nivel(percentual, tipo_meta),
+                'cor_barra': _cor_barra(percentual, tipo_meta),
             })
 
         return resultado
@@ -197,6 +241,57 @@ def editar_meta(usuario_nome, id_meta, limite, nome=None):
         conn.rollback()
         print("Erro ao editar meta:", e)
         return False
+    finally:
+        conn.close()
+
+
+def verificar_transacao(usuario_nome, categoria, valor_novo, isCasal='N'):
+    """Chamado ANTES de salvar um gasto, pra avisar se ele vai cruzar um
+    limite/objetivo configurado pra essa categoria. Devolve None se não
+    há meta pra essa categoria ou se não há nada a avisar; senão devolve
+    {'tipo', 'nome', 'valor_meta', 'novo_total'}.
+
+    Limite: avisa toda vez que o total ficar acima dele (cada gasto a
+    mais enquanto já estourado piora a situação, vale repetir o aviso).
+    Objetivo: avisa só na transação que CRUZA o valor pela primeira vez
+    (gasto_atual ainda abaixo, novo_total já bate ou passa) — depois de
+    batido uma vez não faz sentido reavisar "você atingiu" a cada gasto
+    novo na mesma categoria."""
+    usuario = _get_usuario_by_name(usuario_nome)
+    hoje = datetime.today().date()
+    inicio_mes = hoje.replace(day=1)
+
+    conn = get_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT nome, limite, tipo FROM metas WHERE usuario = %s AND categoria = %s",
+            (usuario, categoria)
+        )
+        row = cursor.fetchone()
+        if not row:
+            return None
+
+        nome, limite, tipo = row
+        limite = float(limite)
+        conjuge = _get_conjuge(cursor, usuario, isCasal)
+
+        cursor.execute(
+            """SELECT COALESCE(SUM(valor_gasto), 0) FROM gastos
+               WHERE usuario IN (%s, %s) AND categoria = %s AND data BETWEEN %s AND %s""",
+            (usuario, conjuge or usuario, categoria, inicio_mes, hoje)
+        )
+        gasto_atual = float(cursor.fetchone()[0])
+        novo_total = gasto_atual + float(valor_novo)
+
+        if tipo == 'objetivo':
+            if gasto_atual < limite <= novo_total:
+                return {'tipo': 'objetivo', 'nome': nome, 'valor_meta': round(limite, 2), 'novo_total': round(novo_total, 2)}
+            return None
+
+        if novo_total > limite:
+            return {'tipo': 'limite', 'nome': nome, 'valor_meta': round(limite, 2), 'novo_total': round(novo_total, 2)}
+        return None
     finally:
         conn.close()
 
