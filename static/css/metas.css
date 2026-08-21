@@ -27,7 +27,56 @@ body.metas-page {
   font-weight: 700;
 }
 
-/* Toggle compacto Individual/Casal */
+/* Topbar com o título à esquerda e o toggle Individual/Casal à direita
+   — mesmo componente (.mode-toggle/.mode-pill) e mesma posição usados
+   na home, só que aqui embutido no header da própria página em vez do
+   header-bar fixo (o dropdown "Modo" do menu de usuário continua
+   existindo à parte, como atalho alternativo). */
+.home-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.home-topbar .titulo-pagina {
+  text-align: left;
+  margin-bottom: 0;
+}
+
+.mode-toggle {
+  display: flex;
+  gap: 4px;
+  background: var(--dna-card-soft);
+  border: 1px solid var(--dna-border);
+  border-radius: 999px;
+  padding: 3px;
+  width: max-content;
+  flex-shrink: 0;
+}
+
+.mode-pill {
+  border: none;
+  background: transparent;
+  color: var(--dna-text-dim);
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.mode-pill.active {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+/* Toggle compacto Objetivos/Limites (o Individual/Casal foi pra
+   .home-topbar, ver acima) */
 .modo-compacto-wrapper {
   display: flex;
   justify-content: center;

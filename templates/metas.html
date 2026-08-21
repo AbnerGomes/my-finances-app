@@ -60,7 +60,17 @@
   </div>
 
   <div class="metas-wrapper">
-    <h3 class="titulo-pagina">Objetivos e Limites</h3>
+    <!-- toggle Individual/Casal no canto superior direito, mesmo lugar
+         e mesmo componente (.mode-toggle/.mode-pill) da home -->
+    <div class="home-topbar">
+      <h3 class="titulo-pagina">Objetivos e Limites</h3>
+      <div class="mode-toggle" role="tablist" aria-label="Modo de visualização">
+        <button type="button" id="pill-individual" class="mode-pill {{ 'active' if isCasal != 'S' else '' }}" onclick="changeMode('N')">Individual</button>
+        {% if temConjuge %}
+        <button type="button" id="pill-casal" class="mode-pill {{ 'active' if isCasal == 'S' else '' }}" onclick="changeMode('S')">Casal</button>
+        {% endif %}
+      </div>
+    </div>
 
     <div class="modo-compacto-wrapper" role="tablist" aria-label="Tipo">
       <button type="button" class="modo-pill-compacta {{ 'active' if tipoAtivo == 'objetivo' else '' }}" data-tipo="objetivo" onclick="changeTipo('objetivo')">
@@ -69,17 +79,6 @@
       <button type="button" class="modo-pill-compacta {{ 'active' if tipoAtivo == 'limite' else '' }}" data-tipo="limite" onclick="changeTipo('limite')">
         <span class="material-icons">speed</span> Limites
       </button>
-    </div>
-
-    <div class="modo-compacto-wrapper" role="tablist" aria-label="Modo de visualização">
-      <button type="button" class="modo-pill-compacta {{ 'active' if isCasal != 'S' else '' }}" data-modo="N" onclick="changeMode('N')">
-        <span class="material-icons">person</span> Individual
-      </button>
-      {% if temConjuge %}
-      <button type="button" class="modo-pill-compacta {{ 'active' if isCasal == 'S' else '' }}" data-modo="S" onclick="changeMode('S')">
-        <span class="material-icons">people</span> Casal
-      </button>
-      {% endif %}
     </div>
 
     <p class="metas-explicacao">
