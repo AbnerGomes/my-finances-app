@@ -193,7 +193,7 @@ def categorias_em_uso(usuario_nome):
 def criar_meta(usuario_nome, categoria, limite, tipo='limite', nome=None):
     usuario = _get_usuario_by_name(usuario_nome)
     # nome é escolhido livremente por quem cria (ex.: "Besteiras" pra
-    # categoria Ifood) — a categoria continua sendo só o acumulador dos
+    # categoria Delivery) — a categoria continua sendo só o acumulador dos
     # gastos, nunca o rótulo mostrado. Cai pra categoria só como rede de
     # segurança (nunca deve faltar vindo do form).
     nome = (nome or '').strip() or categoria

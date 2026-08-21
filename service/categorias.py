@@ -6,7 +6,7 @@
 # que usada (ver get_categorias_disponiveis em gasto_service/despesa_service).
 CATEGORIAS_PADRAO = [
     'Alimentação',
-    'Ifood',
+    'Delivery',
     'Saúde e Beleza',
     'Mobilidade',
     'Entretenimento e Lazer',
@@ -25,7 +25,8 @@ CATEGORIAS_PADRAO = [
 # Fallback genérico ('label') pra categorias digitadas pelo usuário.
 CATEGORIA_ICONES = {
     'Alimentação': 'restaurant',
-    'Ifood': 'lunch_dining',
+    'Delivery': 'lunch_dining',
+    'Ifood': 'lunch_dining',  # compat com registros antigos (pré-renomeação pra "Delivery")
     'Saúde e Beleza': 'favorite',
     'Mobilidade': 'directions_car',
     'Entretenimento e Lazer': 'sports_esports',

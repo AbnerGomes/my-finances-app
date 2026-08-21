@@ -786,6 +786,7 @@ body.theme-dark {
    deles. Ex.: o antigo azul de Mobilidade (#2618ee) era escuro demais
    e sumia contra o fundo — trocado por um tom mais claro. */
 .categoria-Alimentação { background: rgba(250, 204, 21, 0.18); color: #facc15; }
+.categoria-Delivery,
 .categoria-Ifood { background: rgba(251, 146, 60, 0.18); color: #fb923c; }
 .categoria-SaúdeeBeleza,
 .categoria-Saúde { background: rgba(74, 222, 128, 0.18); color: #4ade80; }

@@ -108,7 +108,8 @@ const donutSombraPlugin = {
 // fundo escuro de qualquer tema do app.
 const coresCategorias = {
   'Alimentação': '#facc15',
-  'Ifood': '#fb923c',
+  'Delivery': '#fb923c',
+  'Ifood': '#fb923c', // compat com registros antigos (pré-renomeação pra "Delivery")
   'Entretenimento e Lazer': '#c084fc',
   'Entretenimento': '#c084fc', // compat com registros antigos (pré-renomeação)
   'Mobilidade': '#818cf8',
@@ -126,7 +127,8 @@ const coresCategorias = {
 // Ícones (Material Icons) usados na lista de categorias da nova home
 const iconesCategorias = {
   'Alimentação': 'restaurant',
-  'Ifood': 'delivery_dining',
+  'Delivery': 'lunch_dining',
+  'Ifood': 'lunch_dining', // compat com registros antigos (pré-renomeação pra "Delivery")
   'Entretenimento e Lazer': 'sports_esports',
   'Entretenimento': 'sports_esports', // compat com registros antigos (pré-renomeação)
   'Mobilidade': 'directions_car',
@@ -539,7 +541,7 @@ document.addEventListener("DOMContentLoaded", function () {
     donutChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['Alimentação', 'Ifood', 'Entretenimento e Lazer', 'Mobilidade', 'Saúde e Beleza', 'Moradia', 'Outros', 'Dívidas', 'Educação', 'Pets'],
+            labels: ['Alimentação', 'Delivery', 'Entretenimento e Lazer', 'Mobilidade', 'Saúde e Beleza', 'Moradia', 'Outros', 'Dívidas', 'Educação', 'Pets'],
             datasets: [{
                 data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 backgroundColor: coresIniciais.map(cor => gerarGradienteFatia(ctxDonut2d, cor)),

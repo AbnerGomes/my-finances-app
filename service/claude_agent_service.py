@@ -72,7 +72,7 @@ TOOLS = [
                 },
                 "categoria": {
                     "type": "string",
-                    "description": "Opcional. Preencha se o usuário perguntar sobre uma categoria específica (ex: 'Ifood'), pra filtrar o resultado.",
+                    "description": "Opcional. Preencha se o usuário perguntar sobre uma categoria específica (ex: 'Delivery'), pra filtrar o resultado.",
                 },
                 "escopo": {
                     "type": "string",
