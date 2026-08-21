@@ -1,4 +1,4 @@
-function showToast(msg, success = true) {
+function showToast(msg, success = true, duracao = 2500) {
   const toast = document.getElementById("toast");
 
   toast.textContent = msg;
@@ -8,8 +8,18 @@ function showToast(msg, success = true) {
 
   setTimeout(() => {
     toast.classList.remove("show");
-  }, 2500);
+  }, duracao);
 }
+
+// Explicação de cada tipo de despesa — some no toast quando a pessoa
+// escolhe o radio, pra já entender a diferença na hora de cadastrar
+// (Fixa/Variável/Exceção só podem ser escolhidas no cadastro; depois
+// de criada a despesa não dá pra mudar o tipo).
+const EXPLICACAO_TIPO_DESPESA = {
+  Fixa: 'Fixa: uma despesa fixa é aquela despesa recorrente em que o valor não varia.',
+  Variável: 'Variável: uma despesa variável é uma despesa recorrente, mas que o valor muda de um mês para o outro.',
+  Exceção: 'Exceção: despesas de exceção são despesas não recorrentes e não programadas, ocorridas no mês.',
+};
 
 let idParaExcluir = null;
 
@@ -126,6 +136,16 @@ document.addEventListener('DOMContentLoaded', () => {
   window._pickerEditarVencimento = (typeof criarSeletorDeDataUnica === 'function')
     ? criarSeletorDeDataUnica('editar-vencimento-btn', 'editar-vencimento-texto', 'editar-vencimento', new Date())
     : null;
+
+  // ao escolher Fixa/Variável/Exceção no cadastro, explica o que cada
+  // uma significa (só existe esse radio no cadastro — o tipo não é
+  // editável depois, então é a única hora que isso precisa aparecer)
+  document.querySelectorAll('input[name="tipo_despesa"]').forEach((radio) => {
+    radio.addEventListener('change', () => {
+      const explicacao = EXPLICACAO_TIPO_DESPESA[radio.value];
+      if (explicacao) showToast(explicacao, true, 5000);
+    });
+  });
 
   // 👉 BOTÃO ADICIONAR (AGORA CORRETO)
   const btnAdd = document.getElementById("addDespesaBtn");

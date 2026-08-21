@@ -87,7 +87,7 @@
       {% else %}
       Defina um limite de gasto por categoria e acompanhe aqui. O valor considerado é o que você já gastou nessa categoria neste mês
       {% endif %}
-      {% if isCasal == 'S' %}(somado com seu cônjuge, no Modo Casal){% endif %}. Objetivos e limites são <strong>mensais</strong> — o progresso reinicia todo mês.
+      {% if isCasal == 'S' %}(somado com seu parceiro, no Modo Casal){% endif %}. Objetivos e limites são <strong>mensais</strong> — o progresso reinicia todo mês.
     </p>
 
     {% if cards %}
@@ -95,10 +95,10 @@
       {% for card in cards %}
       <div class="card" data-id="{{ card.id }}">
         <div class="card-acoes">
-          <button type="button" class="card-acao-btn btn-editar-meta" data-id="{{ card.id }}" data-categoria="{{ card.categoria }}" data-limite="{{ card.limite }}" aria-label="Editar meta">
+          <button type="button" class="card-acao-btn btn-editar-meta" data-id="{{ card.id }}" data-nome="{{ card.nome }}" data-categoria="{{ card.categoria }}" data-limite="{{ card.limite }}" aria-label="Editar meta">
             <span class="material-icons">edit</span>
           </button>
-          <button type="button" class="card-acao-btn btn-excluir-meta" data-id="{{ card.id }}" data-categoria="{{ card.categoria }}" aria-label="Excluir meta">
+          <button type="button" class="card-acao-btn btn-excluir-meta" data-id="{{ card.id }}" data-nome="{{ card.nome }}" aria-label="Excluir meta">
             <span class="material-icons">delete</span>
           </button>
         </div>
@@ -106,7 +106,8 @@
           <span class="material-icons card-icone">{{ card.icone }}</span>
         </div>
         <div class="card-info">
-          <h3>{{ card.categoria }}</h3>
+          <h3>{{ card.nome }}</h3>
+          <p class="card-categoria-tag">{{ card.categoria }}</p>
           <div class="progresso-info">
             <span>R$ {{ '%.2f'|format(card.gasto_atual) }} / R$ {{ '%.2f'|format(card.limite) }}</span>
             <div class="barra-progresso">
@@ -144,8 +145,9 @@
       <h2>{{ 'Novo objetivo' if tipoAtivo == 'objetivo' else 'Novo limite' }}</h2>
       <form class="novo-card-form" id="form-nova-meta">
         <input type="hidden" name="tipo" value="{{ tipoAtivo }}">
+        <input type="text" name="nome" maxlength="60" placeholder="{{ 'Nome do objetivo (ex.: Viagem, Reserva)' if tipoAtivo == 'objetivo' else 'Nome do limite (ex.: Besteiras)' }}" required />
         <select name="categoria" required>
-          <option value="" disabled selected>Escolha a categoria</option>
+          <option value="" disabled selected>Categoria que vai contar pra esse valor</option>
           {% for categoria in categoriasDisponiveis %}
           <option value="{{ categoria }}">{{ categoria }}</option>
           {% endfor %}
@@ -159,9 +161,11 @@
   <div id="modal-editar-meta" class="modal">
     <div class="modal-content">
       <span id="closeModalEditarBtn" class="close">&times;</span>
-      <h2>{{ 'Editar objetivo' if tipoAtivo == 'objetivo' else 'Editar limite' }} — <span id="editar-meta-categoria"></span></h2>
+      <h2>{{ 'Editar objetivo' if tipoAtivo == 'objetivo' else 'Editar limite' }}</h2>
+      <p class="editar-meta-categoria-info">Categoria: <span id="editar-meta-categoria"></span> <span class="editar-meta-categoria-nota">(não muda depois de criado)</span></p>
       <form class="novo-card-form" id="form-editar-meta">
         <input type="hidden" name="id_meta" id="editar-meta-id">
+        <input type="text" name="nome" maxlength="60" placeholder="Nome" required id="editar-meta-nome" />
         <input type="number" name="limite" step="0.01" min="0.01" placeholder="Novo valor (R$)" required id="editar-meta-limite" />
         <button type="submit">Salvar</button>
       </form>

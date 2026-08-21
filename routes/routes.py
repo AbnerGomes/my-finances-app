@@ -630,11 +630,11 @@ def cadastrar_conjuge():
     try:
         sucesso = gasto_bp.gasto_service.cadastrar_conjuge(usuario, nome, email, telefone, senha, pronome)
     except Exception:
-        flash("Não foi possível cadastrar o cônjuge. Tente novamente.", "danger")
+        flash("Não foi possível cadastrar o parceiro. Tente novamente.", "danger")
         return redirect(url_for('gasto.index'))
 
     if sucesso:
-        flash("Cônjuge cadastrado com sucesso! 😄", "success")
+        flash("Parceiro cadastrado com sucesso! 😄", "success")
     else:
         flash("Esse email já está cadastrado! 🤦🏽‍♂️", "danger")
 
@@ -1364,13 +1364,14 @@ def criar_meta():
 
     data = request.get_json(silent=True) or {}
     categoria = (data.get('categoria') or '').strip()
+    nome = (data.get('nome') or '').strip()
     limite = data.get('limite')
     tipo = (data.get('tipo') or 'limite').strip()
 
     if tipo not in ('limite', 'objetivo'):
         return jsonify({'erro': 'Tipo inválido'}), 400
 
-    if not categoria or not limite:
+    if not categoria or not limite or not nome:
         return jsonify({'erro': 'Dados incompletos'}), 400
 
     try:
@@ -1380,7 +1381,7 @@ def criar_meta():
     except (TypeError, ValueError):
         return jsonify({'erro': 'Informe um valor válido'}), 400
 
-    resultado = metas_service.criar_meta(usuario, categoria, limite, tipo)
+    resultado = metas_service.criar_meta(usuario, categoria, limite, tipo, nome)
 
     if resultado['sucesso']:
         return jsonify({'mensagem': 'Meta criada com sucesso!'})
@@ -1399,6 +1400,7 @@ def editar_meta(id_meta):
 
     data = request.get_json(silent=True) or {}
     limite = data.get('limite')
+    nome = data.get('nome')
 
     try:
         limite = float(limite)
@@ -1407,7 +1409,7 @@ def editar_meta(id_meta):
     except (TypeError, ValueError):
         return jsonify({'erro': 'Informe um limite válido'}), 400
 
-    sucesso = metas_service.editar_meta(usuario, id_meta, limite)
+    sucesso = metas_service.editar_meta(usuario, id_meta, limite, nome)
 
     if sucesso:
         return jsonify({'mensagem': 'Meta atualizada!'})

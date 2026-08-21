@@ -94,18 +94,18 @@ def listar_metas(usuario_nome, isCasal='N', tipo=None):
 
         if tipo:
             cursor.execute(
-                "SELECT id, categoria, limite, tipo FROM metas WHERE usuario = %s AND tipo = %s ORDER BY categoria",
+                "SELECT id, nome, categoria, limite, tipo FROM metas WHERE usuario = %s AND tipo = %s ORDER BY nome",
                 (usuario, tipo)
             )
         else:
             cursor.execute(
-                "SELECT id, categoria, limite, tipo FROM metas WHERE usuario = %s ORDER BY categoria",
+                "SELECT id, nome, categoria, limite, tipo FROM metas WHERE usuario = %s ORDER BY nome",
                 (usuario,)
             )
         metas = cursor.fetchall()
 
         resultado = []
-        for id_meta, categoria, limite, tipo_meta in metas:
+        for id_meta, nome, categoria, limite, tipo_meta in metas:
             cursor.execute(
                 """SELECT COALESCE(SUM(valor_gasto), 0) FROM gastos
                    WHERE usuario IN (%s, %s) AND categoria = %s AND data BETWEEN %s AND %s""",
@@ -117,6 +117,7 @@ def listar_metas(usuario_nome, isCasal='N', tipo=None):
 
             resultado.append({
                 'id': id_meta,
+                'nome': nome,
                 'categoria': categoria,
                 'limite': round(limite, 2),
                 'gasto_atual': round(gasto_atual, 2),
@@ -145,22 +146,27 @@ def categorias_em_uso(usuario_nome):
         conn.close()
 
 
-def criar_meta(usuario_nome, categoria, limite, tipo='limite'):
+def criar_meta(usuario_nome, categoria, limite, tipo='limite', nome=None):
     usuario = _get_usuario_by_name(usuario_nome)
+    # nome é escolhido livremente por quem cria (ex.: "Besteiras" pra
+    # categoria Ifood) — a categoria continua sendo só o acumulador dos
+    # gastos, nunca o rótulo mostrado. Cai pra categoria só como rede de
+    # segurança (nunca deve faltar vindo do form).
+    nome = (nome or '').strip() or categoria
 
     conn = get_connection()
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO metas (usuario, categoria, limite, tipo) VALUES (%s, %s, %s, %s)",
-            (usuario, categoria, limite, tipo)
+            "INSERT INTO metas (usuario, nome, categoria, limite, tipo) VALUES (%s, %s, %s, %s, %s)",
+            (usuario, nome, categoria, limite, tipo)
         )
         conn.commit()
         return {'sucesso': True}
     except psycopg2.errors.UniqueViolation:
         conn.rollback()
         rotulo = 'objetivo' if tipo == 'objetivo' else 'limite'
-        return {'sucesso': False, 'erro': f'Você já tem um(a) {rotulo} pra "{categoria}". Edite o existente em vez de criar outro.'}
+        return {'sucesso': False, 'erro': f'Você já tem um(a) {rotulo} pra categoria "{categoria}". Edite o existente em vez de criar outro.'}
     except Exception as e:
         conn.rollback()
         print("Erro ao criar meta:", e)
@@ -169,16 +175,22 @@ def criar_meta(usuario_nome, categoria, limite, tipo='limite'):
         conn.close()
 
 
-def editar_meta(usuario_nome, id_meta, limite):
+def editar_meta(usuario_nome, id_meta, limite, nome=None):
     usuario = _get_usuario_by_name(usuario_nome)
 
     conn = get_connection()
     try:
         cursor = conn.cursor()
-        cursor.execute(
-            "UPDATE metas SET limite = %s, data_atualizacao = NOW() WHERE id = %s AND usuario = %s",
-            (limite, id_meta, usuario)
-        )
+        if nome and nome.strip():
+            cursor.execute(
+                "UPDATE metas SET limite = %s, nome = %s, data_atualizacao = NOW() WHERE id = %s AND usuario = %s",
+                (limite, nome.strip(), id_meta, usuario)
+            )
+        else:
+            cursor.execute(
+                "UPDATE metas SET limite = %s, data_atualizacao = NOW() WHERE id = %s AND usuario = %s",
+                (limite, id_meta, usuario)
+            )
         conn.commit()
         return cursor.rowcount > 0
     except Exception as e:

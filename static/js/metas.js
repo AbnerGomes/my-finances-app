@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const dados = new FormData(formNova);
       const categoria = dados.get('categoria');
+      const nome = dados.get('nome');
       const limite = dados.get('limite');
       const tipo = dados.get('tipo');
 
@@ -73,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const resposta = await fetch('/metas/criar', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ categoria, limite, tipo }),
+          body: JSON.stringify({ categoria, nome, limite, tipo }),
         });
         const corpo = await resposta.json();
 
@@ -97,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       document.getElementById('editar-meta-id').value = btn.dataset.id;
       document.getElementById('editar-meta-categoria').textContent = btn.dataset.categoria;
+      document.getElementById('editar-meta-nome').value = btn.dataset.nome;
       document.getElementById('editar-meta-limite').value = btn.dataset.limite;
       modalEditar.style.display = 'block';
     });
@@ -110,12 +112,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const idMeta = document.getElementById('editar-meta-id').value;
       const limite = document.getElementById('editar-meta-limite').value;
+      const nome = document.getElementById('editar-meta-nome').value;
 
       try {
         const resposta = await fetch(`/metas/${idMeta}/editar`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ limite }),
+          body: JSON.stringify({ limite, nome }),
         });
         const corpo = await resposta.json();
 
@@ -135,11 +138,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // ================= EXCLUIR META =================
   document.querySelectorAll('.btn-excluir-meta').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const categoria = btn.dataset.categoria;
+      const nome = btn.dataset.nome;
       const idMeta = btn.dataset.id;
 
       mostrarConfirmacao(
-        `Quer excluir a meta de "${categoria}"?`,
+        `Quer excluir "${nome}"?`,
         async () => {
           try {
             const resposta = await fetch(`/metas/${idMeta}/excluir`, { method: 'POST' });

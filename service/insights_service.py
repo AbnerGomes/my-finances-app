@@ -53,7 +53,7 @@ def calcular_insight(resumo_despesas, tem_pendencias_mes_anterior, metas, gastos
     if estourada:
         return {
             'nivel': 'perigo',
-            'texto': f"Você já passou do limite em \"{estourada['categoria']}\": R$ {estourada['gasto_atual']:.2f} de R$ {estourada['limite']:.2f} planejados este mês.",
+            'texto': f"Você já passou do limite em \"{estourada['nome']}\": R$ {estourada['gasto_atual']:.2f} de R$ {estourada['limite']:.2f} planejados este mês.",
             'acao_label': 'Ver limites',
             'acao_url': '/metas',
         }
@@ -72,7 +72,7 @@ def calcular_insight(resumo_despesas, tem_pendencias_mes_anterior, metas, gastos
     if proxima:
         return {
             'nivel': 'aviso',
-            'texto': f"Você já usou {proxima['percentual']:.0f}% do limite de \"{proxima['categoria']}\" este mês (R$ {proxima['gasto_atual']:.2f} de R$ {proxima['limite']:.2f}).",
+            'texto': f"Você já usou {proxima['percentual']:.0f}% do limite de \"{proxima['nome']}\" este mês (R$ {proxima['gasto_atual']:.2f} de R$ {proxima['limite']:.2f}).",
             'acao_label': 'Ver limites',
             'acao_url': '/metas',
         }

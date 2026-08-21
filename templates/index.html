@@ -204,7 +204,7 @@
     <div class="mode-toggle-row">
       <button type="button" class="btn-vincular-conjuge" onclick="abrirModalConjuge()">
         <span class="material-icons">favorite</span>
-        Vincular cônjuge
+        Vincular parceiro
       </button>
     </div>
     {% endif %}
@@ -229,6 +229,7 @@
           <span class="material-icons" id="toggle-saldo-icon">visibility</span>
         </button>
       </div>
+      <span class="label-muted saldo-label">Saldo</span>
       <div class="saldo-valor" id="saldo-total">R$ 0,00</div>
 
       <div class="receitas-despesas-row">
@@ -381,8 +382,8 @@
   <div id="modal-conjuge" class="modal" style="display: none;">
     <div class="modal-content modal-conjuge-content">
       <span class="close" id="fechar-modal-conjuge">&times;</span>
-      <h4>Vincular cônjuge</h4>
-      <p class="modal-conjuge-subtitulo">Cadastre os dados do seu cônjuge para ativar o modo Casal.</p>
+      <h4>Vincular parceiro</h4>
+      <p class="modal-conjuge-subtitulo">Cadastre os dados do seu parceiro para ativar o modo Casal.</p>
 
       <form method="POST" action="{{ url_for('gasto.cadastrar_conjuge') }}" id="form-conjuge">
         <label for="conjuge-nome">Nome</label>
@@ -398,7 +399,7 @@
         <input type="password" id="conjuge-senha" name="senha" placeholder="Senha de acesso" required>
 
         <label>Gênero</label>
-        <div class="genero-toggle" role="radiogroup" aria-label="Gênero do cônjuge">
+        <div class="genero-toggle" role="radiogroup" aria-label="Gênero do parceiro">
           <input type="radio" id="genero-ele" name="pronome" value="Ele/Dele" checked>
           <label for="genero-ele" class="genero-pill">Masculino</label>
 
@@ -406,7 +407,7 @@
           <label for="genero-ela" class="genero-pill">Feminino</label>
         </div>
 
-        <button type="submit" class="botao-salvar" style="margin-top: 12px;">Cadastrar cônjuge</button>
+        <button type="submit" class="botao-salvar" style="margin-top: 12px;">Cadastrar parceiro</button>
       </form>
     </div>
   </div>

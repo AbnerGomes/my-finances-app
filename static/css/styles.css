@@ -801,11 +801,20 @@ body.dna-page .period-chip.active {
   font-size: 20px;
 }
 
+/* rótulo "Saldo" acima do valor grande — sem ele o número ficava sem
+   dizer o que é; margin-bottom pequena porque o valor logo abaixo já
+   é grande o bastante pra criar separação visual sozinho */
+.saldo-label {
+  display: block;
+  margin-bottom: 2px;
+}
+
 .saldo-valor {
   font-size: 30px;
   font-weight: 800;
   letter-spacing: -0.01em;
   color: var(--dna-text);
+  margin-bottom: 16px;
 }
 
 .saldo-periodo {
