@@ -15,13 +15,13 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/comum.css') }}">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
-  <title>Metas — Dois no Azul</title>
+  <title>Objetivos e Limites — Dois no Azul</title>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="{{ url_for('static', filename='js/comum.js') }}" defer></script>
   <script src="{{ url_for('static', filename='js/metas.js') }}" defer></script>
 </head>
-<body class="metas-page dna-page" data-is-casal="{{ isCasal }}" data-tem-conjuge="{{ 'true' if temConjuge else 'false' }}" data-bloqueado-cadastro="{{ 'true' if bloqueadoParaCadastro else 'false' }}">
+<body class="metas-page dna-page" data-is-casal="{{ isCasal }}" data-tipo-ativo="{{ tipoAtivo }}" data-tem-conjuge="{{ 'true' if temConjuge else 'false' }}" data-bloqueado-cadastro="{{ 'true' if bloqueadoParaCadastro else 'false' }}">
 
   <div class="header-bar center">
     <div class="logo-text">
@@ -60,7 +60,16 @@
   </div>
 
   <div class="metas-wrapper">
-    <h3 class="titulo-pagina">Minhas Metas</h3>
+    <h3 class="titulo-pagina">Objetivos e Limites</h3>
+
+    <div class="modo-compacto-wrapper" role="tablist" aria-label="Tipo">
+      <button type="button" class="modo-pill-compacta {{ 'active' if tipoAtivo == 'objetivo' else '' }}" data-tipo="objetivo" onclick="changeTipo('objetivo')">
+        <span class="material-icons">savings</span> Objetivos
+      </button>
+      <button type="button" class="modo-pill-compacta {{ 'active' if tipoAtivo == 'limite' else '' }}" data-tipo="limite" onclick="changeTipo('limite')">
+        <span class="material-icons">speed</span> Limites
+      </button>
+    </div>
 
     <div class="modo-compacto-wrapper" role="tablist" aria-label="Modo de visualização">
       <button type="button" class="modo-pill-compacta {{ 'active' if isCasal != 'S' else '' }}" data-modo="N" onclick="changeMode('N')">
@@ -74,9 +83,12 @@
     </div>
 
     <p class="metas-explicacao">
-      Defina um limite de gasto por categoria e acompanhe aqui. O valor
-      considerado é o que você já gastou nessa categoria neste mês
-      {% if isCasal == 'S' %}(somado com seu cônjuge, no Modo Casal){% endif %}.
+      {% if tipoAtivo == 'objetivo' %}
+      Escolha uma categoria e defina quanto quer guardar ou investir nela. O progresso é o que você já gastou nessa categoria neste mês
+      {% else %}
+      Defina um limite de gasto por categoria e acompanhe aqui. O valor considerado é o que você já gastou nessa categoria neste mês
+      {% endif %}
+      {% if isCasal == 'S' %}(somado com seu cônjuge, no Modo Casal){% endif %}. Objetivos e limites são <strong>mensais</strong> — o progresso reinicia todo mês.
     </p>
 
     {% if cards %}
@@ -91,7 +103,7 @@
             <span class="material-icons">delete</span>
           </button>
         </div>
-        <div class="card-icone-wrapper">
+        <div class="card-icone-wrapper{% if card.nivel == 'concluido' %} concluido{% endif %}">
           <span class="material-icons card-icone">{{ card.icone }}</span>
         </div>
         <div class="card-info">
@@ -99,40 +111,48 @@
           <div class="progresso-info">
             <span>R$ {{ '%.2f'|format(card.gasto_atual) }} / R$ {{ '%.2f'|format(card.limite) }}</span>
             <div class="barra-progresso">
-              <div class="preenchido {% if card.nivel == 'vermelho' %}vermelho{% elif card.nivel == 'amarelo' %}amarelo{% else %}verde{% endif %}"
+              <div class="preenchido {% if card.nivel == 'vermelho' %}vermelho{% elif card.nivel == 'amarelo' %}amarelo{% elif card.nivel == 'concluido' %}verde{% elif card.nivel == 'progresso' %}azul{% else %}verde{% endif %}"
                    style="width: {{ card.percentual if card.percentual <= 100 else 100 }}%;">
               </div>
             </div>
           </div>
+          {% if card.nivel == 'concluido' %}
+          <p class="card-concluido-texto">Objetivo batido este mês! 🎉</p>
+          {% endif %}
         </div>
       </div>
       {% endfor %}
     </div>
     {% else %}
     <div class="metas-vazio">
-      <span class="material-icons">flag</span>
-      <p>Você ainda não tem nenhuma meta. Que tal criar um limite pra uma categoria que você gasta bastante?</p>
+      <span class="material-icons">{{ 'savings' if tipoAtivo == 'objetivo' else 'speed' }}</span>
+      {% if tipoAtivo == 'objetivo' %}
+      <p>Você ainda não tem nenhum objetivo. Que tal escolher uma categoria e definir quanto quer guardar ou investir nela por mês?</p>
+      {% else %}
+      <p>Você ainda não tem nenhum limite. Que tal criar um limite pra uma categoria que você gasta bastante?</p>
+      {% endif %}
     </div>
     {% endif %}
 
     {% if categoriasDisponiveis %}
-    <button id="openModalBtn" class="btn-adicionar">+ Nova meta</button>
+    <button id="openModalBtn" class="btn-adicionar">+ {{ 'Novo objetivo' if tipoAtivo == 'objetivo' else 'Novo limite' }}</button>
     {% endif %}
   </div>
 
   <div id="modal-nova-meta" class="modal">
     <div class="modal-content">
       <span id="closeModalBtn" class="close">&times;</span>
-      <h2>Nova meta</h2>
+      <h2>{{ 'Novo objetivo' if tipoAtivo == 'objetivo' else 'Novo limite' }}</h2>
       <form class="novo-card-form" id="form-nova-meta">
+        <input type="hidden" name="tipo" value="{{ tipoAtivo }}">
         <select name="categoria" required>
           <option value="" disabled selected>Escolha a categoria</option>
           {% for categoria in categoriasDisponiveis %}
           <option value="{{ categoria }}">{{ categoria }}</option>
           {% endfor %}
         </select>
-        <input type="number" name="limite" step="0.01" min="0.01" placeholder="Limite mensal (R$)" required />
-        <button type="submit">Criar meta</button>
+        <input type="number" name="limite" step="0.01" min="0.01" placeholder="{{ 'Valor do objetivo (R$)' if tipoAtivo == 'objetivo' else 'Limite mensal (R$)' }}" required />
+        <button type="submit">{{ 'Criar objetivo' if tipoAtivo == 'objetivo' else 'Criar limite' }}</button>
       </form>
     </div>
   </div>
@@ -140,10 +160,10 @@
   <div id="modal-editar-meta" class="modal">
     <div class="modal-content">
       <span id="closeModalEditarBtn" class="close">&times;</span>
-      <h2>Editar limite — <span id="editar-meta-categoria"></span></h2>
+      <h2>{{ 'Editar objetivo' if tipoAtivo == 'objetivo' else 'Editar limite' }} — <span id="editar-meta-categoria"></span></h2>
       <form class="novo-card-form" id="form-editar-meta">
         <input type="hidden" name="id_meta" id="editar-meta-id">
-        <input type="number" name="limite" step="0.01" min="0.01" placeholder="Novo limite (R$)" required id="editar-meta-limite" />
+        <input type="number" name="limite" step="0.01" min="0.01" placeholder="Novo valor (R$)" required id="editar-meta-limite" />
         <button type="submit">Salvar</button>
       </form>
     </div>

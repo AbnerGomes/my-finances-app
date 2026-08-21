@@ -87,24 +87,40 @@ body.metas-page {
 }
 
 /* ícone da categoria (substitui a imagem customizada — sem infra de
-   upload no projeto, um ícone identifica bem o suficiente) */
+   upload no projeto, um ícone identifica bem o suficiente).
+   Importante: a geometria do círculo (tamanho/display:flex/centralização)
+   fica só no wrapper (uma <div> comum) — NUNCA no próprio <span
+   class="material-icons">, porque o CSS do Google Fonts pro Material
+   Icons carrega DEPOIS do metas.css e, com a mesma especificidade,
+   sobrescreve display/font-size de volta pro padrão dele
+   (display:inline-block), o que tirava o ícone do centro e fazia ele
+   vazar pra fora do círculo. Definir font-size/color com seletor
+   descendente (`.card-icone-wrapper .card-icone`) tem mais
+   especificidade que `.material-icons` sozinho, então sempre vence. */
 .card-icone-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px 0 6px;
-}
-
-.card-icone {
-  width: 52px;
-  height: 52px;
+  width: 64px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   background: var(--dna-card-soft);
+  margin: 18px auto 6px;
+  transition: background 0.2s ease;
+}
+
+.card-icone-wrapper.concluido {
+  background: rgba(34, 197, 94, 0.15);
+}
+
+.card-icone-wrapper .card-icone {
+  font-size: 32px;
   color: var(--primary-light);
-  font-size: 26px;
+  transition: color 0.2s ease;
+}
+
+.card-icone-wrapper.concluido .card-icone {
+  color: var(--dna-green);
 }
 
 /* editar/excluir por card — ficam discretos no canto até o hover/toque */
@@ -222,6 +238,20 @@ body.metas-page {
 
 .preenchido.vermelho {
   background: var(--danger);
+}
+
+/* progresso de um objetivo ainda não batido (nível 'progresso') — os
+   demais níveis de objetivo reaproveitam verde/vermelho existentes */
+.preenchido.azul {
+  background: var(--primary-light);
+}
+
+.card-concluido-texto {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dna-green);
+  margin: -4px 0 0;
 }
 
 /* Botão de adicionar com gradiente do tema */

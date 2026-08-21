@@ -10,7 +10,13 @@ FATOR_AUMENTO_CATEGORIA = 1.3  # 30% acima do mês anterior já é considerado "
 
 
 def _maior_percentual(metas, minimo, maximo=None):
-    candidatas = [m for m in metas if m['percentual'] >= minimo and (maximo is None or m['percentual'] < maximo)]
+    # só considera metas do tipo 'limite' — pra 'objetivo' chegar ou
+    # passar de 100% é a meta sendo batida, não um estouro pra alertar
+    candidatas = [
+        m for m in metas
+        if m.get('tipo', 'limite') == 'limite'
+        and m['percentual'] >= minimo and (maximo is None or m['percentual'] < maximo)
+    ]
     if not candidatas:
         return None
     # desempate: maior estouro em R$ (não só percentual)
@@ -48,7 +54,7 @@ def calcular_insight(resumo_despesas, tem_pendencias_mes_anterior, metas, gastos
         return {
             'nivel': 'perigo',
             'texto': f"Você já passou do limite em \"{estourada['categoria']}\": R$ {estourada['gasto_atual']:.2f} de R$ {estourada['limite']:.2f} planejados este mês.",
-            'acao_label': 'Ver metas',
+            'acao_label': 'Ver limites',
             'acao_url': '/metas',
         }
 
@@ -67,7 +73,7 @@ def calcular_insight(resumo_despesas, tem_pendencias_mes_anterior, metas, gastos
         return {
             'nivel': 'aviso',
             'texto': f"Você já usou {proxima['percentual']:.0f}% do limite de \"{proxima['categoria']}\" este mês (R$ {proxima['gasto_atual']:.2f} de R$ {proxima['limite']:.2f}).",
-            'acao_label': 'Ver metas',
+            'acao_label': 'Ver limites',
             'acao_url': '/metas',
         }
 
@@ -88,7 +94,7 @@ def calcular_insight(resumo_despesas, tem_pendencias_mes_anterior, metas, gastos
         return {
             'nivel': 'sugestao',
             'texto': f"Você já gastou R$ {atipica['valor_atual']:.2f} com \"{atipica['categoria']}\" este mês. Quer criar um limite pra essa categoria?",
-            'acao_label': 'Criar meta',
+            'acao_label': 'Criar limite',
             'acao_url': '/metas',
             'acao_categoria': atipica['categoria'],
         }

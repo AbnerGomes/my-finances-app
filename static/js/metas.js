@@ -15,10 +15,19 @@ function showToast(msg, success = true) {
 
 // Sobrescreve o changeMode do comum.js: esta página é server-rendered
 // (não AJAX como a home), então trocar de modo recarrega a página com
-// o parâmetro certo — mesmo padrão de despesas/receitas/extrato.
+// o parâmetro certo — mesmo padrão de despesas/receitas/extrato. Mantém
+// o tipo (Objetivos/Limites) que já estava selecionado.
 function changeMode(isCasal) {
   if (typeof salvarModo === 'function') salvarModo(isCasal);
-  window.location.href = `/metas?isCasal=${isCasal}`;
+  const tipoAtivo = document.body.dataset.tipoAtivo || 'limite';
+  window.location.href = `/metas?isCasal=${isCasal}&tipo=${tipoAtivo}`;
+}
+
+// Alterna entre a aba Objetivos e a aba Limites — mesmo padrão de reload
+// server-rendered, mantendo o modo Individual/Casal que já estava ativo.
+function changeTipo(tipo) {
+  const isCasal = document.body.dataset.isCasal || 'N';
+  window.location.href = `/metas?isCasal=${isCasal}&tipo=${tipo}`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -58,21 +67,22 @@ document.addEventListener('DOMContentLoaded', () => {
       const dados = new FormData(formNova);
       const categoria = dados.get('categoria');
       const limite = dados.get('limite');
+      const tipo = dados.get('tipo');
 
       try {
         const resposta = await fetch('/metas/criar', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ categoria, limite }),
+          body: JSON.stringify({ categoria, limite, tipo }),
         });
         const corpo = await resposta.json();
 
         if (!resposta.ok) {
-          showToast(corpo.erro || 'Erro ao criar meta', false);
+          showToast(corpo.erro || 'Erro ao criar', false);
           return;
         }
 
-        showToast(corpo.mensagem || 'Meta criada!');
+        showToast(corpo.mensagem || 'Criado!');
         setTimeout(() => window.location.reload(), 600);
       } catch {
         showToast('Erro de conexão. Tenta de novo.', false);

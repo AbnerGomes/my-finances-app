@@ -1322,18 +1322,22 @@ def metas():
 
     usuario = session['usuario']
     isCasal = request.args.get('isCasal') or 'N'
+    tipo = request.args.get('tipo') or 'limite'
+    if tipo not in ('limite', 'objetivo'):
+        tipo = 'limite'
 
     tem_conjuge = despesa_bp.despesa_service.tem_conjuge(usuario)
     if isCasal == 'S' and not tem_conjuge:
         isCasal = 'N'
 
-    cards = metas_service.listar_metas(usuario, isCasal)
+    cards = metas_service.listar_metas(usuario, isCasal, tipo)
     for card in cards:
         card['icone'] = icone_categoria(card['categoria'])
 
     categorias_completas = despesa_bp.despesa_service.get_categorias_completas(usuario, isCasal)
-    # só oferece pra criar meta em categorias que ainda não têm uma
-    categorias_ja_com_meta = {c['categoria'] for c in cards}
+    # só oferece pra criar em categorias que ainda não têm meta nenhuma
+    # (nem limite, nem objetivo — uma categoria só pode ter uma das duas)
+    categorias_ja_com_meta = metas_service.categorias_em_uso(usuario)
     categorias_disponiveis = [c for c in categorias_completas if c not in categorias_ja_com_meta]
 
     return render_template(
@@ -1341,6 +1345,7 @@ def metas():
         cards=cards,
         usuario=usuario,
         isCasal=isCasal,
+        tipoAtivo=tipo,
         temConjuge=tem_conjuge,
         categoriasDisponiveis=categorias_disponiveis,
         bloqueadoParaCadastro=bloqueado_para_cadastro(usuario),
@@ -1360,6 +1365,10 @@ def criar_meta():
     data = request.get_json(silent=True) or {}
     categoria = (data.get('categoria') or '').strip()
     limite = data.get('limite')
+    tipo = (data.get('tipo') or 'limite').strip()
+
+    if tipo not in ('limite', 'objetivo'):
+        return jsonify({'erro': 'Tipo inválido'}), 400
 
     if not categoria or not limite:
         return jsonify({'erro': 'Dados incompletos'}), 400
@@ -1369,9 +1378,9 @@ def criar_meta():
         if limite <= 0:
             raise ValueError
     except (TypeError, ValueError):
-        return jsonify({'erro': 'Informe um limite válido'}), 400
+        return jsonify({'erro': 'Informe um valor válido'}), 400
 
-    resultado = metas_service.criar_meta(usuario, categoria, limite)
+    resultado = metas_service.criar_meta(usuario, categoria, limite, tipo)
 
     if resultado['sucesso']:
         return jsonify({'mensagem': 'Meta criada com sucesso!'})
